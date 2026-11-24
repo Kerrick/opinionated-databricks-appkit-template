@@ -25,6 +25,13 @@
       "rangeStrategy": "pin"
     },
     {
+      "description": "Node is pinned in mise.toml, generic/.nvmrc and generic/mise.toml.tmpl, and the three have to name one version, so they update in one pull request. Node 22 matches the Databricks Apps runtime, so a new major waits for a decision.",
+      "matchDepNames": ["node"],
+      "matchDatasources": ["node-version"],
+      "allowedVersions": "<23",
+      "groupName": "Node.js"
+    },
+    {
       "description": "The libraries Chromium needs on Linux, pinned in pixi.toml to exact conda-forge versions, with pixi.lock refreshed beside them.",
       "matchManagers": ["pixi"],
       "rangeStrategy": "pin"
