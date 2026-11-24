@@ -94,12 +94,18 @@ async function rows(sql: string) {
   return (await database.query<Record<string, unknown>>(sql)).rows;
 }
 
+// Starting PGlite compiles and boots a whole Postgres, once for the file, and a test's reset drops a schema from
+// it. Both have to run for real, so their limits are stated rather than left at Vitest's 10 seconds, which the
+// start overran with 8 busy loops per core.
+const startLimit = 120_000;
+const resetLimit = 30_000;
+
 beforeAll(async () => {
   database = await PGlite.create();
   wire = new PGLiteSocketServer({ db: database, port: 0, maxConnections: 10 });
   await wire.start();
   port = Number(wire.getServerConn().split(':').at(-1));
-});
+}, startLimit);
 
 afterAll(async () => {
   await wire.stop();
@@ -112,7 +118,7 @@ beforeEach(async () => {
   vi.spyOn(console, 'log').mockImplementation(() => undefined);
   vi.spyOn(console, 'warn').mockImplementation(() => undefined);
   vi.spyOn(console, 'error').mockImplementation(() => undefined);
-});
+}, resetLimit);
 
 afterEach(async () => {
   await app?.close();
