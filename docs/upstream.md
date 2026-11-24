@@ -97,6 +97,13 @@ generates a project with these plugins selected and runs its check.
   search returns is the project's choice, and `appkit lint` fails, saying so,
   until it is made. The root check expects that failure. `README.md.tmpl` says
   what to set.
+- `design`: kept. `client/src/design/index.tsx` is the file the plugin renders
+  at `/design` in development, not a demonstration, and it already follows the
+  rules. Nothing imports it or the pages the plugin serves beside it, so
+  `knip.json` names `client/src/design/**/*.tsx` as entry points, inside the
+  plugin's conditional so that a project without the plugin gets no hint about
+  a pattern that matches nothing. (`knip.json` is rendered as a template for
+  that reason.)
 
 Added files:
 

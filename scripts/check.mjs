@@ -30,6 +30,7 @@ const plugins = {
   agents: {},
   aiSearch: { 'vector-search-index.id': 'check.app.index' },
   analytics: { 'sql-warehouse.id': 'abc123' },
+  design: {},
   lakebase: {
     'postgres.branch': 'projects/check/branches/main',
     'postgres.database': 'projects/check/branches/main/databases/app',
