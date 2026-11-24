@@ -14,7 +14,7 @@
     "build:server": "tsc -b tsconfig.server.json && tsdown -c tsdown.server.config.ts",
     "build": "pnpm run build:server && pnpm run build:client",
     "typecheck": "tsc -b",
-    "lint": "pnpm run lint:oxlint && pnpm run lint:eslint && pnpm run lint:boundaries && pnpm run lint:structure && pnpm run lint:sql && pnpm run lint:triggers",
+    "lint": "pnpm run lint:oxlint && pnpm run lint:eslint && pnpm run lint:boundaries && pnpm run lint:structure && pnpm run lint:ast-grep && pnpm run lint:sql && pnpm run lint:triggers",
     "lint:oxlint": "oxlint --deny-warnings",
     "lint:eslint": "eslint --max-warnings 0 .",
     "lint:boundaries": "tsx tools/check-boundaries.ts",

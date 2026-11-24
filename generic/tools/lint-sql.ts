@@ -20,7 +20,9 @@ export function planSqlChecks(root: string): Command[] {
       lintFolders.add(path.slice(0, path.indexOf('/migrations/') + '/migrations'.length));
   }
   const migrations = sqlFiles.filter((path) => path.includes('migrations/'));
-  const plan: Command[] = [...lintFolders].sort((a, b) => a.localeCompare(b)).map((folder) => ['sqlfluff', 'lint', folder] as const);
+  const plan: Command[] = [...lintFolders]
+    .sort((a, b) => a.localeCompare(b))
+    .map((folder) => ['sqlfluff', 'lint', folder] as const);
   if (migrations.length > 0) plan.push(['squawk', ...migrations]);
   return plan;
 }
