@@ -1,0 +1,17 @@
+id: route-needs-error-element
+valid:
+  - |
+    createBrowserRouter([
+      { element: <Layout />, errorElement: <RouteError />, children: [{ path: '/', element: <Home />, errorElement: <RouteError /> }] },
+    ]);
+  - |
+    createBrowserRouter([{ path: '/', Component: Home, ErrorBoundary: RouteError }]);
+  - |
+    const options = { path: '/not-a-router' };
+invalid:
+  - |
+    createBrowserRouter([{ path: '/', element: <Home /> }]);
+  - |
+    createBrowserRouter([
+      { element: <Layout />, errorElement: <RouteError />, children: [{ path: '/', element: <Home /> }] },
+    ]);

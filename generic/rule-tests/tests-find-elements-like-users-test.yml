@@ -1,0 +1,18 @@
+id: tests-find-elements-like-users
+valid:
+  - |
+    await page.getByRole('button', { name: 'Save' }).click();
+  - |
+    expect(screen.getByLabelText('Name')).toBeVisible();
+invalid:
+  - |
+    page.getByTestId('save');
+  - |
+    const rows = screen.queryAllByTestId('row');
+  - |
+    document.querySelector('.card');
+  - |
+    page.locator('css=.card');
+  - |
+    const { container } = render(<Page />);
+    container.firstChild;

@@ -14,10 +14,11 @@
     "build:server": "tsc -b tsconfig.server.json && tsdown -c tsdown.server.config.ts",
     "build": "pnpm run build:server && pnpm run build:client",
     "typecheck": "tsc -b",
-    "lint": "pnpm run lint:oxlint && pnpm run lint:eslint && pnpm run lint:boundaries && pnpm run lint:triggers",
+    "lint": "pnpm run lint:oxlint && pnpm run lint:eslint && pnpm run lint:boundaries && pnpm run lint:structure && pnpm run lint:triggers",
     "lint:oxlint": "oxlint --deny-warnings",
     "lint:eslint": "eslint --max-warnings 0 .",
     "lint:boundaries": "tsx tools/check-boundaries.ts",
+    "lint:structure": "ast-grep test && ast-grep scan",
     "lint:triggers": "tsx tools/check-triggers.ts",
     "lint:fix": "oxlint --fix",
     "lint:ast-grep": "appkit lint",
@@ -54,6 +55,7 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@ast-grep/cli": "0.51.3",
     "@ast-grep/napi": "0.37.0",
     "@eslint-community/eslint-plugin-eslint-comments": "4.8.1",
     "@tailwindcss/postcss": "4.1.17",

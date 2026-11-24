@@ -1,0 +1,38 @@
+id: appkit-charts-only-in-wrappers
+snapshots:
+  "import { Button, BarChart as Bars } from '@databricks/appkit-ui/react';\n":
+    labels:
+      - source: BarChart as Bars
+        style: primary
+        start: 17
+        end: 33
+      - source: "'@databricks/appkit-ui/react'"
+        style: secondary
+        start: 41
+        end: 70
+      - source: import { Button, BarChart as Bars } from '@databricks/appkit-ui/react';
+        style: secondary
+        start: 0
+        end: 71
+      - source: BarChart
+        style: secondary
+        start: 17
+        end: 25
+  "import { LineChart } from '@databricks/appkit-ui/react';\n":
+    labels:
+      - source: LineChart
+        style: primary
+        start: 9
+        end: 18
+      - source: "'@databricks/appkit-ui/react'"
+        style: secondary
+        start: 26
+        end: 55
+      - source: import { LineChart } from '@databricks/appkit-ui/react';
+        style: secondary
+        start: 0
+        end: 56
+      - source: LineChart
+        style: secondary
+        start: 9
+        end: 18

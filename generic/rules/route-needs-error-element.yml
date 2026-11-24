@@ -1,0 +1,32 @@
+id: route-needs-error-element
+language: Tsx
+severity: error
+message: Every route needs an errorElement, so a failure in one page shows an error page instead of a blank screen.
+note: |
+  Give the route `errorElement: <RouteError />` (see components/RouteError.tsx). The router decision is in
+  docs/design/architecture.md.
+files:
+  - client/src/**/*.ts
+  - client/src/**/*.tsx
+ignores:
+  - '**/*.test.*'
+rule:
+  kind: object
+  all:
+    - has:
+        kind: pair
+        has:
+          field: key
+          regex: ^(path|index|element|Component|lazy|children)$
+    - not:
+        has:
+          kind: pair
+          has:
+            field: key
+            regex: ^(errorElement|ErrorBoundary)$
+  inside:
+    stopBy: end
+    any:
+      - pattern: createBrowserRouter($$$)
+      - pattern: createMemoryRouter($$$)
+      - pattern: createHashRouter($$$)

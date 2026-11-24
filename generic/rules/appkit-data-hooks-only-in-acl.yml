@@ -1,0 +1,26 @@
+id: appkit-data-hooks-only-in-acl
+language: Tsx
+severity: error
+message: Only client/src/acl/ calls AppKit's data hooks.
+note: |
+  AppKit's hooks return the warehouse's row types. The anti-corruption layer wraps each one in a hook named
+  use<Concept> that returns domain objects, so views never see the warehouse's model. See
+  docs/design/architecture.md.
+files:
+  - client/src/**/*.ts
+  - client/src/**/*.tsx
+ignores:
+  - client/src/acl/**
+  - client/src/components/charts/**
+  - client/src/**/*.test.*
+rule:
+  kind: import_specifier
+  has:
+    field: name
+    regex: ^(useAnalyticsQuery|useMetricView|useChartData)$
+  inside:
+    stopBy: end
+    kind: import_statement
+    has:
+      field: source
+      regex: appkit-ui

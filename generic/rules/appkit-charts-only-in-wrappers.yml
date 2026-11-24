@@ -1,0 +1,24 @@
+id: appkit-charts-only-in-wrappers
+language: Tsx
+severity: error
+message: Import AppKit's chart components only in client/src/components/charts/.
+note: |
+  AppKit's charts draw on a canvas, so screen readers and tests can't find their data unless ECharts'
+  accessibility support is on. The wrapper for each chart type in components/charts/ turns it on once; every
+  other file uses the wrapper. See docs/design/architecture.md.
+files:
+  - client/src/**/*.ts
+  - client/src/**/*.tsx
+ignores:
+  - client/src/components/charts/**
+rule:
+  kind: import_specifier
+  has:
+    field: name
+    regex: ^(\w+Chart|BaseChart|ChartWrapper)$
+  inside:
+    stopBy: end
+    kind: import_statement
+    has:
+      field: source
+      regex: appkit-ui

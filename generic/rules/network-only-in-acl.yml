@@ -1,0 +1,29 @@
+id: network-only-in-acl
+language: Tsx
+severity: error
+message: Only client/src/acl/ makes network calls or names an /api/ path.
+note: |
+  Every request goes through the query and mutation functions in client/src/acl/, which share one cache and
+  start fetches in parallel from route loaders. A fetch elsewhere has no cache and invites request
+  waterfalls. See docs/design/data-loading.md.
+files:
+  - client/src/**/*.ts
+  - client/src/**/*.tsx
+ignores:
+  - client/src/acl/**
+  - client/src/**/*.test.*
+rule:
+  any:
+    - pattern: fetch($$$)
+    - pattern: window.fetch($$$)
+    - pattern: globalThis.fetch($$$)
+    - pattern: new XMLHttpRequest($$$)
+    - pattern: new EventSource($$$)
+    - kind: string
+      regex: ^['"]/api/
+    - kind: template_string
+      regex: ^`/api/
+    - kind: import_statement
+      has:
+        field: source
+        regex: ^['"](axios|ky|got|superagent|ofetch|node-fetch|undici|redaxios|wretch)(/.*)?['"]$

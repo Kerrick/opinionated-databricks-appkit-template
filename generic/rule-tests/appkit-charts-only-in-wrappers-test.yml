@@ -1,0 +1,13 @@
+id: appkit-charts-only-in-wrappers
+valid:
+  - |
+    import { Button, Card } from '@databricks/appkit-ui/react';
+  - |
+    import type { LineChartProps } from '@databricks/appkit-ui/react';
+  - |
+    import { LineChart } from './charts/LineChart';
+invalid:
+  - |
+    import { LineChart } from '@databricks/appkit-ui/react';
+  - |
+    import { Button, BarChart as Bars } from '@databricks/appkit-ui/react';

@@ -1,0 +1,48 @@
+id: express-async-handler-wrapped
+snapshots:
+  "app.get('/x', async (req, res) => {\n  res.json(await load());\n});\n":
+    labels:
+      - source: |-
+          async (req, res) => {
+            res.json(await load());
+          }
+        style: primary
+        start: 14
+        end: 63
+      - source: |-
+          app.get('/x', async (req, res) => {
+            res.json(await load());
+          })
+        style: secondary
+        start: 0
+        end: 64
+      - source: |-
+          ('/x', async (req, res) => {
+            res.json(await load());
+          })
+        style: secondary
+        start: 7
+        end: 64
+  "router.post('/x', validate, async function (req, res) {\n  res.json(await load());\n});\n":
+    labels:
+      - source: |-
+          async function (req, res) {
+            res.json(await load());
+          }
+        style: primary
+        start: 28
+        end: 83
+      - source: |-
+          router.post('/x', validate, async function (req, res) {
+            res.json(await load());
+          })
+        style: secondary
+        start: 0
+        end: 84
+      - source: |-
+          ('/x', validate, async function (req, res) {
+            res.json(await load());
+          })
+        style: secondary
+        start: 11
+        end: 84

@@ -1,0 +1,11 @@
+id: appkit-data-hooks-only-in-acl
+valid:
+  - |
+    import { Button, useIsMobile } from '@databricks/appkit-ui/react';
+  - |
+    import { useSales } from '../acl/useSales';
+invalid:
+  - |
+    import { useAnalyticsQuery } from '@databricks/appkit-ui/react';
+  - |
+    import { Button, useMetricView } from '@databricks/appkit-ui/react';

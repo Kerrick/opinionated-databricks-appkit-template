@@ -1,0 +1,38 @@
+id: appkit-data-hooks-only-in-acl
+snapshots:
+  "import { Button, useMetricView } from '@databricks/appkit-ui/react';\n":
+    labels:
+      - source: useMetricView
+        style: primary
+        start: 17
+        end: 30
+      - source: "'@databricks/appkit-ui/react'"
+        style: secondary
+        start: 38
+        end: 67
+      - source: import { Button, useMetricView } from '@databricks/appkit-ui/react';
+        style: secondary
+        start: 0
+        end: 68
+      - source: useMetricView
+        style: secondary
+        start: 17
+        end: 30
+  "import { useAnalyticsQuery } from '@databricks/appkit-ui/react';\n":
+    labels:
+      - source: useAnalyticsQuery
+        style: primary
+        start: 9
+        end: 26
+      - source: "'@databricks/appkit-ui/react'"
+        style: secondary
+        start: 34
+        end: 63
+      - source: import { useAnalyticsQuery } from '@databricks/appkit-ui/react';
+        style: secondary
+        start: 0
+        end: 64
+      - source: useAnalyticsQuery
+        style: secondary
+        start: 9
+        end: 26

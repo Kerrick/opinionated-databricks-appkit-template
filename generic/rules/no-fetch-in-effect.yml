@@ -1,0 +1,25 @@
+id: no-fetch-in-effect
+language: Tsx
+severity: error
+message: Don't fetch inside useEffect.
+note: |
+  A fetch in an effect starts after the first render, so nested components wait on each other in a
+  waterfall, and it has no cache and no cancellation. Load data with a route loader or a TanStack Query hook
+  from client/src/acl/. See docs/design/data-loading.md.
+files:
+  - client/src/**/*.ts
+  - client/src/**/*.tsx
+ignores:
+  - '**/*.test.*'
+rule:
+  any:
+    - pattern: fetch($$$)
+    - pattern: fetchJson($$$)
+    - pattern: fetchOrThrow($$$)
+  inside:
+    stopBy: end
+    any:
+      - pattern: useEffect($$$)
+      - pattern: useLayoutEffect($$$)
+      - pattern: React.useEffect($$$)
+      - pattern: React.useLayoutEffect($$$)

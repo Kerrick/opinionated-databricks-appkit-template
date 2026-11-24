@@ -1,0 +1,19 @@
+id: network-only-in-acl
+valid:
+  - |
+    const label = 'api';
+  - |
+    const url = new URL('https://example.com/docs/api/');
+  - |
+    import { useQuery } from '@tanstack/react-query';
+invalid:
+  - |
+    fetch('https://example.com');
+  - |
+    const response = await window.fetch(url);
+  - |
+    const url = '/api/analytics/query/sales';
+  - |
+    const url = `/api/files/${id}`;
+  - |
+    import axios from 'axios';

@@ -1,0 +1,22 @@
+id: form-uses-form-library
+valid:
+  - |
+    import { useForm } from 'react-hook-form';
+    export function Signup() {
+      const { handleSubmit } = useForm();
+      return <form onSubmit={handleSubmit(save)}><input /></form>;
+    }
+  - |
+    import { Form } from 'react-router';
+    export function Rename() {
+      return <Form method="post"><input name="title" /></Form>;
+    }
+invalid:
+  - |
+    export function Signup() {
+      return <form onSubmit={save}><input /></form>;
+    }
+  - |
+    export function Search() {
+      return <form action="/search" />;
+    }

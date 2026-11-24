@@ -19,6 +19,7 @@ import {
   useIsMobile,
 } from '@databricks/appkit-ui/react';
 import { FileQuestionMark, Menu } from 'lucide-react';
+import { RouteError } from './components/RouteError';
 {{- if .plugins.agents}}
 import { AgentChat } from './pages/agents/AgentChat';
 {{- end}}
@@ -153,33 +154,34 @@ function Layout() {
 const router = createBrowserRouter([
   {
     element: <Layout />,
+    errorElement: <RouteError />,
     children: [
-      { path: '/', element: <HomePage /> },
+      { path: '/', element: <HomePage />, errorElement: <RouteError /> },
 {{- if .plugins.agents}}
-      { path: '/agents', element: <AgentChat /> },
+      { path: '/agents', element: <AgentChat />, errorElement: <RouteError /> },
 {{- end}}
 {{- if .plugins.analytics}}
-      { path: '/analytics', element: <AnalyticsPage /> },
+      { path: '/analytics', element: <AnalyticsPage />, errorElement: <RouteError /> },
 {{- end}}
 {{- if .plugins.lakebase}}
-      { path: '/lakebase', element: <LakebasePage /> },
+      { path: '/lakebase', element: <LakebasePage />, errorElement: <RouteError /> },
 {{- end}}
 {{- if .plugins.genie}}
-      { path: '/genie', element: <GeniePage /> },
+      { path: '/genie', element: <GeniePage />, errorElement: <RouteError /> },
 {{- end}}
 {{- if .plugins.files}}
-      { path: '/files', element: <FilesPage /> },
+      { path: '/files', element: <FilesPage />, errorElement: <RouteError /> },
 {{- end}}
 {{- if .plugins.serving}}
-      { path: '/serving', element: <ServingPage /> },
+      { path: '/serving', element: <ServingPage />, errorElement: <RouteError /> },
 {{- end}}
 {{- if .plugins.aiSearch}}
-      { path: '/ai-search', element: <AiSearchPage /> },
+      { path: '/ai-search', element: <AiSearchPage />, errorElement: <RouteError /> },
 {{- end}}
 {{- if .plugins.jobs}}
-      { path: '/jobs', element: <JobsPage /> },
+      { path: '/jobs', element: <JobsPage />, errorElement: <RouteError /> },
 {{- end}}
-      { path: '*', element: <NotFoundPage /> },
+      { path: '*', element: <NotFoundPage />, errorElement: <RouteError /> },
     ],
   },
 ]);

@@ -1,0 +1,22 @@
+id: tests-find-elements-like-users
+language: Tsx
+severity: error
+message: Find elements the way a user does, by role, label or text, not by test ID, CSS, XPath or container.
+note: |
+  Query with getByRole first, then getByLabelText, getByText and the other accessible queries. A test ID,
+  selector or container query keeps passing when the screen is unusable, and breaks when only markup
+  changes. See docs/design/testing.md.
+files:
+  - client/src/**/*.test.ts
+  - client/src/**/*.test.tsx
+rule:
+  any:
+    - kind: call_expression
+      regex: \b(get|query|find)(All)?ByTestId\(
+    - pattern: $X.querySelector($$$)
+    - pattern: $X.querySelectorAll($$$)
+    - pattern: $X.locator($$$)
+    - kind: member_expression
+      has:
+        field: object
+        regex: ^container$

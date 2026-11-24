@@ -1,0 +1,28 @@
+id: form-uses-form-library
+snapshots:
+  "export function Search() {\n  return <form action=\"/search\" />;\n}\n":
+    labels:
+      - source: <form action="/search" />
+        style: primary
+        start: 36
+        end: 61
+      - source: |
+          export function Search() {
+            return <form action="/search" />;
+          }
+        style: secondary
+        start: 0
+        end: 65
+  "export function Signup() {\n  return <form onSubmit={save}><input /></form>;\n}\n":
+    labels:
+      - source: <form onSubmit={save}><input /></form>
+        style: primary
+        start: 36
+        end: 74
+      - source: |
+          export function Signup() {
+            return <form onSubmit={save}><input /></form>;
+          }
+        style: secondary
+        start: 0
+        end: 78

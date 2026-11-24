@@ -1,0 +1,36 @@
+id: tests-find-elements-like-users
+snapshots:
+  "const rows = screen.queryAllByTestId('row');\n":
+    labels:
+      - source: screen.queryAllByTestId('row')
+        style: primary
+        start: 13
+        end: 43
+  "const { container } = render(<Page />);\ncontainer.firstChild;\n":
+    labels:
+      - source: container.firstChild
+        style: primary
+        start: 40
+        end: 60
+      - source: container
+        style: secondary
+        start: 40
+        end: 49
+  "document.querySelector('.card');\n":
+    labels:
+      - source: document.querySelector('.card')
+        style: primary
+        start: 0
+        end: 31
+  "page.getByTestId('save');\n":
+    labels:
+      - source: page.getByTestId('save')
+        style: primary
+        start: 0
+        end: 24
+  "page.locator('css=.card');\n":
+    labels:
+      - source: page.locator('css=.card')
+        style: primary
+        start: 0
+        end: 25

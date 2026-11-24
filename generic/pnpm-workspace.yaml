@@ -11,6 +11,7 @@ overrides:
   bare-url: 2.5.2
 
 allowBuilds:
+  '@ast-grep/cli': true
   '@ast-grep/napi': true
   esbuild: true
   '@databricks/appkit': true

@@ -1,0 +1,59 @@
+id: express-handler-validates-input
+snapshots:
+  "app.get('/x/:id', asyncHandler(async (req, res) => {\n  res.json(req.params.id);\n}));\n":
+    labels:
+      - source: |-
+          async (req, res) => {
+            res.json(req.params.id);
+          }
+        style: primary
+        start: 31
+        end: 81
+      - source: req.params.id
+        style: secondary
+        start: 64
+        end: 77
+      - source: |-
+          app.get('/x/:id', asyncHandler(async (req, res) => {
+            res.json(req.params.id);
+          }))
+        style: secondary
+        start: 0
+        end: 83
+  "app.post('/x', (req, res) => {\n  res.json(req.body);\n});\n":
+    labels:
+      - source: |-
+          (req, res) => {
+            res.json(req.body);
+          }
+        style: primary
+        start: 15
+        end: 54
+      - source: req.body
+        style: secondary
+        start: 42
+        end: 50
+      - source: |-
+          app.post('/x', (req, res) => {
+            res.json(req.body);
+          })
+        style: secondary
+        start: 0
+        end: 55
+  "this.route(router, {\n  method: 'post',\n  handler: (req, res) => {\n    res.json(req.query);\n  },\n});\n":
+    labels:
+      - source: |-
+          handler: (req, res) => {
+              res.json(req.query);
+            }
+        style: primary
+        start: 41
+        end: 94
+      - source: handler
+        style: secondary
+        start: 41
+        end: 48
+      - source: req.query
+        style: secondary
+        start: 79
+        end: 88

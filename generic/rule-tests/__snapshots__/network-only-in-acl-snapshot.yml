@@ -1,0 +1,36 @@
+id: network-only-in-acl
+snapshots:
+  "const response = await window.fetch(url);\n":
+    labels:
+      - source: window.fetch(url)
+        style: primary
+        start: 23
+        end: 40
+  "const url = '/api/analytics/query/sales';\n":
+    labels:
+      - source: "'/api/analytics/query/sales'"
+        style: primary
+        start: 12
+        end: 40
+  "const url = `/api/files/${id}`;\n":
+    labels:
+      - source: '`/api/files/${id}`'
+        style: primary
+        start: 12
+        end: 30
+  "fetch('https://example.com');\n":
+    labels:
+      - source: fetch('https://example.com')
+        style: primary
+        start: 0
+        end: 28
+  "import axios from 'axios';\n":
+    labels:
+      - source: import axios from 'axios';
+        style: primary
+        start: 0
+        end: 26
+      - source: "'axios'"
+        style: secondary
+        start: 18
+        end: 25

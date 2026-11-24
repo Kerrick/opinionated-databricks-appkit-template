@@ -1,0 +1,34 @@
+id: express-handler-validates-input
+valid:
+  - |
+    app.post('/x', asyncHandler(async (req, res) => {
+      const body = Body.safeParse(req.body);
+      res.json(body);
+    }));
+  - |
+    app.get('/x', (_req, res) => {
+      res.json({ ok: true });
+    });
+  - |
+    router.patch('/x/:id', (req, res) => {
+      const params = Params.parse(req.params);
+      res.json(params);
+    });
+  - |
+    const read = (req) => req.body;
+invalid:
+  - |
+    app.post('/x', (req, res) => {
+      res.json(req.body);
+    });
+  - |
+    app.get('/x/:id', asyncHandler(async (req, res) => {
+      res.json(req.params.id);
+    }));
+  - |
+    this.route(router, {
+      method: 'post',
+      handler: (req, res) => {
+        res.json(req.query);
+      },
+    });

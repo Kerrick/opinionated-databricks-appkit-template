@@ -1,0 +1,25 @@
+id: express-async-handler-wrapped
+valid:
+  - |
+    app.get('/x', asyncHandler(async (req, res) => {
+      res.json(await load());
+    }));
+  - |
+    app.get('/x', (req, res) => {
+      res.json({});
+    });
+  - |
+    appkit.server.extend(async (app) => {
+      await setup(app);
+    });
+  - |
+    const load = async () => 1;
+invalid:
+  - |
+    app.get('/x', async (req, res) => {
+      res.json(await load());
+    });
+  - |
+    router.post('/x', validate, async function (req, res) {
+      res.json(await load());
+    });

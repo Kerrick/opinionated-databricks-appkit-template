@@ -1,0 +1,48 @@
+id: express-handler-validates-input
+language: Tsx
+severity: error
+message: A route handler that reads req.body, req.params or req.query must validate it with Zod.
+note: |
+  Parse the input with a Zod schema (`Schema.safeParse(req.body)`) before using it, and answer 400 when it
+  fails. Unchecked input reaches SQL, files and other services. See the server side of
+  docs/design/architecture.md.
+files:
+  - server/**/*.ts
+ignores:
+  - '**/*.test.*'
+utils:
+  reads-request-input:
+    has:
+      stopBy: end
+      kind: member_expression
+      regex: ^(req|_req|request)\.(body|params|query)\b
+  parses-with-zod:
+    has:
+      stopBy: end
+      kind: call_expression
+      regex: \.(safeParse|parse|safeParseAsync|parseAsync)\(
+rule:
+  any:
+    # app.post('/x', (req, res) => ...), wrapped or not
+    - any:
+        - kind: arrow_function
+        - kind: function_expression
+      all:
+        - matches: reads-request-input
+        - not:
+            matches: parses-with-zod
+        - inside:
+            stopBy: end
+            pattern: $APP.$METHOD($$$ARGS)
+    # this.route(router, { method, path, handler: (req, res) => ... })
+    - kind: pair
+      all:
+        - has:
+            field: key
+            regex: ^handler$
+        - matches: reads-request-input
+        - not:
+            matches: parses-with-zod
+constraints:
+  METHOD:
+    regex: ^(get|post|put|patch|delete|all)$

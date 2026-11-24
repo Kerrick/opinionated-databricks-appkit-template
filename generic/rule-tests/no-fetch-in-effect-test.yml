@@ -1,0 +1,19 @@
+id: no-fetch-in-effect
+valid:
+  - |
+    function load() {
+      return fetch('/x');
+    }
+  - |
+    useEffect(() => {
+      document.title = 'x';
+    }, []);
+invalid:
+  - |
+    useEffect(() => {
+      fetch('/x').then(setData);
+    }, []);
+  - |
+    React.useEffect(() => {
+      void fetchJson('/x', undefined, schema, fallback);
+    }, []);

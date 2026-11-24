@@ -1,0 +1,6 @@
+# Structural rules for one file at a time. `pnpm run lint:structure` scans the project; the rules'
+# own tests live in rule-tests/ and run first, so a rule that stops matching is caught.
+ruleDirs:
+  - rules
+testConfigs:
+  - testDir: rule-tests
