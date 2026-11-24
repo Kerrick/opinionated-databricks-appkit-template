@@ -31,6 +31,9 @@ A Databricks App powered by [AppKit](https://developers.databricks.com/docs/appk
 {{- if .plugins.jobs}}
 - **Jobs** -- Triggers and monitors a Databricks job, under `/api/jobs/`. No sample page is included: call those routes from `client/src/acl/`, like every other request.
 {{- end}}
+{{- if .plugins.serving}}
+- **Serving** -- Calls a model serving endpoint, under `/api/serving/`. AppKit deprecates it in favor of the agents plugin. No sample page is included: call those routes from `client/src/acl/`, like every other request.
+{{- end}}
 - **Server** -- Express HTTP server with static file serving and Vite dev mode
 
 ## Prerequisites

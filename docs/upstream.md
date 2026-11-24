@@ -119,6 +119,11 @@ generates a project with these plugins selected and runs its check.
   stream read inside the view, posted plain forms, and failed the lint checks.
   What a project shows about its job, and when it may start a run, is its own
   decision. `README.md.tmpl` says to call the plugin's routes from `acl/`.
+- `serving`: cut. `client/src/pages/serving/` is gone, with its route and
+  link. It was a chat with the serving endpoint that streamed from the view
+  and posted a plain form, for a plugin AppKit deprecates in favor of
+  `agents`. `README.md.tmpl` says so, and to call the plugin's routes from
+  `acl/`.
 
 Added files:
 
@@ -186,7 +191,7 @@ Modified files:
   no `tools/unpack-docs.*` and no `postinstall` script.
 - Formatting only: `client/src/App.tsx`, `client/src/index.css`,
   `client/src/acl/fetch-or-throw.ts`, `client/src/main.tsx`,
-  `client/vite.config.ts`, `client/src/pages/*/*.tsx` (except `genie`),
+  `client/vite.config.ts`, `client/src/pages/lakebase/LakebasePage.tsx`,
   and `server/routes/lakebase/todo-routes.ts`.
 
 When a later upstream change touches a formatting-only file, take it, then

@@ -38,6 +38,7 @@ const plugins = {
     'postgres.branch': 'projects/check/branches/main',
     'postgres.database': 'projects/check/branches/main/databases/app',
   },
+  serving: { 'serving-endpoint.name': 'check-endpoint' },
 };
 
 // The failures the plugins project must show, each matched line by line

@@ -27,9 +27,6 @@ import { LakebasePage } from './pages/lakebase/LakebasePage';
 {{- if .plugins.genie}}
 import { GeniePage } from './pages/genie/GeniePage';
 {{- end}}
-{{- if .plugins.serving}}
-import { ServingPage } from './pages/serving/ServingPage';
-{{- end}}
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
@@ -61,11 +58,6 @@ function NavLinks({
 {{- if .plugins.genie}}
       <NavLink to="/genie" className={linkClass} onClick={onClick}>
         Genie
-      </NavLink>
-{{- end}}
-{{- if .plugins.serving}}
-      <NavLink to="/serving" className={linkClass} onClick={onClick}>
-        Serving
       </NavLink>
 {{- end}}
     </nav>
@@ -129,9 +121,6 @@ const router = createBrowserRouter([
 {{- end}}
 {{- if .plugins.genie}}
       { path: '/genie', element: <GeniePage />, errorElement: <RouteError /> },
-{{- end}}
-{{- if .plugins.serving}}
-      { path: '/serving', element: <ServingPage />, errorElement: <RouteError /> },
 {{- end}}
       { path: '*', element: <NotFoundPage />, errorElement: <RouteError /> },
     ],
