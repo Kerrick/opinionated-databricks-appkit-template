@@ -1,10 +1,15 @@
 import { defineConfig, devices } from '@playwright/test';
+import { createHash } from 'node:crypto';
 import { defineBddConfig } from 'playwright-bdd';
 import { browserLaunchOptions } from './tools/browser-libraries.ts';
 
 // Journeys: the built app (`pnpm run build` first) in a real browser, with the
 // browser's calls to `/api/` faked. They need no workspace and no credentials.
-const port = Number(process.env['JOURNEY_PORT'] ?? 4173);
+// The port comes from where the project sits, so two copies of it on one machine (two checkouts, two
+// worktrees) don't fight over one. `JOURNEY_PORT` overrides it.
+const port = Number(
+  process.env['JOURNEY_PORT'] ?? 4000 + (createHash('sha256').update(process.cwd()).digest().readUInt16BE() % 4000)
+);
 
 const testDir = defineBddConfig({
   features: 'features/journeys/**/*.feature',
