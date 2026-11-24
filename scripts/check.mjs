@@ -65,7 +65,8 @@ const expectedFailures = [
     lines: [
       /^Scanning \d+ TypeScript files\.\.\.$/,
       /^Found 1 violation\(s\):$/,
-      /^server\/server\.ts:\d+:\d+$/,
+      // appkit lint prints paths with the system's separator.
+      /^server[/\\]server\.ts:\d+:\d+$/,
       /^ {2}ai-search-index-requires-columns: AI Search index has no `columns`; it will fail in production .* Set `columns` explicitly on each index\.$/,
       /^ {2}> aiSearch\(\)$/,
     ],
