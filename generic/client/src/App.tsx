@@ -27,9 +27,6 @@ import { LakebasePage } from './pages/lakebase/LakebasePage';
 {{- if .plugins.genie}}
 import { GeniePage } from './pages/genie/GeniePage';
 {{- end}}
-{{- if .plugins.files}}
-import { FilesPage } from './pages/files/FilesPage';
-{{- end}}
 {{- if .plugins.serving}}
 import { ServingPage } from './pages/serving/ServingPage';
 {{- end}}
@@ -67,11 +64,6 @@ function NavLinks({
 {{- if .plugins.genie}}
       <NavLink to="/genie" className={linkClass} onClick={onClick}>
         Genie
-      </NavLink>
-{{- end}}
-{{- if .plugins.files}}
-      <NavLink to="/files" className={linkClass} onClick={onClick}>
-        Files
       </NavLink>
 {{- end}}
 {{- if .plugins.serving}}
@@ -145,9 +137,6 @@ const router = createBrowserRouter([
 {{- end}}
 {{- if .plugins.genie}}
       { path: '/genie', element: <GeniePage />, errorElement: <RouteError /> },
-{{- end}}
-{{- if .plugins.files}}
-      { path: '/files', element: <FilesPage />, errorElement: <RouteError /> },
 {{- end}}
 {{- if .plugins.serving}}
       { path: '/serving', element: <ServingPage />, errorElement: <RouteError /> },

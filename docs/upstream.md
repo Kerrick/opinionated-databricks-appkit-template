@@ -104,6 +104,11 @@ generates a project with these plugins selected and runs its check.
   plugin's conditional so that a project without the plugin gets no hint about
   a pattern that matches nothing. (`knip.json` is rendered as a template for
   that reason.)
+- `files`: cut. `client/src/pages/files/` is gone, with its route and link. It
+  was a volume browser of almost 400 lines that fetched from the view, posted
+  plain forms and failed the type and lint checks, and it needs a volume with
+  files in it. A project's own file features call the plugin's routes from
+  `acl/`. `README.md.tmpl` says so.
 
 Added files:
 
