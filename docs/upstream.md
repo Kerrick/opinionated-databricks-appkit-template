@@ -86,7 +86,13 @@ Modified files:
 - `.prettierrc.json`: an override for `databricks.yml` that keeps double
   quotes, because `databricks.yml.tmpl` writes `"{{.projectName}}"`.
 - `.prettierignore`: `appkit.plugins.json`, which the build rewrites.
-- `README.md.tmpl`: a blank line after `**Enabled plugins:**`.
+- `README.md.tmpl`: a blank line after `**Enabled plugins:**`, and the
+  package manager is written as `pnpm` instead of `{{or .packageManager "pnpm"}}`,
+  with a sentence saying the project uses pnpm only.
+- `app.yaml.tmpl`: the start command names `pnpm` for the same reason.
+- `package-lock.json`: removed. The template is pnpm-only and its check
+  installs with pnpm from `pnpm-lock.yaml`. Upstream's npm lockfile would go
+  stale as dependencies change, and Renovate would try to keep both current.
 - `server/server.ts`: the plugin list is written on one line, which is how
   Prettier prints it for every plugin selection.
 - `client/src/ErrorBoundary.tsx` moved to `client/src/components/ErrorBoundary.tsx`, and `client/src/lib/fetch-or-throw.ts` to `client/src/acl/fetch-or-throw.ts`, so that both live in a layer. `main.tsx` and the three pages that import `fetch-or-throw` follow.

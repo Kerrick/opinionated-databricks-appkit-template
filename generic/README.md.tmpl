@@ -23,7 +23,7 @@ A Databricks App powered by [AppKit](https://developers.databricks.com/docs/appk
 
 ## Prerequisites
 
-- Node.js v22.23.4+ (pinned in `.nvmrc`) and {{or .packageManager "pnpm"}}
+- Node.js v22.23.4+ (pinned in `.nvmrc`) and pnpm. The project uses pnpm only: `pnpm-lock.yaml` is the one lockfile, and `pnpm install --frozen-lockfile` reproduces it.
 - Databricks CLI (for deployment)
 - Access to a Databricks workspace
 
@@ -103,7 +103,7 @@ databricks bundle deploy --profile production
 ### Install Dependencies
 
 ```bash
-{{or .packageManager "pnpm"}} install
+pnpm install
 ```
 
 ### Development
@@ -111,7 +111,7 @@ databricks bundle deploy --profile production
 Run the app in development mode with hot reload:
 
 ```bash
-{{or .packageManager "pnpm"}} run dev
+pnpm run dev
 ```
 
 The app will be available at the URL shown in the console output.
@@ -121,7 +121,7 @@ The app will be available at the URL shown in the console output.
 Build both client and server for production:
 
 ```bash
-{{or .packageManager "pnpm"}} run build
+pnpm run build
 ```
 
 This creates:
@@ -134,7 +134,7 @@ This creates:
 Run the production build:
 
 ```bash
-{{or .packageManager "pnpm"}} start
+pnpm start
 ```
 
 ## Code Quality
@@ -143,15 +143,15 @@ There are a few commands to help you with code quality:
 
 ```bash
 # Type checking
-{{or .packageManager "pnpm"}} run typecheck
+pnpm run typecheck
 
 # Linting
-{{or .packageManager "pnpm"}} run lint
-{{or .packageManager "pnpm"}} run lint:fix
+pnpm run lint
+pnpm run lint:fix
 
 # Formatting
-{{or .packageManager "pnpm"}} run format
-{{or .packageManager "pnpm"}} run format:fix
+pnpm run format
+pnpm run format:fix
 ```
 
 ## Deployment with Databricks Asset Bundles
