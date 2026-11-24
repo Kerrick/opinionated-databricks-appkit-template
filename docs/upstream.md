@@ -64,3 +64,4 @@ fetched sources.
 - `.oxlintrc.json`: added `typescript/switch-exhaustiveness-check`, and `max-classes-per-file` (one class per file) for `client/src/domain/`. `lint:oxlint` runs with `--deny-warnings`.
 - `eslint.config.js`: new flat config for what oxlint lacks: `naming-convention` (no agent-noun class names in the domain), disable-comment hygiene, sonarjs, functional's immutability rules and a setter ban in the domain, and JSDoc on exports from the domain and `server/`. The `lint` script now runs oxlint, ESLint and the triggered checks in turn.
 - `client/src/App.tsx`, `client/src/components/ErrorBoundary.tsx`, `server/example.test.ts`: small edits so the new rules pass (readonly props, one return type, `static readonly`).
+- `server/routes/lakebase/todo-routes.ts`: a doc comment on the exported setup function, which the JSDoc rule requires.

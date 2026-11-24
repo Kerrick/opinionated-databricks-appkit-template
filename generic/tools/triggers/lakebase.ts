@@ -4,6 +4,11 @@ import { listDirectories, listFiles, readIfPresent } from '../lib/files.ts';
 /** `lakebase()` or `database()` called in the server entry point. */
 const REGISTRATION = /\b(lakebase|database)\s*\(/g;
 
+/** True when a .sqlfluff file sets `dialect = postgres` on a line of its own. */
+function isPostgresDialect(config: string): boolean {
+  return config.split('\n').some((line) => line.replaceAll(' ', '').trim() === 'dialect=postgres');
+}
+
 /**
  * Fails from the moment Lakebase arrives (a `lakebase()` or `database()` plugin in `server/server.ts`, or a
  * `migrations` folder) until its SQL is linted as Postgres and its migrations are checked for safety.
@@ -21,7 +26,7 @@ export function checkLakebase(root: string): string[] {
     (path) =>
       path !== '.sqlfluff' &&
       path.endsWith('/.sqlfluff') &&
-      readIfPresent(root, path).split("\n").some((line) => /^dialect\s*=\s*postgres$/.test(line.trim())) &&
+      isPostgresDialect(readIfPresent(root, path)) &&
       (path.startsWith('config/database/') || path.includes('/migrations/'))
   );
   if (!postgresLinted) {

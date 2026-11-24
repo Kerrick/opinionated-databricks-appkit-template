@@ -32,6 +32,7 @@ const CREATE_TABLE_SQL = `
 
 const CreateTodoBody = z.object({ title: z.string().min(1) });
 
+/** Creates the sample todo table if it is missing and registers its routes. */
 export async function setupSampleLakebaseRoutes(appkit: AppKitWithLakebase) {
   try {
     const { rows } = await appkit.lakebase.query(TABLE_EXISTS_SQL);
