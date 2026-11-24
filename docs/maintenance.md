@@ -6,9 +6,29 @@ repository from rotting. Neither reaches a generated project.
 ## The workflow
 
 `.github/workflows/check.yml` runs `pnpm run check` at the repository root. That
-check generates a project from the checkout with the Databricks CLI, installs it
-from its lockfile and runs the project's own `check` script, with no workspace
-credentials: `apps init` gets a fake host and token, and nothing else sees them.
+check generates projects from the checkout with the Databricks CLI, installs
+each from its lockfile and runs the project's own `check` script, with no
+workspace credentials: `apps init` gets a fake host and token, and nothing else
+sees them.
+
+It generates two projects, one after the other:
+
+- **No plugins.** Its check must pass as it is.
+- **Plugins.** The AppKit plugins listed in `plugins` in `scripts/check.mjs`,
+  selected together, with made-up values for the resources each one asks for.
+  A plugin can bring a fact that one of the project's
+  waiting checks exists for: Lakebase's sample todo list writes data, so the
+  check that wants the write target written down fires. Each such failure is
+  listed in `expectedFailures`, with the lines it must print. The root check
+  requires the failure to print exactly those lines, makes the change the
+  message asks for, and then requires the project's whole check to pass. Any
+  other failure fails the root check.
+
+When a plugin is added to the template, add it to `plugins`. When a change
+makes a plugin fire a waiting check, add the failure to `expectedFailures` only
+if a developer selecting that plugin should see it; otherwise fix the template.
+
+The second project roughly doubles the time a run takes.
 
 It runs on:
 
