@@ -34,3 +34,9 @@ test('the app and AppKit load the same copy of ECharts', () => {
   const theirs = dirname(realpathSync(fromAppkitUi.resolve('echarts/core')));
   expect(ours).toBe(theirs);
 });
+
+test('the app registers the accessibility support when it starts', () => {
+  // main.tsx only starts the app, so no other test loads it; without this, deleting the call goes unnoticed.
+  const main = readFileSync(`${projectRoot}client/src/main.tsx`, 'utf8');
+  expect(main).toMatch(/^registerChartAccessibility\(\);$/m);
+});
