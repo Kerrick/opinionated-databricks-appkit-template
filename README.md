@@ -104,7 +104,7 @@ With [mise](https://mise.jdx.dev/), which installs the pinned Node, pnpm and Dat
 mise x -- pnpm run check
 ```
 
-On GitHub's runners, a run lasts about 12 to 14 minutes.
+On GitHub's runners, a run takes 8 to 20 minutes, depending on the system: Windows is the slowest.
 
 ## Documentation
 

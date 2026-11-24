@@ -123,9 +123,9 @@ generates a project with these plugins selected and runs its check.
   plain forms and failed the type and lint checks, and it needs a volume with
   files in it. A project's own file features call the plugin's routes from
   `acl/`. `README.md.tmpl` says so.
-- `genie`: kept as it was. `client/src/pages/genie/GeniePage.tsx` renders
-  AppKit's `GenieChat` and nothing else, which is how a project uses the
-  plugin, and it passes every check. `GenieChat` talks to its Genie space
+- `genie`: kept, with its title made an `h1` (see the entry on headings below).
+  `client/src/pages/genie/GeniePage.tsx` renders AppKit's `GenieChat` and
+  nothing else, which is how a project uses the plugin, and it passes every check. `GenieChat` talks to its Genie space
   itself, like AppKit's charts, so `_docs/design/architecture.md` names it
   beside them as a component a view may render as it is.
 - `jobs`: cut. `client/src/pages/jobs/` is gone, with its route and link. It
@@ -313,6 +313,15 @@ Modified files:
 - Tests beside the code they test: `client/src/acl/fetch-or-throw.test.ts`,
   `client/src/acl/todos.test.ts` and `client/src/lib/utils.test.ts`, run in
   Node and by mutation testing.
+- Headings: every page owns its one `h1`, and the app never shows two. In
+  `client/src/App.tsx` the project name in the header is a `span`, not an `h1`.
+  `GeniePage.tsx` and the home page's welcome line are `h1` where upstream had
+  an `h2`. The titles of the not-found, load-failure and crash pages, the todo
+  list's card and the home page's "Getting Started" card (a `div`-based
+  component) say `role="heading"` and `aria-level`. In `ErrorBoundary.tsx` the
+  three `h3` sub-headings are `h2`. The accessibility checks run axe's
+  `page-has-heading-one` rule beside the standards' tags, so a page without an
+  `h1` fails them.
 - `client/src/main.tsx`, `client/src/components/charts/register-accessibility.ts`,
   `package.json`: `echarts` becomes a dependency, pinned to the version
   `@databricks/appkit-ui` depends on, and `main.tsx` registers ECharts'
