@@ -1,0 +1,9 @@
+[tools]
+node = "22.23.4"
+pnpm = "11.0.8"
+"aqua:databricks/cli" = "1.27.0"
+
+[settings]
+# The default of 3 seconds is too short on a slow connection, and the release
+# lookup for the Databricks CLI then fails.
+fetch_remote_versions_timeout = "30s"

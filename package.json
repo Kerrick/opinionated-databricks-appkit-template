@@ -1,0 +1,14 @@
+{
+  "name": "opinionated-databricks-appkit-template",
+  "private": true,
+  "description": "Checks for the template repository. The template itself is in generic/.",
+  "license": "MIT-0",
+  "type": "module",
+  "packageManager": "pnpm@11.0.8",
+  "engines": {
+    "node": ">=22.23.4"
+  },
+  "scripts": {
+    "check": "node scripts/check.mjs"
+  }
+}
