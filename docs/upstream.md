@@ -158,7 +158,10 @@ Modified files:
 - `.prettierignore`: `appkit.plugins.json`, which the build rewrites, and `shared/appkit-types/`, which type generation rewrites.
 - `README.md.tmpl`: a blank line after `**Enabled plugins:**`, and the
   package manager is written as `pnpm` instead of `{{or .packageManager "pnpm"}}`,
-  with a sentence saying the project uses pnpm only.
+  with a sentence saying the project uses pnpm only. The Prerequisites line points at `.nvmrc` instead of
+  naming a Node.js version, because a version written in prose goes stale.
+- `.nvmrc`: `22.23.5` instead of `22.23.4`, so it matches `mise.toml` and
+  `mise.toml.tmpl`. Renovate updates the three together.
 - `app.yaml.tmpl`: the start command names `pnpm` for the same reason.
 - `package-lock.json`: removed. The template is pnpm-only and its check
   installs with pnpm from `pnpm-lock.yaml`. Upstream's npm lockfile would go
