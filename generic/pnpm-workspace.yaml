@@ -16,3 +16,9 @@ allowBuilds:
   '@databricks/appkit': true
   '@databricks/appkit-ui': true
   protobufjs: true
+
+# With pnpm's side-effects cache, a second install from a warm store drops the
+# dependencies that @databricks/appkit bundles inside its package, and the app
+# then fails to start with "Cannot find package '@databricks/sdk-statementexecution'".
+# Building such packages again on every install avoids that.
+sideEffectsCache: false

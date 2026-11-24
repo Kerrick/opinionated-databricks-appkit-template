@@ -55,27 +55,20 @@ export function AgentChat() {
   // Agent registry comes from the agents plugin's `clientConfig()` payload
   // (boot-time, no fetch). `defaultAgent` is null only when no agents are
   // registered; both `planner` and `helper` are registered here.
-  const { agents, defaultAgent, skills } =
-    usePluginClientConfig<AgentsClientConfig>('agents');
+  const { agents, defaultAgent, skills } = usePluginClientConfig<AgentsClientConfig>('agents');
   const activeAgent = defaultAgent ?? agents[0] ?? null;
   // Skills visible to the active agent, if any — drives the `/skill` picker.
   const activeSkills = (activeAgent && skills?.[activeAgent]) || [];
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
-  const [pendingAssistantId, setPendingAssistantId] = useState<string | null>(
-    null,
-  );
+  const [pendingAssistantId, setPendingAssistantId] = useState<string | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
 
   // Surface tool-call events as inline messages. Sub-agent delegations
   // show up here as `agent-helper` tool calls — same wire shape as a
   // function tool, so the same row renders both.
   const handleEvent = (event: AgentChatEvent) => {
-    if (
-      event.type === 'response.output_item.added' &&
-      event.item?.type === 'function_call' &&
-      event.item.name
-    ) {
+    if (event.type === 'response.output_item.added' && event.item?.type === 'function_call' && event.item.name) {
       setMessages((prev) => [
         ...prev,
         {
@@ -127,37 +120,27 @@ export function AgentChat() {
       <div>
         <h2 className="text-2xl font-bold text-foreground">Chat</h2>
         <p className="text-sm text-muted-foreground mt-1">
-          You’re talking to <code className="mx-1">planner</code>, a
-          markdown agent at
-          <code className="mx-1">server/agents/planner/agent.md</code>.
-          For computational actions it delegates to its sub-agent
+          You’re talking to <code className="mx-1">planner</code>, a markdown agent at
+          <code className="mx-1">server/agents/planner/agent.md</code>. For computational actions it delegates to its
+          sub-agent
           <code className="mx-1">helper</code> (code-defined at
-          <code className="mx-1">server/agents/helper/agent.ts</code>), which
-          surfaces as an
+          <code className="mx-1">server/agents/helper/agent.ts</code>), which surfaces as an
           <code className="mx-1">agent-helper</code> tool call.
         </p>
       </div>
 
       <Card className="h-[min(600px,70vh)] flex flex-col">
-        <CardContent
-          className="flex-1 overflow-y-auto p-4 space-y-3"
-          ref={scrollRef}
-        >
+        <CardContent className="flex-1 overflow-y-auto p-4 space-y-3" ref={scrollRef}>
           {messages.length === 0 && (
             <p className="text-sm text-muted-foreground text-center mt-8">
-              Try “help me plan a feature” for a planning conversation,
-              or “what time is it?” / “count the words in: the quick
-              brown fox” to watch planner delegate to{' '}
-              <code>agent-helper</code>.
+              Try “help me plan a feature” for a planning conversation, or “what time is it?” / “count the words in: the
+              quick brown fox” to watch planner delegate to <code>agent-helper</code>.
             </p>
           )}
           {messages.map((m) => {
             if (m.role === 'tool') {
               return (
-                <div
-                  key={m.id}
-                  className="text-xs font-mono text-muted-foreground border-l-2 border-primary/50 pl-3"
-                >
+                <div key={m.id} className="text-xs font-mono text-muted-foreground border-l-2 border-primary/50 pl-3">
                   <span className="font-semibold">tool · {m.toolName}</span>
                   {m.content ? <span className="ml-2">{m.content}</span> : null}
                 </div>
@@ -166,28 +149,18 @@ export function AgentChat() {
             return (
               <div
                 key={m.id}
-                className={`p-3 rounded-md ${
-                  m.role === 'user'
-                    ? 'bg-primary/10 ml-12'
-                    : 'bg-muted mr-12'
-                }`}
+                className={`p-3 rounded-md ${m.role === 'user' ? 'bg-primary/10 ml-12' : 'bg-muted mr-12'}`}
               >
-                <div className="text-xs text-muted-foreground mb-1">
-                  {m.role}
-                </div>
+                <div className="text-xs text-muted-foreground mb-1">{m.role}</div>
                 <div className="whitespace-pre-wrap text-sm">
-                  {(m.id === pendingAssistantId ? content : m.content) ||
-                    (isStreaming ? '…' : '')}
+                  {(m.id === pendingAssistantId ? content : m.content) || (isStreaming ? '…' : '')}
                 </div>
               </div>
             );
           })}
         </CardContent>
 
-        <form
-          onSubmit={(e) => void handleSubmit(e)}
-          className="p-3 border-t flex gap-2"
-        >
+        <form onSubmit={(e) => void handleSubmit(e)} className="p-3 border-t flex gap-2">
           {activeSkills.length > 0 && (
             <select
               className="text-sm border rounded-md px-2 bg-background text-foreground shrink-0"
@@ -213,17 +186,10 @@ export function AgentChat() {
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder={
-              activeAgent
-                ? `Message ${activeAgent}…`
-                : 'No agents registered'
-            }
+            placeholder={activeAgent ? `Message ${activeAgent}…` : 'No agents registered'}
             disabled={!activeAgent || isStreaming}
           />
-          <Button
-            type="submit"
-            disabled={!input.trim() || !activeAgent || isStreaming}
-          >
+          <Button type="submit" disabled={!input.trim() || !activeAgent || isStreaming}>
             {isStreaming ? 'Sending…' : 'Send'}
           </Button>
         </form>

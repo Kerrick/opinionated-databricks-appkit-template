@@ -46,14 +46,16 @@ export async function setupSampleLakebaseRoutes(appkit: AppKitWithLakebase) {
   } catch (err) {
     console.warn('[lakebase] Database setup failed:', err instanceof Error ? err.message : String(err));
     console.warn('[lakebase] Routes will be registered but may return errors');
-    console.warn('[lakebase] See https://developers.databricks.com/docs/appkit/v0/plugins/lakebase#database-permissions for troubleshooting');
+    console.warn(
+      '[lakebase] See https://developers.databricks.com/docs/appkit/v0/plugins/lakebase#database-permissions for troubleshooting'
+    );
   }
 
   appkit.server.extend((app) => {
     app.get('/api/lakebase/todos', async (_req, res) => {
       try {
         const result = await appkit.lakebase.query(
-          'SELECT id, title, completed, created_at FROM app.todos ORDER BY created_at DESC',
+          'SELECT id, title, completed, created_at FROM app.todos ORDER BY created_at DESC'
         );
         res.json(result.rows);
       } catch (err) {
@@ -71,7 +73,7 @@ export async function setupSampleLakebaseRoutes(appkit: AppKitWithLakebase) {
         }
         const result = await appkit.lakebase.query(
           'INSERT INTO app.todos (title) VALUES ($1) RETURNING id, title, completed, created_at',
-          [parsed.data.title.trim()],
+          [parsed.data.title.trim()]
         );
         res.status(201).json(result.rows[0]);
       } catch (err) {
@@ -89,7 +91,7 @@ export async function setupSampleLakebaseRoutes(appkit: AppKitWithLakebase) {
         }
         const result = await appkit.lakebase.query(
           'UPDATE app.todos SET completed = NOT completed WHERE id = $1 RETURNING id, title, completed, created_at',
-          [id],
+          [id]
         );
         if (result.rows.length === 0) {
           res.status(404).json({ error: 'Todo not found' });
@@ -109,10 +111,7 @@ export async function setupSampleLakebaseRoutes(appkit: AppKitWithLakebase) {
           res.status(400).json({ error: 'Invalid id' });
           return;
         }
-        const result = await appkit.lakebase.query(
-          'DELETE FROM app.todos WHERE id = $1 RETURNING id',
-          [id],
-        );
+        const result = await appkit.lakebase.query('DELETE FROM app.todos WHERE id = $1 RETURNING id', [id]);
         if (result.rows.length === 0) {
           res.status(404).json({ error: 'Todo not found' });
           return;

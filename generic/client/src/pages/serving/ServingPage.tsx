@@ -7,18 +7,12 @@ import { z } from 'zod';
 
 // Only the first choice is shown, so only it has to be a chat message.
 const ChatResponse = z.object({
-  choices: z.tuple(
-    [z.object({ message: z.object({ content: z.string() }).optional() })],
-    z.unknown(),
-  ),
+  choices: z.tuple([z.object({ message: z.object({ content: z.string() }).optional() })], z.unknown()),
 });
 
 function extractContent(data: unknown): string {
   const resp = ChatResponse.safeParse(data);
-  return (
-    (resp.success ? resp.data.choices[0].message?.content : undefined) ??
-    JSON.stringify(data)
-  );
+  return (resp.success ? resp.data.choices[0].message?.content : undefined) ?? JSON.stringify(data);
 }
 
 interface Message {
@@ -68,23 +62,16 @@ export function ServingPage() {
     <div className="space-y-6 w-full max-w-4xl mx-auto">
       <div>
         <h2 className="text-2xl font-bold text-foreground">Model Serving</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Chat with a Databricks Model Serving endpoint.
-        </p>
+        <p className="text-sm text-muted-foreground mt-1">Chat with a Databricks Model Serving endpoint.</p>
       </div>
 
       <div className="border rounded-lg flex flex-col h-[min(600px,70vh)]">
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
+            <div key={msg.id} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
               <div
                 className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                  msg.role === 'user'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted'
+                  msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'
                 }`}
               >
                 <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
@@ -100,11 +87,7 @@ export function ServingPage() {
             </div>
           )}
 
-          {error && (
-            <div className="text-destructive text-sm p-2 bg-destructive/10 rounded">
-              Error: {error}
-            </div>
-          )}
+          {error && <div className="text-destructive text-sm p-2 bg-destructive/10 rounded">Error: {error}</div>}
         </div>
 
         <form onSubmit={handleSubmit} className="border-t p-4 flex gap-2">

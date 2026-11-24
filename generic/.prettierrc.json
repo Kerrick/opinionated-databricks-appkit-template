@@ -8,5 +8,11 @@
   "arrowParens": "always",
   "endOfLine": "lf",
   "bracketSpacing": true,
-  "jsxSingleQuote": false
+  "jsxSingleQuote": false,
+  "overrides": [
+    {
+      "files": "databricks.yml",
+      "options": { "singleQuote": false }
+    }
+  ]
 }

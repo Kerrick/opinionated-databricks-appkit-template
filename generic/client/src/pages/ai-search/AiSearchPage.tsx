@@ -1,13 +1,5 @@
 {{if .plugins.aiSearch -}}
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Input,
-  Skeleton,
-} from '@databricks/appkit-ui/react';
+import { Button, Card, CardContent, CardHeader, CardTitle, Input, Skeleton } from '@databricks/appkit-ui/react';
 import { useAiSearchQuery } from '@databricks/appkit-ui/react/beta';
 import { Search } from 'lucide-react';
 import { useState } from 'react';
@@ -34,9 +26,7 @@ export function AiSearchPage() {
     <div className="space-y-6 w-full max-w-4xl mx-auto">
       <div>
         <h2 className="text-2xl font-bold text-foreground">AI Search</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Query a Databricks AI Search index using natural language.
-        </p>
+        <p className="text-sm text-muted-foreground mt-1">Query a Databricks AI Search index using natural language.</p>
       </div>
 
       <div className="flex gap-3">
@@ -59,11 +49,7 @@ export function AiSearchPage() {
         </Button>
       </div>
 
-      {error && (
-        <div className="text-destructive bg-destructive/10 p-3 rounded-md text-sm">
-          {error}
-        </div>
-      )}
+      {error && <div className="text-destructive bg-destructive/10 p-3 rounded-md text-sm">{error}</div>}
 
       {loading && (
         <div className="space-y-3">
@@ -81,8 +67,8 @@ export function AiSearchPage() {
       {data && !loading && (
         <div className="space-y-4">
           <p className="text-sm text-muted-foreground">
-            {data.totalCount} result{data.totalCount !== 1 ? 's' : ''} &middot;{' '}
-            {data.queryTimeMs}ms &middot; {data.queryType}
+            {data.totalCount} result{data.totalCount !== 1 ? 's' : ''} &middot; {data.queryTimeMs}ms &middot;{' '}
+            {data.queryType}
           </p>
 
           {data.results.length === 0 ? (
@@ -93,21 +79,15 @@ export function AiSearchPage() {
                 <CardHeader className="pb-2">
                   <CardTitle className="text-sm font-medium flex items-center justify-between">
                     <span>Result {index + 1}</span>
-                    <span className="text-muted-foreground font-normal">
-                      score: {result.score.toFixed(4)}
-                    </span>
+                    <span className="text-muted-foreground font-normal">score: {result.score.toFixed(4)}</span>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <dl className="grid grid-cols-1 gap-1">
                     {Object.entries(result.data).map(([key, value]) => (
                       <div key={key} className="flex gap-2 text-sm">
-                        <dt className="font-medium text-muted-foreground min-w-[80px] shrink-0">
-                          {key}
-                        </dt>
-                        <dd className="text-foreground break-all">
-                          {formatValue(value)}
-                        </dd>
+                        <dt className="font-medium text-muted-foreground min-w-[80px] shrink-0">{key}</dt>
+                        <dd className="text-foreground break-all">{formatValue(value)}</dd>
                       </div>
                     ))}
                   </dl>

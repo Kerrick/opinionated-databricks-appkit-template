@@ -9,7 +9,7 @@ until the last layer lands, so integration risk is discovered last and there's
 nothing to demo for weeks.
 
 **Vertical / tracer bullet (prefer):** build a thin path through every layer at
-once. It handles one case, but it *runs*. Each later slice widens it.
+once. It handles one case, but it _runs_. Each later slice widens it.
 
 ## Worked example — "users can export a report"
 

@@ -16,7 +16,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@databricks/appkit-ui/react';
-import { sql } from "@databricks/appkit-ui/js";
+import { sql } from '@databricks/appkit-ui/js';
 import { useState } from 'react';
 
 export function AnalyticsPage() {

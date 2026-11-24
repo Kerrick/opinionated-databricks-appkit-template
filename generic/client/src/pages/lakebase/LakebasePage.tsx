@@ -1,13 +1,5 @@
 {{if .plugins.lakebase -}}
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  Button,
-  Input,
-  Skeleton,
-} from '@databricks/appkit-ui/react';
+import { Card, CardContent, CardHeader, CardTitle, Button, Input, Skeleton } from '@databricks/appkit-ui/react';
 import { useState, useEffect } from 'react';
 import { Check, X } from 'lucide-react';
 import { z } from 'zod';
@@ -29,12 +21,7 @@ export function LakebasePage() {
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    fetchJson(
-      '/api/lakebase/todos',
-      undefined,
-      z.array(Todo),
-      (r) => `Failed to fetch todos: ${r.statusText}`,
-    )
+    fetchJson('/api/lakebase/todos', undefined, z.array(Todo), (r) => `Failed to fetch todos: ${r.statusText}`)
       .then(setTodos)
       .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load todos'))
       .finally(() => setLoading(false));
@@ -55,7 +42,7 @@ export function LakebasePage() {
           body: JSON.stringify({ title }),
         },
         Todo,
-        (r) => `Failed to create todo: ${r.statusText}`,
+        (r) => `Failed to create todo: ${r.statusText}`
       );
       setTodos((prev) => [created, ...prev]);
       setNewTitle('');
@@ -71,7 +58,7 @@ export function LakebasePage() {
         `/api/lakebase/todos/${id}`,
         { method: 'PATCH' },
         Todo,
-        (r) => `Failed to update todo: ${r.statusText}`,
+        (r) => `Failed to update todo: ${r.statusText}`
       );
       setTodos((prev) => prev.map((t) => (t.id === id ? updated : t)));
     } catch (err) {
@@ -84,7 +71,7 @@ export function LakebasePage() {
       await fetchOrThrow(
         `/api/lakebase/todos/${id}`,
         { method: 'DELETE' },
-        (r) => `Failed to delete todo: ${r.statusText}`,
+        (r) => `Failed to delete todo: ${r.statusText}`
       );
       setTodos((prev) => prev.filter((t) => t.id !== id));
     } catch (err) {
@@ -118,11 +105,7 @@ export function LakebasePage() {
             </Button>
           </form>
 
-          {error && (
-            <div className="text-destructive bg-destructive/10 p-3 rounded-md mb-4">
-              {error}
-            </div>
-          )}
+          {error && <div className="text-destructive bg-destructive/10 p-3 rounded-md mb-4">{error}</div>}
 
           {loading && (
             <div className="space-y-3">
@@ -136,9 +119,7 @@ export function LakebasePage() {
           )}
 
           {!loading && todos.length === 0 && (
-            <p className="text-muted-foreground text-center py-8">
-              No todos yet. Add one above to get started.
-            </p>
+            <p className="text-muted-foreground text-center py-8">No todos yet. Add one above to get started.</p>
           )}
 
           {!loading && todos.length > 0 && (

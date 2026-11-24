@@ -34,3 +34,6 @@ pnpm-lock.yaml
 
 # Vendor
 vendor
+
+# Rewritten by `appkit plugin sync` on every build, unformatted
+appkit.plugins.json

@@ -1,21 +1,9 @@
 {{if .plugins.files -}}
 import type { DirectoryEntry, FilePreview } from '@databricks/appkit-ui/react';
-import {
-  Button,
-  DirectoryList,
-  FileBreadcrumb,
-  FilePreviewPanel,
-  NewFolderInput,
-} from '@databricks/appkit-ui/react';
+import { Button, DirectoryList, FileBreadcrumb, FilePreviewPanel, NewFolderInput } from '@databricks/appkit-ui/react';
 import { FolderPlus, Loader2, Upload } from 'lucide-react';
 import { fetchJson, fetchOrThrow } from '../../acl/fetch-or-throw';
-import {
-  type RefObject,
-  useEffect,
-  useEffectEvent,
-  useRef,
-  useState,
-} from 'react';
+import { type RefObject, useEffect, useEffectEvent, useRef, useState } from 'react';
 import { z } from 'zod';
 
 const VolumeListSchema = z.object({ volumes: z.array(z.string()) });
@@ -49,14 +37,11 @@ function nextSignal(ref: RefObject<AbortController | null>): AbortSignal {
   return ref.current.signal;
 }
 
-const isAbort = (err: unknown) =>
-  err instanceof DOMException && err.name === 'AbortError';
+const isAbort = (err: unknown) => err instanceof DOMException && err.name === 'AbortError';
 
 export function FilesPage() {
   const [volumes, setVolumes] = useState<string[]>([]);
-  const [volumeKey, setVolumeKey] = useState<string>(
-    () => localStorage.getItem('appkit:files:volumeKey') ?? '',
-  );
+  const [volumeKey, setVolumeKey] = useState<string>(() => localStorage.getItem('appkit:files:volumeKey') ?? '');
   const [currentPath, setCurrentPath] = useState<string>('');
   const [entries, setEntries] = useState<DirectoryEntry[]>([]);
   const [loading, setLoading] = useState(false);
@@ -97,7 +82,7 @@ export function FilesPage() {
         url,
         { signal },
         z.array(DirectoryEntrySchema),
-        (res) => `HTTP ${res.status}: ${res.statusText}`,
+        (res) => `HTTP ${res.status}: ${res.statusText}`
       );
       data.sort((a, b) => {
         if (a.is_directory && !b.is_directory) return -1;
@@ -126,8 +111,8 @@ export function FilesPage() {
           apiUrl('preview', { path: filePath }),
           { signal },
           FilePreviewSchema,
-          (res) => `HTTP ${res.status}`,
-        ),
+          (res) => `HTTP ${res.status}`
+        )
       );
     } catch (err) {
       if (!isAbort(err)) setPreview(null);
@@ -141,7 +126,7 @@ export function FilesPage() {
       '/api/files/volumes',
       undefined,
       VolumeListSchema,
-      (res) => `HTTP ${res.status}: ${res.statusText}`,
+      (res) => `HTTP ${res.status}: ${res.statusText}`
     )
       .then(({ volumes: list }) => {
         setVolumes(list);
@@ -189,11 +174,9 @@ export function FilesPage() {
     if (volumeKey) loadRootDirectory();
   }, [volumeKey]);
 
-  const childPath = (name: string) =>
-    currentPath ? `${currentPath}/${name}` : name;
+  const childPath = (name: string) => (currentPath ? `${currentPath}/${name}` : name);
 
-  const resolveEntryPath = (entry: DirectoryEntry) =>
-    childPath(entry.name ?? '');
+  const resolveEntryPath = (entry: DirectoryEntry) => childPath(entry.name ?? '');
 
   const handleEntryClick = (entry: DirectoryEntry) => {
     const entryPath = resolveEntryPath(entry);
@@ -229,7 +212,7 @@ export function FilesPage() {
 
     if (file.size > MAX_UPLOAD_SIZE) {
       setError(
-        `File "${file.name}" is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximum upload size is ${MAX_UPLOAD_SIZE / 1024 / 1024 / 1024} GB.`,
+        `File "${file.name}" is too large (${(file.size / 1024 / 1024).toFixed(1)} MB). Maximum upload size is ${MAX_UPLOAD_SIZE / 1024 / 1024 / 1024} GB.`
       );
       if (fileInputRef.current) fileInputRef.current.value = '';
       return;
@@ -240,7 +223,7 @@ export function FilesPage() {
       await fetchOrThrow(
         apiUrl('upload', { path: childPath(file.name) }),
         { method: 'POST', body: file },
-        (res) => `Upload failed (${res.status})`,
+        (res) => `Upload failed (${res.status})`
       );
       await loadDirectory(currentPath);
     } catch (err) {
@@ -263,7 +246,7 @@ export function FilesPage() {
       await fetchOrThrow(
         `/api/files/${volumeKey}?path=${encodeURIComponent(selectedFile)}`,
         { method: 'DELETE' },
-        (res) => `Delete failed (${res.status})`,
+        (res) => `Delete failed (${res.status})`
       );
       setSelectedFile(null);
       setPreview(null);
@@ -287,7 +270,7 @@ export function FilesPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ path: childPath(name) }),
         },
-        (res) => `Create directory failed (${res.status})`,
+        (res) => `Create directory failed (${res.status})`
       );
       setShowNewDirInput(false);
       setNewDirName('');
@@ -302,9 +285,7 @@ export function FilesPage() {
     <div className="space-y-6 w-full max-w-7xl mx-auto">
       <div>
         <h2 className="text-2xl font-bold text-foreground">Files</h2>
-        <p className="text-sm text-muted-foreground mt-1">
-          Browse and manage files in Databricks Volumes.
-        </p>
+        <p className="text-sm text-muted-foreground mt-1">Browse and manage files in Databricks Volumes.</p>
       </div>
 
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
@@ -339,31 +320,13 @@ export function FilesPage() {
         </div>
 
         <div className="flex items-center gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowNewDirInput(true)}
-          >
+          <Button variant="outline" size="sm" onClick={() => setShowNewDirInput(true)}>
             <FolderPlus className="h-4 w-4 mr-2" />
             New Folder
           </Button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            className="hidden"
-            onChange={(e) => void handleUpload(e)}
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={uploading}
-            onClick={() => fileInputRef.current?.click()}
-          >
-            {uploading ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Upload className="h-4 w-4 mr-2" />
-            )}
+          <input ref={fileInputRef} type="file" className="hidden" onChange={(e) => void handleUpload(e)} />
+          <Button variant="outline" size="sm" disabled={uploading} onClick={() => fileInputRef.current?.click()}>
+            {uploading ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Upload className="h-4 w-4 mr-2" />}
             {uploading ? 'Uploading...' : 'Upload'}
           </Button>
         </div>
@@ -403,9 +366,7 @@ export function FilesPage() {
           selectedFile={selectedFile}
           preview={preview}
           previewLoading={previewLoading}
-          onDownload={(path) =>
-            window.open(apiUrl('download', { path }), '_blank')
-          }
+          onDownload={(path) => window.open(apiUrl('download', { path }), '_blank')}
           onDelete={() => void handleDelete()}
           deleting={deleting}
           imagePreviewSrc={(p) => apiUrl('raw', { path: p })}

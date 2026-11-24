@@ -54,8 +54,40 @@ fetched sources.
 
 ## Changes from upstream
 
-`generic/` is no longer identical to `template/`. Each entry names the files and the reason.
+Every difference between `generic/` and `template/` at the pinned commit. A
+later upstream merge should keep these. Lines changed for formatting only
+follow from running Prettier 3.6.2 with the template's own `.prettierrc.json`
+over the generated project.
 
+Added files:
+
+- `APPKIT-TEMPLATE-LICENSE`: the Apache-2.0 text, copied from upstream's
+  `LICENSE`.
+- `APPKIT-TEMPLATE-NOTICE.md`: names the AppKit template, the commit and that
+  the files were modified. Neither is called `LICENSE`, which belongs to the
+  generated project.
+- `scripts/typegen-production.mjs`: runs `appkit generate-types --wait` with
+  `NODE_ENV=production`, for `prebuild`.
+
+Modified files:
+
+- `package.json`: new `check` script (typecheck, lint, format check, test,
+  build, in that order). `prebuild` calls `scripts/typegen-production.mjs`
+  instead of `NODE_ENV=production appkit generate-types --wait`, which fails on
+  Windows.
+- `pnpm-workspace.yaml`: `sideEffectsCache: false`. With pnpm 11.0.8,
+  installing the project a second time from a warm store leaves out the packages that
+  `@databricks/appkit` bundles (`@databricks/sdk-statementexecution` among
+  them), and `pnpm run test` fails with "Cannot find package". The first,
+  cold install is fine. Turning the side-effects cache off fixes the warm
+  install (checked with the flag on a store that had already failed);
+  `--package-import-method=copy` does not.
+- `.prettierrc.json`: an override for `databricks.yml` that keeps double
+  quotes, because `databricks.yml.tmpl` writes `"{{.projectName}}"`.
+- `.prettierignore`: `appkit.plugins.json`, which the build rewrites.
+- `README.md.tmpl`: a blank line after `**Enabled plugins:**`.
+- `server/server.ts`: the plugin list is written on one line, which is how
+  Prettier prints it for every plugin selection.
 - `client/src/ErrorBoundary.tsx` moved to `client/src/components/ErrorBoundary.tsx`, and `client/src/lib/fetch-or-throw.ts` to `client/src/acl/fetch-or-throw.ts`, so that both live in a layer. `main.tsx` and the three pages that import `fetch-or-throw` follow.
 - `package.json`, `tsconfig.json` and `tsconfig.tools.json`: a `tools/` project (typechecked with `tsc -b`, run with `tsx`) holding the repository checks, and the `lint:triggers` script that `lint` runs.
 - `tools/`: new. Checks that stay quiet until the project learns something: an unknown folder under `client/src/`, a first non-GET custom server route, Lakebase arriving, and an on-behalf-of-user query.
@@ -65,3 +97,12 @@ fetched sources.
 - `eslint.config.js`: new flat config for what oxlint lacks: `naming-convention` (no agent-noun class names in the domain), disable-comment hygiene, sonarjs, functional's immutability rules and a setter ban in the domain, and JSDoc on exports from the domain and `server/`. The `lint` script now runs oxlint, ESLint and the triggered checks in turn.
 - `client/src/App.tsx`, `client/src/components/ErrorBoundary.tsx`, `server/example.test.ts`: small edits so the new rules pass (readonly props, one return type, `static readonly`).
 - `server/routes/lakebase/todo-routes.ts`: a doc comment on the exported setup function, which the JSDoc rule requires.
+- Formatting only: `client/src/App.tsx`, `client/src/index.css`,
+  `client/src/acl/fetch-or-throw.ts`, `client/src/main.tsx`,
+  `client/vite.config.ts`, `client/src/pages/*/*.tsx` (except `genie`),
+  `server/routes/lakebase/todo-routes.ts` and
+  `server/agents/skills/tracer-bullets/reference.md`.
+
+When a later upstream change touches a formatting-only file, take it, then
+format that file the way `generic/` does: strip any `{{if ...}}` wrapper
+lines, run Prettier on the body, and put the wrapper back.

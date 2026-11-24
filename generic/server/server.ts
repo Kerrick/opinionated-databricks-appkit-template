@@ -17,11 +17,7 @@ import { setupSampleLakebaseRoutes } from './routes/lakebase/todo-routes';
 {{- end}}
 
 createApp({
-  plugins: [
-{{- range $name, $_ := .plugins}}
-    {{$name}}(),
-{{- end}}
-  ],
+  plugins: [{{$sep := ""}}{{range $name, $_ := .plugins}}{{$sep}}{{$name}}(){{$sep = ", "}}{{end}}],
 {{- if .plugins.lakebase}}
   async onPluginsReady(appkit) {
     await setupSampleLakebaseRoutes(appkit);
