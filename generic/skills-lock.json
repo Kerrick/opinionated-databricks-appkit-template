@@ -1,0 +1,61 @@
+{
+  "version": 2,
+  "skills": {
+    "adr": {
+      "source": "Kerrick/technical-writing-agent-skills",
+      "commit": "15ea717c7f494649440fa703f6c31bafce25a7aa",
+      "sourceType": "github",
+      "skillPath": "skills/adr/SKILL.md",
+      "computedHash": "b99d112b6613527ec933d0149207a666c6e0c115ce13962d386bab9d42f1892e"
+    },
+    "databricks-app-design": {
+      "source": "databricks/databricks-agent-skills",
+      "commit": "5ecd4e16f9fdaab05f25b1ee8f0364a3623baac4",
+      "sourceType": "github",
+      "skillPath": "skills/databricks-app-design/SKILL.md",
+      "computedHash": "a837c68589b67beb482187a4199a5e2216c2abc65c35f8344528f0c56fcc3860"
+    },
+    "databricks-apps": {
+      "source": "databricks/databricks-agent-skills",
+      "commit": "5ecd4e16f9fdaab05f25b1ee8f0364a3623baac4",
+      "sourceType": "github",
+      "skillPath": "skills/databricks-apps/SKILL.md",
+      "computedHash": "5d845116efd809ff777d5e7aa71ebe9a75fcfd37990ed0d9075a45c8e194533d"
+    },
+    "databricks-core": {
+      "source": "databricks/databricks-agent-skills",
+      "commit": "5ecd4e16f9fdaab05f25b1ee8f0364a3623baac4",
+      "sourceType": "github",
+      "skillPath": "skills/databricks-core/SKILL.md",
+      "computedHash": "5ec7f5a4d98d804c5ada576690e7b1fdd318ba89d7350559ceda427b07ed623f"
+    },
+    "databricks-dbsql": {
+      "source": "databricks/databricks-agent-skills",
+      "commit": "5ecd4e16f9fdaab05f25b1ee8f0364a3623baac4",
+      "sourceType": "github",
+      "skillPath": "skills/databricks-dbsql/SKILL.md",
+      "computedHash": "63018a4c00fc5da3c2a72c26a197effa776d91c2077fc2ef2f9eb4ae6b2dd4d8"
+    },
+    "databricks-docs": {
+      "source": "databricks/databricks-agent-skills",
+      "commit": "5ecd4e16f9fdaab05f25b1ee8f0364a3623baac4",
+      "sourceType": "github",
+      "skillPath": "skills/databricks-docs/SKILL.md",
+      "computedHash": "435ba1e295a258598033bc8391cf9d57b79a295e9be3cac27502151cac671709"
+    },
+    "databricks-lakebase": {
+      "source": "databricks/databricks-agent-skills",
+      "commit": "5ecd4e16f9fdaab05f25b1ee8f0364a3623baac4",
+      "sourceType": "github",
+      "skillPath": "skills/databricks-lakebase/SKILL.md",
+      "computedHash": "90a45afb318198282fc65f8063a42570a0ebbcdd626e080fb10edbc2970ba317"
+    },
+    "skill-authoring": {
+      "source": "Kerrick/technical-writing-agent-skills",
+      "commit": "15ea717c7f494649440fa703f6c31bafce25a7aa",
+      "sourceType": "github",
+      "skillPath": "skills/skill-authoring/SKILL.md",
+      "computedHash": "58640badc99baf8c697dfce09c996e3a6a96b9f247f3c792502b99f12a302f4d"
+    }
+  }
+}

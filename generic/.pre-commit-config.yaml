@@ -1,0 +1,17 @@
+minimum_pre_commit_version: '4.4.0'
+# `pre-commit install` installs every hook type listed here.
+default_install_hook_types: [pre-commit, post-checkout, post-merge]
+
+repos:
+  - repo: local
+    hooks:
+      # The shared agent skills (Databricks' own, adr, skill-authoring) are pinned in skills-lock.json and never
+      # committed. Restoring them after every checkout and merge gives every contributor's agents the pinned versions.
+      # -a names the agents to link them for: `universal` is the shared .agents/skills/ folder.
+      - id: restore-agent-skills
+        name: restore the shared agent skills from skills-lock.json
+        entry: npx --yes skills@1.9.0 experimental_install --frozen-lockfile -a universal -a claude-code
+        language: unsupported
+        pass_filenames: false
+        always_run: true
+        stages: [post-checkout, post-merge]

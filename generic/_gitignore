@@ -13,3 +13,11 @@ playwright-report/
 # Auto-generated types (endpoint-specific, varies per developer)
 shared/appkit-types/serving.d.ts
 
+
+# Shared agent skills, installed from skills-lock.json by a git hook
+.agents/skills/adr/
+.agents/skills/skill-authoring/
+.agents/skills/databricks-*/
+.claude/skills/adr
+.claude/skills/skill-authoring
+.claude/skills/databricks-*
