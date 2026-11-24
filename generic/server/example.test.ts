@@ -37,7 +37,7 @@ class GreeterPlugin extends Plugin {
     resources: { required: [], optional: [] },
   };
 
-  setup() {
+  override setup() {
     // Routes registered here are captured by createTestPluginContext().routes.
     this.context?.addRoute('get', '/hello', (_req, res) => {
       res.end();
@@ -52,7 +52,7 @@ class GreeterPlugin extends Plugin {
   }
 
   // A real HTTP route, so createTestApp has something to call.
-  injectRoutes(router: Parameters<Plugin['injectRoutes']>[0]) {
+  override injectRoutes(router: Parameters<Plugin['injectRoutes']>[0]) {
     this.route(router, {
       name: 'greet',
       method: 'post',

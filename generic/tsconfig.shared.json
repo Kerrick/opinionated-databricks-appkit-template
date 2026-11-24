@@ -1,22 +1,15 @@
 {
+  // The strictest preset sets the type-checking flags. This file adds only what the starter app needs
+  // for modules and emit.
+  "extends": "@tsconfig/strictest/tsconfig.json",
   "compilerOptions": {
-    /* Type Checking */
-    "strict": true,
-    "noUncheckedIndexedAccess": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitReturns": true,
-
     /* Modules */
     "module": "ESNext",
     "moduleResolution": "bundler",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true,
 
     /* Emit */
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true
   }
 }
