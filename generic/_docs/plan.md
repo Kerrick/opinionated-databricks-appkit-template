@@ -32,40 +32,63 @@ finishes it, and add items as the project learns what it needs.
 
 ## Wire in once published
 
-These packages will be published on npm. Each closes a gap in the gate that is
-open today; add each to `pnpm run check` as soon as it is published, and update
-`docs/design/tooling.md` and `AGENTS.md` in the same commit.
+Three packages that close gaps in the gate are due on npm. As each is
+published, add it to `pnpm run check`, and update `docs/design/tooling.md` and
+`AGENTS.md` in the same commit.
 
-- [ ] **`lint-ledger`:** one ledger file per kind of escape hatch, each entry a
-      file, a line or lines, and a reason that says why the exception can't be
-      avoided. Its enforcer fails on any unlisted escape hatch and on any entry that
-      no longer matches, so fixed debt has to leave the ledger. Point it at
-      lint-disable comments, `@ts-ignore`, `@ts-expect-error` and `@ts-nocheck`;
-      coverage and mutation exclusions (`v8 ignore`, `c8 ignore`,
-      `istanbul ignore`, `Stryker disable`); skipped and focused tests (`.skip`,
-      `.only`, `.todo`, `.fixme`, `xit`, `xdescribe`, and the `@skip`, `@only`,
-      `@fixme` and `@wip` tags in feature files); other tools' suppressions
-      (`ast-grep-ignore`, `prettier-ignore`, `jscpd:ignore`, sqlfluff's `noqa`);
-      and every ignore or exclude list in the configurations of knip, jscpd,
-      dependency-cruiser, coverage and Stryker, including each browser-tested folder
-      left out of mutation testing. Run it in `pnpm run lint`.
-- [ ] **`cross-lint`, with its `nudge`, `appkit` and `agents` plugins:** rules
-      about how files relate to one another, with a debt file for violations that
-      already exist. Turn on:
-  - every query file in `config/queries/` is used by a data hook or a chart or
-    table component;
-  - every page in `client/src/pages/` has a page-level scenario;
-  - every relative link in a Markdown file resolves;
-  - every `SKILL.md` meets the Agent Skills specification's rules for `name`
-    and `description`;
-  - the index in `docs/decisions/` lists exactly the records in that folder, and
-    nothing cites a record number that doesn't exist;
-  - every `AGENTS.md` has a `CLAUDE.md` beside it that imports it.
+- [ ] **`lint-ledger`:** a written record of every exception to a rule. It keeps
+      one file for each kind of exception, and an entry names the file, the lines
+      and the reason the exception can't be avoided. The check fails on an
+      exception the record doesn't list, and on an entry whose exception has gone,
+      so a fixed problem leaves the record too. Run it in `pnpm run lint`, over
+      every kind of exception the project's tools accept:
+  - comments that switch a check off: lint disables, `@ts-ignore`,
+    `@ts-expect-error`, `@ts-nocheck`, `ast-grep-ignore`, `prettier-ignore`,
+    `jscpd:ignore` and sqlfluff's `noqa`;
+  - comments that hide code from coverage or mutation testing: `v8 ignore`,
+    `c8 ignore`, `istanbul ignore` and `Stryker disable`;
+  - tests that don't run, or run alone: `.skip`, `.only`, `.todo`, `.fixme`,
+    `xit` and `xdescribe` in test files, and `@skip`, `@only`, `@fixme` and
+    `@wip` on scenarios;
+  - the lists of files and packages each tool is told to leave alone, in the
+    configurations of knip, jscpd, dependency-cruiser, coverage and Stryker.
 
-  Move the project's own checks in `tools/triggers/` (the Lakebase,
-  on-behalf-of-user, write-route and client-layout checks) into the matching
-  plugins where they fit, keeping their messages.
+  Until it is wired in, this list is the record of the exceptions the template
+  ships, and the ledger starts from it:
+  - the `Stryker disable` comment in `client/src/acl/fetch-or-throw.ts`, on a
+    mutant that behaves exactly like the original: a body that isn't JSON and a
+    missing body both fail the schema;
+  - Stryker's `mutate` list, which leaves out `server/**` (its tests boot an
+    AppKit app, which crashes the runner Stryker uses) and
+    `client/src/acl/use*.ts` (hooks, whose tests run in a browser, where Stryker
+    can't);
+  - coverage's `exclude` list in `vitest.config.ts`, which leaves out
+    `server/routes/lakebase/**` (the Lakebase sample's routes run SQL, which
+    only a real Postgres can test), and `client/src/main.tsx` and
+    `server/server.ts` (they only start the app, and the journeys run them);
+  - knip's `ignoreDependencies`, for four packages that are used where knip
+    can't see: `@ast-grep/napi`, which `appkit lint` loads, the two PostCSS
+    packages, and `tw-animate-css`, which AppKit's stylesheet imports.
 
-- [ ] **`typescript-quality`:** use its domain-layer ESLint configuration for
-      the immutability and object-oriented rules on `client/src/domain/`, in place
-      of the project's own, and compare `AGENTS.md` with its template.
+- [ ] **`cross-lint`, with its `nudge`, `appkit` and `agents` plugins:** checks
+      that look at how files relate to one another, where today's linters see one
+      file at a time. Violations that already exist go in a debt file, so the
+      check can start strict. Turn on:
+  - each query file in `config/queries/` is used by a data hook, or by a chart
+    or table component;
+  - each page in `client/src/pages/` has page-level scenarios;
+  - each relative link in a Markdown file leads somewhere;
+  - each `SKILL.md` has a `name` and `description` that follow the Agent Skills
+    specification;
+  - `docs/decisions/README.md` lists every record in its folder and nothing
+    else, and no file cites a record number that isn't there;
+  - each `AGENTS.md` has a `CLAUDE.md` beside it that imports it.
+
+  Then move the project's own checks in `tools/triggers/` (the client layout,
+  the write route, Lakebase and on-behalf-of-user queries) into the plugins that
+  fit them, keeping their messages.
+
+- [ ] **`typescript-quality`:** a shared baseline for TypeScript projects. Use
+      its ESLint configuration for the domain layer, in place of the immutability
+      and object rules this project sets up itself for `client/src/domain/`, and
+      compare `AGENTS.md` with the template it ships.

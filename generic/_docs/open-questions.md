@@ -62,11 +62,13 @@ workspace.
 
 Default: the app doesn't write. The first custom route that isn't a `GET`
 fails the build until a document in `docs/design/` has a "Write target" section
-saying where writes go and why. Registering `lakebase()` or `database()` turns
-on the checks Lakebase needs: Postgres linting for its SQL, and squawk for its
-migrations. The `database()` plugin has no per-user authorization
-(`docs/design/platform.md`), so it also needs a "Per-user authorization"
-section in a design document.
+saying where writes go and why. A project generated with the Lakebase plugin
+meets that check at once, because the plugin's sample todo list writes. Using
+`lakebase()` or `database()` also turns on the checks Lakebase needs: Postgres
+linting for its SQL, and squawk for its migrations. The `database()` plugin has
+no per-user authorization (`docs/design/platform.md`), so it also needs a
+"Per-user authorization" section in a design document.
+`docs/design/tooling.md` lists each of these checks and what it needs.
 
 ### Should queries run as each signed-in user or as the app's service principal?
 
@@ -134,8 +136,9 @@ Default: adapters for Claude Code, and `AGENTS.md` for everything else.
 Gherkin's value is that people outside engineering can read and help write the
 scenarios, worked out together in Example Mapping sessions. If they will take
 part, keep the scenarios in `.feature` files. If only engineers will read them,
-plain TypeScript tests are simpler: write each page's scenarios as a test file
-beside the page, and remove the Gherkin runners.
+plain TypeScript tests are simpler: write the scenarios as test files that call
+the same tasks, and remove the Gherkin runners. `docs/design/testing.md` lists
+the steps.
 
 Default: Gherkin.
 
