@@ -4,3 +4,8 @@ ruleDirs:
   - rules
 testConfigs:
   - testDir: rule-tests
+# Rules are written for Tsx, which also parses plain TypeScript. ast-grep picks a file's language by its extension,
+# so without this every rule silently skipped .ts files (the server, hooks and acl/ code).
+languageGlobs:
+  tsx:
+    - '*.ts'
