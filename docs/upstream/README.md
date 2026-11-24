@@ -11,8 +11,9 @@ Nothing in this folder has been filed. Each draft is one Markdown file, with
 the title, the affected versions, a minimal reproduction and what this template
 does meanwhile, and optionally a paired `.patch` where a fix is known. The
 maintainer decides whether to file it. Each draft names the workaround in this
-template that can be removed once the problem is fixed upstream. No draft is
-here yet.
+template that can be removed once the problem is fixed upstream.
+
+- [AppKit's `@ast-grep/napi` crashes in a worker thread](appkit-ast-grep-napi-worker-thread.md)
 
 | | |
 | --- | --- |
@@ -246,7 +247,8 @@ Modified files:
     `client/src/acl/` (except the `use*` hooks, which are tested in a browser),
     `client/src/domain/` and `server/` (except `server.ts`, which only starts
     the app and which the journeys run).
-  - `stryker.config.json` sets `vitest.pool` to `forks`. Stryker's default is
+  - `stryker.config.json` sets `vitest.pool` to `forks` (draft report:
+    [appkit-ast-grep-napi-worker-thread.md](appkit-ast-grep-napi-worker-thread.md)). Stryker's default is
     worker threads, and `@ast-grep/napi` 0.37.0 (a dependency of
     `@databricks/appkit`) crashes a Linux x64 worker thread with a segmentation
     fault once it has been loaded there, as a bare Node script shows. A test that
