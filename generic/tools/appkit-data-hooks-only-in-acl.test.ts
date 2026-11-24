@@ -42,7 +42,7 @@ function filesWithFindings(): string[] {
     cwd: project.root,
     encoding: 'utf8',
     shell: process.platform === 'win32',
-    env: { ...process.env, PATH: [join(projectRoot, 'node_modules', '.bin'), process.env.PATH].join(delimiter) },
+    env: { ...process.env, PATH: [join(projectRoot, 'node_modules', '.bin'), process.env['PATH']].join(delimiter) },
   });
   expect(result.error).toBeUndefined();
   const findings = JSON.parse(result.stdout || '[]') as { file: string }[];
