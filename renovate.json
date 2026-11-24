@@ -5,7 +5,9 @@
   "automerge": false,
   "platformAutomerge": false,
   "minimumReleaseAge": "3 days",
-  "dependencyDashboard": true,
+  "dependencyDashboard": {
+    "enabled": true
+  },
   "lockFileMaintenance": {
     "enabled": true,
     "schedule": ["before 6am on monday"]
@@ -31,6 +33,59 @@
       "description": "Actions stay pinned to a full commit digest, with the version in a comment.",
       "matchManagers": ["github-actions"],
       "pinDigests": true
+    }
+  ],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Node in generic/mise.toml.tmpl. The mise manager can't read the file, because the Go template conditionals make it invalid TOML.",
+      "managerFilePatterns": ["/(^|/)mise\\.toml\\.tmpl$/"],
+      "matchStrings": ["(?:^|\\n)(?<depName>node) = \"(?<currentValue>[^\"]+)\""],
+      "datasourceTemplate": "node-version",
+      "versioningTemplate": "node"
+    },
+    {
+      "customType": "regex",
+      "description": "Python in generic/mise.toml.tmpl.",
+      "managerFilePatterns": ["/(^|/)mise\\.toml\\.tmpl$/"],
+      "matchStrings": ["(?:^|\\n)python = \"(?<currentValue>[^\"]+)\""],
+      "depNameTemplate": "python",
+      "packageNameTemplate": "python/cpython",
+      "datasourceTemplate": "github-tags",
+      "extractVersionTemplate": "^v(?<version>\\S+)"
+    },
+    {
+      "customType": "regex",
+      "description": "pnpm in generic/mise.toml.tmpl.",
+      "managerFilePatterns": ["/(^|/)mise\\.toml\\.tmpl$/"],
+      "matchStrings": ["(?:^|\\n)(?<depName>pnpm) = \"(?<currentValue>[^\"]+)\""],
+      "datasourceTemplate": "npm"
+    },
+    {
+      "customType": "regex",
+      "description": "The Python tools in generic/mise.toml.tmpl, which mise installs from PyPI.",
+      "managerFilePatterns": ["/(^|/)mise\\.toml\\.tmpl$/"],
+      "matchStrings": [
+        "(?:^|\\n)\"?(?:pipx:)?(?<depName>uv|pre-commit|sqlfluff|squawk-cli)\"? = \"(?<currentValue>[^\"]+)\""
+      ],
+      "datasourceTemplate": "pypi"
+    },
+    {
+      "customType": "regex",
+      "description": "pixi in generic/mise.toml.tmpl.",
+      "managerFilePatterns": ["/(^|/)mise\\.toml\\.tmpl$/"],
+      "matchStrings": ["(?:^|\\n)pixi = \\{ version = \"(?<currentValue>[^\"]+)\""],
+      "depNameTemplate": "pixi",
+      "packageNameTemplate": "prefix-dev/pixi",
+      "datasourceTemplate": "github-releases",
+      "extractVersionTemplate": "^v(?<version>\\S+)"
+    },
+    {
+      "customType": "regex",
+      "description": "The skills CLI that generic/.pre-commit-config.yaml runs through npx. The pre-commit manager reads only hook revisions, and this hook is a local command.",
+      "managerFilePatterns": ["/(^|/)\\.pre-commit-config\\.ya?ml$/"],
+      "matchStrings": ["npx (?:--yes |-y )?(?<depName>[^@\\s]+)@(?<currentValue>[0-9][^\\s]*)"],
+      "datasourceTemplate": "npm"
     }
   ]
 }
