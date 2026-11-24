@@ -271,6 +271,10 @@ file lists, and `mise run hooks` runs it for you:
   clone, so `mise run hooks` also runs the restore once, and the agents have
   their skills as soon as setup ends.
 
+`pre-commit install` refuses to run when git's `core.hooksPath` is set, and a
+global git configuration can set it. Unset it, or set it to the repository's own
+hooks folder (`.git/hooks`), before `mise run hooks`.
+
 ## Licences of development tools
 
 Three development tools carry licences with conditions that a permissive

@@ -39,6 +39,9 @@ https://databricks.github.io/appkit/llms.txt.
 | `pnpm run test:smoke`          | Smoke journeys against a deployed app; needs `APP_URL`                      |
 | `pnpm run typegen`             | Regenerates the types for the SQL files in `config/queries/`                |
 
+`mise run hooks` fails while git's `core.hooksPath` is set, as a global git
+configuration can set it. Unset it, or set it to `.git/hooks`, first.
+
 The Databricks CLI runs `typegen`, `lint:ast-grep`, `typecheck`, `build` and
 `test` by name when it validates the project, so keep those names.
 

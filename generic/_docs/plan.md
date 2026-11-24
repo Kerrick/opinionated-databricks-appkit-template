@@ -36,7 +36,7 @@ Three packages that close gaps in the gate are due on npm. As each is
 published, add it to `pnpm run check`, and update `docs/design/tooling.md` and
 `AGENTS.md` in the same commit.
 
-- [ ] **`lint-ledger`:** a written record of every exception to a rule. It keeps
+- [ ] **[`lint-ledger`](https://github.com/setdef/LintLedger):** a written record of every exception to a rule. It keeps
       one file for each kind of exception, and an entry names the file, the lines
       and the reason the exception can't be avoided. The check fails on an
       exception the record doesn't list, and on an entry whose exception has gone,
@@ -70,7 +70,7 @@ published, add it to `pnpm run check`, and update `docs/design/tooling.md` and
     the Lakebase plugin it also lists the two PGlite packages, which only the
     Lakebase sample's tests use.
 
-- [ ] **`cross-lint`, with its `nudge`, `appkit` and `agents` plugins:** checks
+- [ ] **[`cross-lint`](https://github.com/setdef/CrossLint), with its `nudge`, `appkit` and `agents` plugins:** checks
       that look at how files relate to one another, where today's linters see one
       file at a time. Violations that already exist go in a debt file, so the
       check can start strict. Turn on:
@@ -88,7 +88,7 @@ published, add it to `pnpm run check`, and update `docs/design/tooling.md` and
   the write route, Lakebase and on-behalf-of-user queries) into the plugins that
   fit them, keeping their messages.
 
-- [ ] **`typescript-quality`:** a shared baseline for TypeScript projects. Use
+- [ ] **[`typescript-quality`](https://github.com/Kerrick/typescript-quality):** a shared baseline for TypeScript projects. Use
       its ESLint configuration for the domain layer, in place of the immutability
       and object rules this project sets up itself for `client/src/domain/`, and
       compare `AGENTS.md` with the template it ships.
