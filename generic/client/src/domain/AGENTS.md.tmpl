@@ -6,14 +6,14 @@ runs in React, in a browser, or on Databricks. The reasons are in
 
 ## Imports
 
-Nothing from React, AppKit, `client/src/acl/`, `client/src/hooks/`, the view
-folders, or browser APIs (`window`, `document`, `fetch`, storage). Other domain
-files and small pure libraries only.
+Nothing from React, AppKit, a chart library, any other folder of the client, or
+the browser (`window`, `document`, `fetch`, storage). Other domain files and
+small pure libraries only.
 
 ## Objects never change
 
-React decides what to re-render by comparing references, and the React
-Compiler assumes nothing it is given is ever mutated. So:
+React only re-renders when it sees a different object, and the React Compiler
+counts on nothing it holds being changed in place. So:
 
 - Fields are `readonly`. No setters.
 - A method that "changes" an object returns a new one:

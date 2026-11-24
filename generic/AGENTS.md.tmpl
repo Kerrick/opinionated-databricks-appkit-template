@@ -4,10 +4,10 @@ This is a Databricks App: a React single-page app served by AppKit's Express
 server, written in TypeScript. Every contributor starts with only this
 repository, so everything that matters lives in it.
 
-**"AppKit" here always means Databricks' TypeScript SDK,** the packages
-`@databricks/appkit` (the server and its plugins) and `@databricks/appkit-ui`
-(React components and data hooks). It is not Apple's AppKit framework, and
-Apple's documentation answers the wrong questions. Look things up with
+**"AppKit" here always means Databricks' TypeScript SDK:** `@databricks/appkit`
+for the server and its plugins, and `@databricks/appkit-ui` for the React
+components and the hooks that load data. It is not Apple's AppKit framework,
+and Apple's documentation answers the wrong questions. Look things up with
 `npx @databricks/appkit docs <query>`, or at
 https://databricks.github.io/appkit/llms.txt.
 
@@ -15,8 +15,8 @@ https://databricks.github.io/appkit/llms.txt.
 
 - **The tools are the guardrail.** A rule that a tool can check is a check, and
   the build fails on it. Zero errors and zero warnings, always.
-- **Every escape hatch needs a written reason.** A disable comment, a skipped
-  test or a coverage exclusion is a debt that someone must be able to review.
+- **An exception to a rule is debt, and its reason is written down** where a
+  reviewer will see it.
 - **Test first.** Work outside in: a scenario, then a failing test at the
   cheapest level that proves the rule, then the code.
 - **Model the domain.** Business rules live in plain, immutable domain objects
@@ -25,51 +25,54 @@ https://databricks.github.io/appkit/llms.txt.
 
 ## Commands
 
-| Command                  | What it does                                                                 |
-| ------------------------ | ---------------------------------------------------------------------------- |
-| `bin/setup`              | Installs the pinned toolchain, the dependencies and the git hooks            |
-| `pnpm run check`         | **The Definition of Done.** Every check below except the smoke journeys      |
-| `pnpm run lint`          | The fast checks: linters, architecture rules, formatting, SQL lint           |
-| `pnpm run typecheck`     | `tsc -b`                                                                     |
-| `pnpm test`              | Unit, component and page-level tests, with coverage and accessibility checks |
-| `pnpm run test:e2e`      | Journeys through the built app, with Databricks faked                        |
-| `pnpm run test:mutation` | Mutation testing of the code whose tests run in Node                         |
-| `pnpm run test:smoke`    | Smoke journeys against the deployed app; needs workspace credentials         |
-| `pnpm run typegen`       | Regenerates the types for the SQL files in `config/queries/`                 |
+| Command                        | What it does                                                                |
+| ------------------------------ | --------------------------------------------------------------------------- |
+| `mise install`, `pnpm install` | Install the pinned tools, then the dependencies                             |
+| `mise x -- pre-commit install` | Install the git hooks: `check` before each commit, skills after checkout    |
+| `pnpm run check`               | The whole gate: every check below except the smoke journeys                 |
+| `pnpm run lint`                | Linters, import rules, structural rules, `appkit lint`, SQL lint, sizes     |
+| `pnpm run typecheck`           | `tsc -b`                                                                    |
+| `pnpm run format:fix`          | Formats everything with Prettier                                            |
+| `pnpm test`                    | Unit, property and page-level tests, with coverage and accessibility checks |
+| `pnpm run test:mutation`       | Mutation testing of the code whose tests run in Node                        |
+| `pnpm run test:e2e`            | Journeys through the built app, with Databricks faked; build first          |
+| `pnpm run test:smoke`          | Smoke journeys against a deployed app; needs `APP_URL`                      |
+| `pnpm run typegen`             | Regenerates the types for the SQL files in `config/queries/`                |
 
-Keep the names `build`, `typecheck`, `lint`, `test`, `sync` and `typegen`: the
-Databricks CLI calls them, and `databricks apps deploy` runs `build`,
-`typecheck` and `lint` before every deploy, so `lint` must stay fast.
+The Databricks CLI runs `typegen`, `lint:ast-grep`, `typecheck`, `build` and
+`test` by name when it validates the project, so keep those names.
 
 ## The shape of the code
 
-| Layer       | Folders                                       | Holds                                                                                   |
-| ----------- | --------------------------------------------- | --------------------------------------------------------------------------------------- |
-| View        | `client/src/pages/`, `client/src/components/` | Function components. No business logic, no `fetch`                                      |
-| Application | `client/src/hooks/`, `client/src/acl/`        | Hooks. Only `acl/` touches AppKit's data hooks, its generated query types, and `/api/*` |
-| Domain      | `client/src/domain/`                          | Plain TypeScript classes and functions. Nothing from React, AppKit or the browser       |
-| Server      | `server/`                                     | AppKit's server, its plugins, and the app's own routes                                  |
+| Layer       | Folders                                       | Holds                                                                                        |
+| ----------- | --------------------------------------------- | -------------------------------------------------------------------------------------------- |
+| View        | `client/src/pages/`, `client/src/components/` | Function components. No business logic, and no `fetch`                                       |
+| Application | `client/src/acl/`                             | The only code that calls `fetch`, names `/api/` paths, or uses AppKit's data hooks and types |
+| Domain      | `client/src/domain/`                          | Plain TypeScript classes and functions. Nothing from React, AppKit or the browser            |
+| Server      | `server/`                                     | AppKit's server, its plugins, and the app's own routes                                       |
 
 The folders `acl/`, `domain/` and `server/` have their own `AGENTS.md`; read it
 before editing there. Why the layers exist, and the exceptions AppKit's own
 files need, are in `docs/design/architecture.md`.
 
+One exception in the view: AppKit's chart and table components, and its
+`GenieChat`, fetch for themselves, and a view may render them as they are.
+
 **No request waterfalls.** Details and examples are in
 `docs/design/data-loading.md`.
 
-- Data from the app's own endpoints is loaded in route loaders, through
-  TanStack Query, so every fetch starts in parallel before the page renders. A
-  child route's loader never waits for its parent's data.
-- AppKit's data hooks can't run in a loader. Call them, through their `acl/`
-  hooks, at the top of each page component or in components that always render.
-  Never hide a component that fetches behind another query's loading state;
-  show the loading state beside it.
+- Data from the app's own endpoints is requested in route loaders, which call
+  functions in `acl/`. Every loader on a page starts at once, before it renders.
+  A child route's loader never waits for its parent's data.
+- AppKit's data hooks can't run in a loader. A page calls their `acl/` hooks in
+  its own body, or in children it always renders; a component that loads data
+  never sits behind another query's spinner.
 - Prefer one SQL query with a join to several queries that depend on one
   another. Each trip to a SQL warehouse costs seconds.
 
 ## Never
 
-- `useEffect` with `fetch` to load data. Use a route loader or an `acl/` hook.
+- `fetch` inside `useEffect`, or anywhere in the client outside `acl/`.
 - `useMemo` or `useCallback`. The React Compiler memoizes.
 - Changing a domain object. Write `order.withStatus(s)`, which returns a new
   object, not `order.status = s`.
@@ -81,19 +84,23 @@ files need, are in `docs/design/architecture.md`.
 - Hand-written types for SQL results. Run `pnpm run typegen`.
 - Next.js, React Router's framework mode, or any other server-rendering
   framework. AppKit's server is the server (`docs/decisions/`, record 0001).
-- An `async` Express route handler that isn't wrapped to pass its errors to
-  `next`. AppKit runs Express 4, which drops them.
-- Forcing an install, or downgrading a package, to get past an install error.
-  Stop and report it.
+- An `async` Express handler without `asyncHandler` from
+  `server/async-handler.ts`. AppKit runs Express 4, which loses its errors.
+- A route without `errorElement: <RouteError />`.
+- A plain `<form>`. Use React Router's `<Form>` for a form that only submits to
+  an action, and React Hook Form with Zod for one that validates in the browser.
+- `--force`, an override or a downgrade to make an install succeed. When an
+  install fails, leave it failed and report the error.
 - A write path (Lakebase, `INSERT`s into Delta, or another system) before the
   team chooses where writes go (`docs/open-questions.md`).
 
 ## Escape hatches
 
-Don't reach for a disable comment, `@ts-expect-error`, a skipped or focused
-test, a coverage or mutation exclusion, or an entry in a tool's ignore list.
-Fix the code instead. When one is truly unavoidable, it carries a description
-that says why, on the same line, and the change says so in its commit message.
+A disable comment, `@ts-expect-error`, a skipped or focused test, a coverage or
+mutation exclusion, or an entry in a tool's ignore list hides a problem instead
+of fixing it. Change the code so the tool is satisfied. If that truly can't be
+done, put the reason on the same line as the exception, and repeat it in the
+commit message.
 
 ## Where knowledge lives
 
@@ -101,8 +108,8 @@ that says why, on the same line, and the change says so in its commit message.
 | -------------------------------------------------- | -------------------------------------------------------------------------- |
 | Rules for every agent                              | This file                                                                  |
 | Rules for one layer                                | `AGENTS.md` in that layer's folder                                         |
-| The few decisions that shape the system            | `docs/decisions/`, written with the `adr` skill                            |
-| How the system works, and why each tool was chosen | `docs/design/`                                                             |
+| Decisions that would take a rewrite to undo        | `docs/decisions/`, written with the `adr` skill                            |
+| How each part works, and the reasons for each tool | `docs/design/`                                                             |
 | Platform facts, each with the date it was checked  | `docs/design/platform.md`                                                  |
 | Questions only the team can answer                 | `docs/open-questions.md`                                                   |
 | The work ahead                                     | `docs/plan.md`                                                             |
@@ -113,19 +120,19 @@ Shared skills (Databricks' own, `adr`, `skill-authoring`) are pinned in
 
 ## Definition of Done
 
-- `pnpm run check` passes with zero errors and zero warnings.
-- Each new test fails without the change, checks specific behavior, and
-  survives mutation testing.
-- Documents that describe changed behavior are updated in the same commit.
-- `docs/plan.md` is ticked off if the work finished an item.
-- A commit message is proposed in the Conventional Commits form, explaining why
-  rather than listing files.
+- The gate is green: `pnpm run check` reports no error and no warning.
+- Every new test fails before the change, checks one behavior precisely, and
+  leaves no mutant alive.
+- Any document the change makes untrue is fixed in the same commit.
+- An item in `docs/plan.md` that the work finishes is ticked.
+- The proposed commit message is a Conventional Commit, and says why the change
+  was made, not which files it touched.
 
 ## Before you stop
 
-Everything the next contributor needs is committed in its home from the table
-above. Nothing that matters lives only in a conversation, a scratch file or one
-tool's private memory.
+Put everything the next contributor will need in its home in the table above,
+and commit it. A conversation, a scratch file and an agent's own memory are
+gone by the next session.
 
 ## Committing
 

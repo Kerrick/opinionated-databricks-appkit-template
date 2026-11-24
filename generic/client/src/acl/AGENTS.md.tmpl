@@ -1,8 +1,8 @@
 # The anti-corruption layer
 
-The only code that knows how data reaches the app. Everything else in the client
-asks this folder for domain objects. The reasons are in
-`docs/decisions/` (record 0002) and `docs/design/architecture.md`.
+The only code in the client that knows how data arrives. Everything else asks
+this folder for domain objects. The reasons are in record 0002 of
+`docs/decisions/` and in `docs/design/architecture.md`.
 
 ## What lives here
 
@@ -10,34 +10,39 @@ asks this folder for domain objects. The reasons are in
   `useOpenInvoices`, never `useInvoiceQuery` or `useData`. It calls AppKit's
   data hook (`useAnalyticsQuery` and the others from `@databricks/appkit-ui`)
   and maps the rows to objects from `client/src/domain/`.
-- **Query and mutation options for the app's own endpoints,** built for
-  TanStack Query. Route loaders and components use these; nothing else in the
-  client calls `/api/*`.
+- **Loader and action functions for the app's own endpoints,** which routes
+  name in `App.tsx` (`todos.ts` in the Lakebase sample is one). Nothing else in
+  the client calls `fetch` or names an `/api/` path.
+- **`fetch-or-throw.ts`,** the helper those functions use: it turns an error
+  response into a thrown error and checks the JSON against a Zod schema.
 - **Mapping functions,** pure and separate from the hooks, so they are tested in
-  Node and covered by mutation testing.
+  Node and covered by mutation testing. Hooks (`use*.ts`) are tested in the
+  browser instead, and mutation testing leaves them out.
 
 ## Rules
 
-- AppKit's generated row types (in `shared/appkit-types/`) are imported here
-  and nowhere else in the client. A row is the SQL warehouse's model, not the
-  app's: column names, nulls and number types follow the warehouse.
+- AppKit's generated row types (in `shared/appkit-types/`, written by
+  `pnpm run typegen`) are imported here and nowhere else in the client. A row is
+  the SQL warehouse's model, not the app's: column names, nulls and number types
+  follow the warehouse.
 - Return domain objects, never rows. A hook's result type mentions no generated
   type.
 - Keep AppKit's loading and error states. Pass `loading`, `error` and
   `warehouseStatus` through in a shape the view can show; a stopped warehouse
   can take minutes to start.
-- No `fetch` inside `useEffect`. AppKit's hooks and TanStack Query do the
-  fetching, the sharing of requests and the caching.
+- No `fetch` inside `useEffect`. Route loaders and AppKit's hooks do the
+  fetching.
 - One SQL query with a join is better than two hooks whose second waits for the
   first.
-- Every hook and option set has a test, with the network faked by MSW. AppKit's
-  analytics hooks `POST` to `/api/analytics/query/<key>` and read a
-  server-sent-event stream from the response body, so the fake is an
-  `http.post` handler that returns a `text/event-stream` body.
+- Every function and hook has a test, with the network faked by MSW
+  (`features/mocks/`). To fake an analytics hook, answer its `POST` to
+  `/api/analytics/query/<key>` with a `text/event-stream` body from an
+  `http.post` handler; the hook reads the stream from a `fetch` response.
 
 ## The exception
 
-AppKit's chart and table components take a query key and fetch for themselves.
-A view may use them directly to show a query's rows as they are, with no logic
-around them. As soon as anything interprets the rows, the data comes through a
-hook here instead.
+Some of AppKit's components fetch for themselves: the chart and table
+components, given a query key, and `GenieChat`, which talks to its Genie space.
+A view may render them directly, as long as nothing interprets what they show.
+As soon as the view needs to work with the rows, the data comes through a hook
+here instead.
