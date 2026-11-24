@@ -83,6 +83,12 @@ generates a project with these plugins selected and runs its check.
   and that the generated types should be committed. `.prettierignore` skips
   `shared/appkit-types/`, which type generation rewrites, unformatted, on every
   build.
+- `agents`: cut. `client/src/pages/agents/` (a chat page) and `server/agents/`
+  (a planner agent, a helper agent with two demonstration tools, and a skill)
+  are gone, with the page's route and link. The page streamed from the agent
+  routes inside a view, kept message state by hand and used a plain form, and
+  the agents are a demonstration a project would delete. The plugin starts
+  with no agents and says so in its log. `README.md.tmpl` says where agents go.
 
 Added files:
 
@@ -151,8 +157,7 @@ Modified files:
 - Formatting only: `client/src/App.tsx`, `client/src/index.css`,
   `client/src/acl/fetch-or-throw.ts`, `client/src/main.tsx`,
   `client/vite.config.ts`, `client/src/pages/*/*.tsx` (except `genie`),
-  `server/routes/lakebase/todo-routes.ts` and
-  `server/agents/skills/tracer-bullets/reference.md`.
+  and `server/routes/lakebase/todo-routes.ts`.
 
 When a later upstream change touches a formatting-only file, take it, then
 format that file the way `generic/` does: strip any `{{if ...}}` wrapper

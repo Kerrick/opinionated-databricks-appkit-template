@@ -20,9 +20,6 @@ import {
 } from '@databricks/appkit-ui/react';
 import { FileQuestionMark, Menu } from 'lucide-react';
 import { RouteError } from './components/RouteError';
-{{- if .plugins.agents}}
-import { AgentChat } from './pages/agents/AgentChat';
-{{- end}}
 {{- if .plugins.lakebase}}
 import { listTodos, submitTodoForm } from './acl/todos';
 import { LakebasePage } from './pages/lakebase/LakebasePage';
@@ -65,11 +62,6 @@ function NavLinks({
       <NavLink to="/" end className={linkClass} onClick={onClick}>
         Home
       </NavLink>
-{{- if .plugins.agents}}
-      <NavLink to="/agents" className={linkClass} onClick={onClick}>
-        Agents
-      </NavLink>
-{{- end}}
 {{- if .plugins.lakebase}}
       <NavLink to="/lakebase" className={linkClass} onClick={onClick}>
         Lakebase
@@ -150,9 +142,6 @@ const router = createBrowserRouter([
     errorElement: <RouteError />,
     children: [
       { path: '/', element: <HomePage />, errorElement: <RouteError /> },
-{{- if .plugins.agents}}
-      { path: '/agents', element: <AgentChat />, errorElement: <RouteError /> },
-{{- end}}
 {{- if .plugins.lakebase}}
       {
         path: '/lakebase',
