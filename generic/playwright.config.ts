@@ -16,8 +16,15 @@ const testDir = defineBddConfig({
   outputDir: '.features-gen/journeys',
 });
 
+// A browser has to run here, so the limits are stated, not left at Playwright's defaults (a test 30 s, an
+// assertion 5 s, the server's start 60 s). With busy loops on every core and the app built, the slower journey takes
+// about 1 s on an idle machine and 6 s with 8 loops per core. With 32 per core it took 35 s and failed its 30 s,
+// and with 64 per core the server did not start within a minute. A test gets 120 s, an assertion 30 s and the
+// server 240 s, so a journey fails when the app is wrong and not when the machine is busy.
 export default defineConfig({
   testDir,
+  timeout: 120_000,
+  expect: { timeout: 30_000 },
   forbidOnly: true,
   reporter: [['list']],
   use: {
@@ -35,6 +42,7 @@ export default defineConfig({
       DATABRICKS_TOKEN: 'journeys-token',
     },
     url: `http://localhost:${port}/health`,
+    timeout: 240_000,
     reuseExistingServer: false,
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
