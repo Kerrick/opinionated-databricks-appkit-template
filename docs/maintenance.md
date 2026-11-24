@@ -51,7 +51,9 @@ pull request does.
 `renovate.json` configures Renovate. It keeps exact pins (`rangeStrategy: pin`)
 and covers the root `package.json`, `generic/package.json` with its lockfile,
 `mise.toml`, the GitHub Actions digests, and the AppKit packages, which it
-updates together in one pull request. It never automerges. A person merges each
+updates together in one pull request. The three Node pins (`mise.toml`,
+`generic/.nvmrc`, `generic/mise.toml.tmpl`) are one group too, held to Node 22
+because that is the Databricks Apps runtime. It never automerges. A person merges each
 pull request after the check is green.
 
 Setup that has to be done in GitHub, because no file in the repository can do it:
@@ -66,6 +68,34 @@ Setup that has to be done in GitHub, because no file in the repository can do it
 
 Never turn on Renovate's automerge without step 2: with no required check,
 GitHub merges as soon as a pull request is mergeable, whatever the workflow says.
+
+## Agent skill pins
+
+`generic/skills-lock.json` pins each shared agent skill to a commit of its
+source repository, with a hash of the installed files. No Renovate manager reads
+it, so the pins move only when someone updates them. The `skills` CLI does that
+itself: `skills update` moves each skill's `commit` forward and rewrites its
+`computedHash`. The CLI's version is pinned in `generic/.pre-commit-config.yaml`;
+use that one.
+
+To update the pins in this repository, work in an empty scratch folder, because
+`skills update` acts on skills that are installed:
+
+1. Copy `generic/skills-lock.json` into the folder.
+2. Install what the lock records: `npx --yes skills@<version> experimental_install --frozen-lockfile -a universal`.
+3. See what is newer with `npx --yes skills@<version> check`.
+4. Run `npx --yes skills@<version> update -p -y`.
+5. Copy the folder's `skills-lock.json` back to `generic/`, read the diff (each
+   changed skill's `commit` and `computedHash` move), and commit it.
+
+A project generated from the template does the same at its root: its post-checkout
+hook has already installed the skills, so `npx --yes skills@<version> update -p -y`
+is enough, and the project commits the changed lock.
+
+Run it on a schedule you choose, such as when a skill's source repository
+announces a change, and before a release of the template. The skills are
+instructions that agents follow, so read the diff of the skills' own files
+before committing the new pins, not only the lock.
 
 ## Taking AppKit's template changes
 
