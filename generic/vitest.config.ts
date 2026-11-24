@@ -11,17 +11,8 @@ export default defineConfig({
       // Every source file counts, including ones no test loads, so an untested file shows up as 0%.
       include: ['client/src/**/*.{ts,tsx}', 'server/**/*.ts'],
       // Tests, type declarations, and the two files that only start the app. Each of the starts is
-      // exercised by the journeys, not by unit tests. The Lakebase sample's routes (present only when that
-      // plugin is selected) run SQL, and a fake database would prove nothing about it: its tests belong
-      // against a local Postgres, once the project has a database of its own to test.
-      exclude: [
-        '**/*.test.*',
-        '**/*.d.ts',
-        '**/.stryker-tmp/**',
-        'client/src/main.tsx',
-        'server/server.ts',
-        'server/routes/lakebase/**',
-      ],
+      // exercised by the journeys, not by unit tests.
+      exclude: ['**/*.test.*', '**/*.d.ts', '**/.stryker-tmp/**', 'client/src/main.tsx', 'server/server.ts'],
       // Every line, branch, function and statement of every file, so a gap can't hide behind a healthy average.
       thresholds: { 100: true, perFile: true },
       reporter: ['text-summary', 'html'],

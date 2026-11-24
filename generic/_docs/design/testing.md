@@ -260,8 +260,10 @@ no scenario has to change.
 ## Fakes and stand-ins
 
 A fake is the last resort. When something can run locally the way it runs in
-production, test against that instead: if the app adopts Lakebase, its routes
-are tested against a local Postgres. Nothing runs a SQL warehouse locally, so
+production, test against that instead: the Lakebase sample's routes are tested
+against PGlite, a real Postgres compiled to WebAssembly that runs inside the
+test process, with AppKit's own Lakebase plugin connected to it over a local
+port. Nothing runs a SQL warehouse locally, so
 the warehouse is faked.
 
 ## Tests that prove something
@@ -273,10 +275,9 @@ A test must check specific behavior; "it doesn't crash" is never enough.
   every run. Every file under `client/src/` and `server/` counts, including
   files no test loads. Mutation testing would catch uncovered code too, since an
   uncovered mutant survives, but coverage says so in seconds instead of minutes.
-  `vitest.config.ts` leaves out three files and folders, each with its reason
-  beside it: `client/src/main.tsx` and `server/server.ts`, which only start the
-  app and which the journeys run, and the Lakebase sample's routes in
-  `server/routes/lakebase/`, which run SQL that only a real Postgres can test.
+  `vitest.config.ts` leaves out two files, with their reason beside them:
+  `client/src/main.tsx` and `server/server.ts` only start the app, and the
+  journeys run them.
 - **Mutation testing at 100%,** with Stryker (`@stryker-mutator/core`, its Vitest
   runner and its TypeScript checker), incrementally, through
   `pnpm run test:mutation`. A mutant that survives is a change to the code that

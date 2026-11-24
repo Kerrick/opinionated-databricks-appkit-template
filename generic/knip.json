@@ -11,5 +11,12 @@
     "client/src/design/**/*.tsx"{{end}}
   ],
   "project": ["client/src/**/*.{ts,tsx}", "server/**/*.ts", "tools/**/*.ts", "features/**/*.{ts,tsx}", "*.ts"],
-  "ignoreDependencies": ["@ast-grep/napi", "@tailwindcss/postcss", "autoprefixer", "tw-animate-css"]
+  "ignoreDependencies": {{if .plugins.lakebase}}["@ast-grep/napi", "@tailwindcss/postcss", "autoprefixer", "tw-animate-css"]{{else}}[
+    "@ast-grep/napi",
+    "@tailwindcss/postcss",
+    "autoprefixer",
+    "tw-animate-css",
+    "@electric-sql/pglite",
+    "@electric-sql/pglite-socket"
+  ]{{end}}
 }

@@ -245,10 +245,25 @@ Modified files:
 
 - Coverage in `test`: `package.json`'s `test` now runs `vitest run --coverage`
   and the separate `test:coverage` script is gone, so `check` enforces 100%
-  of every file. `vitest.config.ts` also leaves out
-  `server/routes/lakebase/**`: the sample's routes run SQL, and a faked
-  database would prove nothing about it. Tests for it belong against a local
-  Postgres, once the project has a database of its own.
+  of every file, including the sample Lakebase routes.
+
+- Lakebase sample routes under test (`server/routes/lakebase/todo-routes.test.ts`,
+  present only when the plugin is selected): AppKit's own Lakebase plugin is
+  pointed at PGlite (Postgres compiled to WebAssembly) through
+  `@electric-sql/pglite-socket`, which serves the Postgres wire protocol on a
+  local port. The plugin's `pool` option takes an explicit host, port, user,
+  password and `sslMode: 'disable'`, so it opens an ordinary `pg` connection
+  and never asks the workspace for a token. No service, root or credentials are
+  involved. The test kit's `createTestApp` has no `onPluginsReady` hook, so the
+  test registers the routes from a small plugin that waits for the
+  `setup:complete` lifecycle event (the point `onPluginsReady` runs at) and
+  hands them the Lakebase plugin and the server plugin's `addExtension`.
+  - `package.json`, `pnpm-lock.yaml`: `@electric-sql/pglite` and
+    `@electric-sql/pglite-socket`, pinned. They are always installed, because
+    the lockfile cannot depend on the selected plugins. `knip.json` ignores them
+    when Lakebase is not selected.
+  - AppKit's testing guide says a Lakebase test needs "a real database or a
+    purpose-built fake pool". PGlite is the first: a real Postgres, in process.
 
 - `.dependency-cruiser.mjs` and `tools/check-boundaries.ts`: new. Import-graph rules (layers, client against server, domain isolation, generated types only in `acl/`, chart libraries only in `components/charts/`, no cycles, no orphans, no server-rendering frameworks), run through a wrapper that fails when no modules were analysed. `lint:boundaries` is part of `lint`. `.oxlintrc.json` bans browser globals in the domain.
 - `sgconfig.yml`, `rules/`, `rule-tests/`: new. Structural rules checked one file at a time with `@ast-grep/cli` (added to `devDependencies` and to `allowBuilds` in `pnpm-workspace.yaml`): routes have an `errorElement`, route handlers validate input with Zod and async handlers go through `asyncHandler`, network calls and `/api/` paths stay in `acl/`, no `fetch` in an effect, plain forms need React Hook Form, Vitest tests avoid test IDs and selectors, and AppKit's charts and analytics hooks stay in their layers. Each rule has tests; `lint:structure` runs them before scanning.

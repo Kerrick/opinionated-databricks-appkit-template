@@ -63,12 +63,13 @@ published, add it to `pnpm run check`, and update `docs/design/tooling.md` and
     `client/src/acl/use*.ts` (hooks, whose tests run in a browser, where Stryker
     can't);
   - coverage's `exclude` list in `vitest.config.ts`, which leaves out
-    `server/routes/lakebase/**` (the Lakebase sample's routes run SQL, which
-    only a real Postgres can test), and `client/src/main.tsx` and
-    `server/server.ts` (they only start the app, and the journeys run them);
+    `client/src/main.tsx` and `server/server.ts` (they only start the app, and
+    the journeys run them);
   - knip's `ignoreDependencies`, for four packages that are used where knip
     can't see: `@ast-grep/napi`, which `appkit lint` loads, the two PostCSS
-    packages, and `tw-animate-css`, which AppKit's stylesheet imports.
+    packages, and `tw-animate-css`, which AppKit's stylesheet imports. Without
+    the Lakebase plugin it also lists the two PGlite packages, which only the
+    Lakebase sample's tests use.
 
 - [ ] **`cross-lint`, with its `nudge`, `appkit` and `agents` plugins:** checks
       that look at how files relate to one another, where today's linters see one
