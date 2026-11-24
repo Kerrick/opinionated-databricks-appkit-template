@@ -58,10 +58,9 @@ published, add it to `pnpm run check`, and update `docs/design/tooling.md` and
   - the `Stryker disable` comment in `client/src/acl/fetch-or-throw.ts`, on a
     mutant that behaves exactly like the original: a body that isn't JSON and a
     missing body both fail the schema;
-  - Stryker's `mutate` list, which leaves out `server/**` (its tests boot an
-    AppKit app, which crashes the runner Stryker uses) and
-    `client/src/acl/use*.ts` (hooks, whose tests run in a browser, where Stryker
-    can't);
+  - Stryker's `mutate` list, which leaves out `server/server.ts` (it only
+    starts the app, and the journeys run it) and `client/src/acl/use*.ts`
+    (hooks, whose tests run in a browser, where Stryker can't);
   - coverage's `exclude` list in `vitest.config.ts`, which leaves out
     `client/src/main.tsx` and `server/server.ts` (they only start the app, and
     the journeys run them);

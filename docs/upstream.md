@@ -231,10 +231,16 @@ Modified files:
   - `package.json`: `test:mutation` runs Stryker in incremental mode, and
     `check` runs it after `test`. It must score 100.
   - It mutates the code whose tests run in Node: `client/src/lib/`,
-    `client/src/acl/` (except the `use*` hooks, which are tested in a browser)
-    and `client/src/domain/`. The server is left out: the tests that boot an
-    AppKit app crash Stryker's Vitest runner (SIGSEGV), so nothing there could
-    be measured.
+    `client/src/acl/` (except the `use*` hooks, which are tested in a browser),
+    `client/src/domain/` and `server/` (except `server.ts`, which only starts
+    the app and which the journeys run).
+  - `stryker.config.json` sets `vitest.pool` to `forks`. Stryker's default is
+    worker threads, and `@ast-grep/napi` 0.37.0 (a dependency of
+    `@databricks/appkit`) crashes a Linux x64 worker thread with a segmentation
+    fault once it has been loaded there, as a bare Node script shows. A test that
+    imports `@databricks/appkit` triggers it too (importing only its testing
+    kit does not), so the runner died before it could judge a mutant. Forked processes don't
+    trigger it, and neither does a newer `@ast-grep/napi` (0.51.3 was tried).
   - `client/src/acl/fetch-or-throw.ts`: one `Stryker disable next-line` comment
     with its reason. A response body that is not JSON and one that is absent
     both fail the schema, so replacing `() => null` changes nothing anyone can

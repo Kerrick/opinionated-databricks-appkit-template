@@ -284,9 +284,11 @@ A test must check specific behavior; "it doesn't crash" is never enough.
   no test noticed. Stryker's Vitest runner doesn't support Browser Mode, so
   mutation testing covers the code whose tests run in Node: `client/src/lib/`,
   `client/src/acl/` apart from its `use*` hooks (which are tested in a browser),
-  and `client/src/domain/`. The server is left out, because its tests boot an
-  AppKit app, which crashes the runner Stryker uses, so no mutant there could be
-  judged.
+  `client/src/domain/`, and `server/` apart from `server.ts`, which only starts
+  the app. Stryker runs its tests in forked processes (`"pool": "forks"` in
+  `stryker.config.json`). Its default is worker threads, and a worker thread that
+  loads `@ast-grep/napi`, which AppKit's package pulls in, crashes with a
+  segmentation fault on Linux once the tests finish, so no mutant could be judged.
 
 ## Accessibility checks
 
