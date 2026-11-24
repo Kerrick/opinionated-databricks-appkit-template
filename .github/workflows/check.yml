@@ -2,7 +2,9 @@
 # SPDX-License-Identifier: MIT-0
 
 # Generates a project from this checkout, installs it and runs its own check,
-# on each of the three operating systems a generated project has to support.
+# on each of the three operating systems a generated project has to support,
+# and on Linux for both x86-64 and Arm, since the browser tests bring their own
+# Linux libraries for each.
 # No workspace credentials are used: the generated project's check needs none,
 # and the script that does the generating supplies a fake host and token to
 # `databricks apps init` alone. The schedule catches rot: AppKit, the
@@ -36,7 +38,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest, macos-latest]
+        os: [ubuntu-latest, ubuntu-24.04-arm, windows-latest, macos-latest]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:

@@ -8,6 +8,8 @@ python = "3.13.18"
 uv = "0.13.9"
 pre-commit = "4.7.0"
 "pipx:sqlfluff" = "4.5.0"
+# Installs the libraries Chromium needs on Linux (pixi.toml), without root.
+pixi = { version = "0.84.2", os = ["linux"] }
 {{- if or .plugins.lakebase .plugins.database}}
 # Checks Lakebase migrations for changes that lock tables or break running code.
 "pipx:squawk-cli" = "2.74.0"

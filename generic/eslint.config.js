@@ -72,6 +72,7 @@ export default tseslint.config(
       '**/node_modules/**',
       '**/.databricks/**',
       '**/.stryker-tmp/**',
+      '**/.pixi/**',
       // Written by `appkit generate-types`; edits are overwritten on the next run
       'shared/appkit-types/**',
     ],
