@@ -11,7 +11,7 @@ import {
 import { useState, useEffect } from 'react';
 import { Check, X } from 'lucide-react';
 import { z } from 'zod';
-import { fetchJson, fetchOrThrow } from '../../lib/fetch-or-throw';
+import { fetchJson, fetchOrThrow } from '../../acl/fetch-or-throw';
 
 const Todo = z.object({
   id: z.number(),

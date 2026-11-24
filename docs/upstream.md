@@ -54,4 +54,8 @@ fetched sources.
 
 ## Changes from upstream
 
-None yet: `generic/` is identical to `template/` at the commit above.
+`generic/` is no longer identical to `template/`. Each entry names the files and the reason.
+
+- `client/src/ErrorBoundary.tsx` moved to `client/src/components/ErrorBoundary.tsx`, and `client/src/lib/fetch-or-throw.ts` to `client/src/acl/fetch-or-throw.ts`, so that both live in a layer. `main.tsx` and the three pages that import `fetch-or-throw` follow.
+- `package.json`, `tsconfig.json` and `tsconfig.tools.json`: a `tools/` project (typechecked with `tsc -b`, run with `tsx`) holding the repository checks, and the `lint:triggers` script that `lint` runs.
+- `tools/`: new. Checks that stay quiet until the project learns something: an unknown folder under `client/src/`, a first non-GET custom server route, Lakebase arriving, and an on-behalf-of-user query.

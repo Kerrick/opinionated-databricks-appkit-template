@@ -8,7 +8,7 @@ import {
 } from '@databricks/appkit-ui/react';
 import { useId, useRef, useState } from 'react';
 import { z } from 'zod';
-import { fetchJson, fetchOrThrow } from '../../lib/fetch-or-throw';
+import { fetchJson, fetchOrThrow } from '../../acl/fetch-or-throw';
 
 const MAX_STREAM_LOG = 500;
 

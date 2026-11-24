@@ -8,7 +8,7 @@ import {
   NewFolderInput,
 } from '@databricks/appkit-ui/react';
 import { FolderPlus, Loader2, Upload } from 'lucide-react';
-import { fetchJson, fetchOrThrow } from '../../lib/fetch-or-throw';
+import { fetchJson, fetchOrThrow } from '../../acl/fetch-or-throw';
 import {
   type RefObject,
   useEffect,
