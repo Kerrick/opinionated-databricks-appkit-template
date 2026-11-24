@@ -18,7 +18,8 @@ allowBuilds:
   protobufjs: true
 
 # With pnpm's side-effects cache, a second install from a warm store drops the
-# dependencies that @databricks/appkit bundles inside its package, and the app
-# then fails to start with "Cannot find package '@databricks/sdk-statementexecution'".
+# dependencies that @databricks/appkit bundles inside its package. Importing
+# @databricks/appkit then throws "Cannot find package
+# '@databricks/sdk-statementexecution'" (which is how `pnpm run test` failed).
 # Building such packages again on every install avoids that.
 sideEffectsCache: false

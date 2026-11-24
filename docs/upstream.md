@@ -78,8 +78,9 @@ Modified files:
 - `pnpm-workspace.yaml`: `sideEffectsCache: false`. With pnpm 11.0.8,
   installing the project a second time from a warm store leaves out the packages that
   `@databricks/appkit` bundles (`@databricks/sdk-statementexecution` among
-  them), and `pnpm run test` fails with "Cannot find package". The first,
-  cold install is fine. Turning the side-effects cache off fixes the warm
+  them), so importing `@databricks/appkit` throws "Cannot find package
+  '@databricks/sdk-statementexecution'", which is how `pnpm run test` failed.
+  The first, cold install is fine. Turning the side-effects cache off fixes the warm
   install (checked with the flag on a store that had already failed);
   `--package-import-method=copy` does not.
 - `.prettierrc.json`: an override for `databricks.yml` that keeps double
