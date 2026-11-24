@@ -223,6 +223,22 @@ Modified files:
     locator rules to the journey files.
   - `.prettierignore` and `_gitignore` list the same output.
 
+- Mutation testing (`stryker.config.json`, `vitest.mutation.config.ts`):
+  - `package.json`: `test:mutation` runs Stryker in incremental mode, and
+    `check` runs it after `test`. It must score 100.
+  - It mutates the code whose tests run in Node: `client/src/lib/`,
+    `client/src/acl/` (except the `use*` hooks, which are tested in a browser)
+    and `client/src/domain/`. The server is left out: the tests that boot an
+    AppKit app crash Stryker's Vitest runner (SIGSEGV), so nothing there could
+    be measured.
+  - `client/src/acl/fetch-or-throw.ts`: one `Stryker disable next-line` comment
+    with its reason. A response body that is not JSON and one that is absent
+    both fail the schema, so replacing `() => null` changes nothing anyone can
+    observe.
+  - `vitest.config.ts` keeps the mutation sandbox out of coverage, and
+    `.oxlintrc.json`, `.prettierignore` and `_gitignore` out of the linters,
+    the formatter and git.
+
 - Formatting only: `client/src/App.tsx`, `client/src/index.css`,
   `client/src/acl/fetch-or-throw.ts`, `client/src/main.tsx`,
   `client/vite.config.ts`, `client/src/pages/lakebase/LakebasePage.tsx`,

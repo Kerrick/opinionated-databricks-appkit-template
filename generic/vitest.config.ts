@@ -12,7 +12,7 @@ export default defineConfig({
       include: ['client/src/**/*.{ts,tsx}', 'server/**/*.ts'],
       // Tests, type declarations, and the two files that only start the app. Each of the starts is
       // exercised by the journeys, not by unit tests.
-      exclude: ['**/*.test.*', '**/*.d.ts', 'client/src/main.tsx', 'server/server.ts'],
+      exclude: ['**/*.test.*', '**/*.d.ts', '**/.stryker-tmp/**', 'client/src/main.tsx', 'server/server.ts'],
       // Every line, branch, function and statement of every file, so a gap can't hide behind a healthy average.
       thresholds: { 100: true, perFile: true },
       reporter: ['text-summary', 'html'],

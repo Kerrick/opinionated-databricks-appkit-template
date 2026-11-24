@@ -284,6 +284,7 @@
     "**/test-results/**",
     "**/playwright-report/**",
     "**/reports/**",
+    "**/.stryker-tmp/**",
     "client/dist/**",
     "**/.databricks/**",
     "**/.pixi/**",

@@ -11,6 +11,7 @@ export async function fetchOrThrow(
 ): Promise<Response> {
   const response = await fetch(url, init);
   if (!response.ok) {
+    // Stryker disable next-line ArrowFunction: a body that is not JSON and an absent body both fail the schema, so the caller's fallback is used either way
     const body = ServerErrorSchema.safeParse(await response.json().catch(() => null));
     throw new Error(body.success ? body.data.error : fallback(response));
   }

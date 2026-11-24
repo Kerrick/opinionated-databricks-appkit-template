@@ -47,3 +47,4 @@ shared/appkit-types/
 test-results
 playwright-report
 reports
+.stryker-tmp
