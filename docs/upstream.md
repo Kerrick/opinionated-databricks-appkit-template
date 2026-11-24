@@ -97,6 +97,17 @@ Modified files:
 - `eslint.config.js`: new flat config for what oxlint lacks: `naming-convention` (no agent-noun class names in the domain), disable-comment hygiene, sonarjs, functional's immutability rules and a setter ban in the domain, and JSDoc on exports from the domain and `server/`. The `lint` script now runs oxlint, ESLint and the triggered checks in turn.
 - `client/src/App.tsx`, `client/src/components/ErrorBoundary.tsx`, `server/example.test.ts`: small edits so the new rules pass (readonly props, one return type, `static readonly`).
 - `server/routes/lakebase/todo-routes.ts`: a doc comment on the exported setup function, which the JSDoc rule requires.
+- `package.json`: a `postinstall` script runs `tools/unpack-docs.ts`
+  (a new file). The project's documents ship in `generic/_docs/` and that
+  script renames the folder to `docs/` on the first install. The reason is that
+  `databricks apps init` never copies a directory named `docs`, at any depth,
+  even when the files in it end in `.tmpl` (its skip list in
+  `cmd/apps/init.go`). Leading underscores are the convention the CLI already
+  uses for files it must not treat as live (`_gitignore`). The script does
+  nothing once `docs/` exists, so later installs, including the one each deploy
+  runs, leave the tree alone. It also does nothing in `generic/` itself, where
+  `package.json` still holds the unrendered project name, so installing inside
+  the template doesn't break it.
 - Formatting only: `client/src/App.tsx`, `client/src/index.css`,
   `client/src/acl/fetch-or-throw.ts`, `client/src/main.tsx`,
   `client/vite.config.ts`, `client/src/pages/*/*.tsx` (except `genie`),

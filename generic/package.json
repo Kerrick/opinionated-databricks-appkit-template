@@ -29,7 +29,8 @@
     "predev": "pnpm run sync && pnpm run typegen",
     "sync": "appkit plugin sync --write --silent",
     "typegen": "appkit generate-types",
-    "setup": "appkit setup --write"
+    "setup": "appkit setup --write",
+    "postinstall": "tsx tools/unpack-docs.ts"
   },
   "keywords": [],
   "author": "",
