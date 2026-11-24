@@ -61,6 +61,10 @@ over the generated project.
 
 Added files:
 
+- `.gitattributes`: every text file is checked out with LF line endings. A
+  Windows checkout with `core.autocrlf=true` otherwise writes CRLF, and the
+  format check fails on nearly every file. The repository root has the same
+  file for the same reason.
 - `APPKIT-TEMPLATE-LICENSE`: the Apache-2.0 text, copied from upstream's
   `LICENSE`.
 - `APPKIT-TEMPLATE-NOTICE.md`: names the AppKit template, the commit and that
