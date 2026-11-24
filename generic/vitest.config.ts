@@ -1,18 +1,11 @@
 import { defineConfig } from 'vitest/config';
-import path from 'node:path';
 
+// Two projects: code that runs in Node, and pages and components that need a
+// real browser. Each lives in its own file so mutation testing can run the
+// Node one alone.
 export default defineConfig({
   test: {
-    passWithNoTests: true,
-    globals: true,
-    environment: 'node',
-    exclude: ['**/node_modules/**', '**/dist/**', '**/.databricks/**'],
-    server: {
-      deps: {
-        // echarts-for-react's ESM build has extensionless imports Node rejects.
-        inline: [/@databricks\/appkit-ui/, 'echarts-for-react'],
-      },
-    },
+    projects: ['./vitest.unit.config.ts', './vitest.pages.config.ts'],
     coverage: {
       provider: 'v8',
       // Every source file counts, including ones no test loads, so an untested file shows up as 0%.
@@ -24,11 +17,6 @@ export default defineConfig({
       thresholds: { 100: true, perFile: true },
       reporter: ['text-summary', 'html'],
       reportsDirectory: 'coverage',
-    },
-  },
-  resolve: {
-    alias: {
-      '@': path.resolve(__dirname, './client/src'),
     },
   },
 });

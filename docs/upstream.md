@@ -189,6 +189,22 @@ Modified files:
   unrendered project name, so installing inside the template doesn't break it.
   The root check asserts that a generated project, after install, has `docs/`,
   no `tools/unpack-docs.*` and no `postinstall` script.
+- Test levels (browser tests, scenarios and the fakes they share):
+  - `client/src/App.tsx`: the home page and the not-found page moved into
+    `client/src/pages/home/HomePage.tsx` and
+    `client/src/pages/not-found/NotFoundPage.tsx`, so each page can be rendered
+    on its own by a scenario. Nothing else in the file changed.
+  - `vitest.config.ts` now only lists two projects (`vitest.unit.config.ts`
+    for Node, `vitest.pages.config.ts` for a real browser) and keeps the
+    coverage settings. The Node project holds what the old file configured.
+  - `package.json`: `pretest` makes sure Chromium is installed
+    (`tools/install-browsers.ts`), and the devDependencies for browser tests,
+    Gherkin scenarios, network fakes and property tests.
+  - `tsconfig.json` references `tsconfig.tests.json`, which typechecks
+    `features/` and the test tool configs.
+  - `knip.json` knows about `features/` and the one binary
+    `tools/install-browsers.ts` calls.
+
 - Formatting only: `client/src/App.tsx`, `client/src/index.css`,
   `client/src/acl/fetch-or-throw.ts`, `client/src/main.tsx`,
   `client/vite.config.ts`, `client/src/pages/lakebase/LakebasePage.tsx`,

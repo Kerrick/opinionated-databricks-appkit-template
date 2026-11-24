@@ -5,9 +5,10 @@
     "client/tailwind.config.ts",
     "client/postcss.config.js",
     "client/src/lib/utils.ts",
-    "client/src/acl/fetch-or-throw.ts"{{if .plugins.design}},
+    "client/src/acl/fetch-or-throw.ts",
+    "features/steps/*.{ts,tsx}"{{if .plugins.design}},
     "client/src/design/**/*.tsx"{{end}}
   ],
-  "project": ["client/src/**/*.{ts,tsx}", "server/**/*.ts", "tools/**/*.ts"],
+  "project": ["client/src/**/*.{ts,tsx}", "server/**/*.ts", "tools/**/*.ts", "features/**/*.{ts,tsx}", "*.ts"],
   "ignoreDependencies": ["@ast-grep/napi", "@tailwindcss/postcss", "autoprefixer", "tw-animate-css"]
 }
