@@ -30,9 +30,6 @@ import { GeniePage } from './pages/genie/GeniePage';
 {{- if .plugins.serving}}
 import { ServingPage } from './pages/serving/ServingPage';
 {{- end}}
-{{- if .plugins.jobs}}
-import { JobsPage } from './pages/jobs/JobsPage';
-{{- end}}
 
 const navLinkClass = ({ isActive }: { isActive: boolean }) =>
   `px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
@@ -69,11 +66,6 @@ function NavLinks({
 {{- if .plugins.serving}}
       <NavLink to="/serving" className={linkClass} onClick={onClick}>
         Serving
-      </NavLink>
-{{- end}}
-{{- if .plugins.jobs}}
-      <NavLink to="/jobs" className={linkClass} onClick={onClick}>
-        Jobs
       </NavLink>
 {{- end}}
     </nav>
@@ -140,9 +132,6 @@ const router = createBrowserRouter([
 {{- end}}
 {{- if .plugins.serving}}
       { path: '/serving', element: <ServingPage />, errorElement: <RouteError /> },
-{{- end}}
-{{- if .plugins.jobs}}
-      { path: '/jobs', element: <JobsPage />, errorElement: <RouteError /> },
 {{- end}}
       { path: '*', element: <NotFoundPage />, errorElement: <RouteError /> },
     ],

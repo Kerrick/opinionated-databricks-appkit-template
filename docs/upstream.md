@@ -114,6 +114,11 @@ generates a project with these plugins selected and runs its check.
   plugin, and it passes every check. `GenieChat` talks to its Genie space
   itself, like AppKit's charts, so `_docs/design/architecture.md` names it
   beside them as a component a view may render as it is.
+- `jobs`: cut. `client/src/pages/jobs/` is gone, with its route and link. It
+  triggered and followed runs of the configured job with requests and a
+  stream read inside the view, posted plain forms, and failed the lint checks.
+  What a project shows about its job, and when it may start a run, is its own
+  decision. `README.md.tmpl` says to call the plugin's routes from `acl/`.
 
 Added files:
 
