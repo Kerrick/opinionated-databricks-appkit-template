@@ -6,7 +6,7 @@
 // `check` script. It needs no workspace credentials and works on any OS.
 
 import { spawn } from 'node:child_process';
-import { mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -87,6 +87,12 @@ try {
     cwd: projectDir,
     env: projectEnv,
   });
+  // The CLI never copies a folder named docs, so the template ships _docs/
+  // and the project's postinstall renames it.
+  if (!existsSync(join(projectDir, 'docs', 'plan.md')) || existsSync(join(projectDir, '_docs'))) {
+    throw new Error('The generated project has no docs/ after install: _docs/ was not unpacked');
+  }
+  console.log('\nThe project documents are in docs/.');
   await run('Run the generated project\'s own check', 'pnpm', ['run', 'check'], {
     cwd: projectDir,
     env: projectEnv,
