@@ -10,11 +10,15 @@
 import comments from '@eslint-community/eslint-plugin-eslint-comments';
 import functional from 'eslint-plugin-functional';
 import jsdoc from 'eslint-plugin-jsdoc';
+import playwright from 'eslint-plugin-playwright';
 import sonarjs from 'eslint-plugin-sonarjs';
 import tseslint from 'typescript-eslint';
 
 const sources = ['client/src/**/*.{ts,tsx}', 'server/**/*.ts', 'config/**/*.ts', 'tools/**/*.ts'];
 const domain = ['client/src/domain/**/*.{ts,tsx}'];
+// The files that drive the built app in Playwright. Elsewhere in the tests, Testing Library's query rules
+// apply through the page-level tasks; here these rules keep locators to what a person sees.
+const journeys = ['features/steps/journeys.steps.ts', 'features/tasks/through-playwright.ts'];
 const tests = ['**/*.test.{ts,tsx}', '**/*.spec.{ts,tsx}'];
 
 // Names that describe what an object does for others instead of what it is. A domain class names the concept.
@@ -73,6 +77,10 @@ export default tseslint.config(
       '**/.databricks/**',
       '**/.stryker-tmp/**',
       '**/.pixi/**',
+      '**/.features-gen/**',
+      '**/test-results/**',
+      '**/playwright-report/**',
+      '**/reports/**',
       // Written by `appkit generate-types`; edits are overwritten on the next run
       'shared/appkit-types/**',
     ],
@@ -136,6 +144,17 @@ export default tseslint.config(
           contexts: ['TSInterfaceDeclaration', 'TSTypeAliasDeclaration', 'TSEnumDeclaration'],
         },
       ],
+    },
+  },
+  {
+    ...playwright.configs['flat/recommended'],
+    files: journeys,
+    languageOptions: { parser: tseslint.parser },
+    rules: {
+      ...playwright.configs['flat/recommended'].rules,
+      // Find elements by role, label or text, as a person would; test IDs, CSS and XPath are for when nothing else works.
+      'playwright/no-raw-locators': 'error',
+      'playwright/prefer-native-locators': 'error',
     },
   }
 );

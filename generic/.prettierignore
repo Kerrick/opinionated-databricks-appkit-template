@@ -41,3 +41,9 @@ appkit.plugins.json
 
 # Written by `appkit generate-types` on every build, unformatted
 shared/appkit-types/
+
+# Test output
+.features-gen
+test-results
+playwright-report
+reports

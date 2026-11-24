@@ -205,6 +205,24 @@ Modified files:
   - `knip.json` knows about `features/` and the one binary
     `tools/install-browsers.ts` calls.
 
+- Journeys (the built app, driven in a browser):
+  - `playwright.config.ts` starts AppKit's own server (`features/mocks/journey-server.ts`),
+    which serves the built client, with a preload
+    (`features/mocks/fake-databricks.ts`) that answers the Databricks calls the
+    server makes at start-up from inside its own process. The project's plugins
+    are not started, because they need resources only a deployment binds; the
+    browser's calls to their `/api/` routes are faked in the browser, and each
+    plugin's routes are tested with AppKit's testing kit. Nothing reaches a
+    workspace.
+    `playwright.smoke.config.ts` runs the journeys tagged `@smoke` against a
+    deployed app (`APP_URL`, optionally `APP_TOKEN`) with nothing faked.
+  - `package.json`: `test:e2e` and `test:smoke`, and `check` runs `test:e2e`
+    after `build`, which it needs.
+  - `eslint.config.js` and `.oxlintrc.json` ignore the output of the test
+    runners, and `eslint.config.js` applies `eslint-plugin-playwright`'s
+    locator rules to the journey files.
+  - `.prettierignore` and `_gitignore` list the same output.
+
 - Formatting only: `client/src/App.tsx`, `client/src/index.css`,
   `client/src/acl/fetch-or-throw.ts`, `client/src/main.tsx`,
   `client/vite.config.ts`, `client/src/pages/lakebase/LakebasePage.tsx`,
