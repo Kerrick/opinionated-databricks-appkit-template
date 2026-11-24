@@ -10,6 +10,11 @@ function characters(text: string): number {
   return Array.from(text).length;
 }
 
+/** Counts lines the way `wc -l` does, so a file that ends with a newline doesn't gain a line. */
+function lines(text: string): number {
+  return text.split('\n').length - (text.endsWith('\n') ? 1 : 0);
+}
+
 /** Names of the skills installed from skills-lock.json. They aren't this project's own files, so they're not measured. */
 function installedSkillNames(root: string): Set<string> {
   const lock: unknown = JSON.parse(readIfPresent(root, 'skills-lock.json') || '{}');
@@ -26,6 +31,26 @@ function installedSkillNames(root: string): Set<string> {
   return new Set(typeof skills === 'object' && skills !== null ? Object.keys(skills) : []);
 }
 
+function checkAgentsFile(path: string, text: string): string[] {
+  const limit = path === 'AGENTS.md' ? ROOT_AGENTS_LIMIT : LAYER_AGENTS_LIMIT;
+  const length = characters(text);
+  if (length < limit) return [];
+  return [
+    `${path} has ${length} characters; the limit is under ${limit}. Agents load it into every session, so ` +
+      'keep the rules that apply everywhere here and move detail to a document in docs/ that it links to.',
+  ];
+}
+
+function checkSkillFile(path: string, text: string): string[] {
+  const length = characters(text);
+  const lineCount = lines(text);
+  if (length < SKILL_CHARACTER_LIMIT && lineCount < SKILL_LINE_LIMIT) return [];
+  return [
+    `${path} has ${lineCount} lines and ${length} characters; a skill stays under ${SKILL_LINE_LIMIT} lines and ` +
+      `${SKILL_CHARACTER_LIMIT} characters. Move reference material into files beside SKILL.md and link to them.`,
+  ];
+}
+
 /**
  * Fails when an instruction file is too long to be read in full on every task.
  *
@@ -35,32 +60,15 @@ function installedSkillNames(root: string): Set<string> {
  */
 export function checkSizes(root: string): string[] {
   const installed = installedSkillNames(root);
-  const problems: string[] = [];
-  for (const path of listFiles(root)) {
-    const name = path.split('/').at(-1);
-    const text = name === 'AGENTS.md' || name === 'SKILL.md' ? readIfPresent(root, path) : '';
-    if (name === 'AGENTS.md') {
-      const limit = path === 'AGENTS.md' ? ROOT_AGENTS_LIMIT : LAYER_AGENTS_LIMIT;
-      const length = characters(text);
-      if (length >= limit) {
-        problems.push(
-          `${path} has ${length} characters; the limit is under ${limit}. Agents load it into every session, so ` +
-            'keep the rules that apply everywhere here and move detail to a document in docs/ that it links to.'
-        );
-      }
+  return listFiles(root).flatMap((path) => {
+    const parts = path.split('/');
+    const name = parts.at(-1);
+    if (name === 'AGENTS.md') return checkAgentsFile(path, readIfPresent(root, path));
+    if (name === 'SKILL.md' && !installed.has(parts.at(-2) ?? '')) {
+      return checkSkillFile(path, readIfPresent(root, path));
     }
-    if (name === 'SKILL.md' && !installed.has(path.split('/').at(-2) ?? '')) {
-      const length = characters(text);
-      const lines = text.split('\n').length - (text.endsWith('\n') ? 1 : 0);
-      if (length >= SKILL_CHARACTER_LIMIT || lines >= SKILL_LINE_LIMIT) {
-        problems.push(
-          `${path} has ${lines} lines and ${length} characters; a skill stays under ${SKILL_LINE_LIMIT} lines and ` +
-            `${SKILL_CHARACTER_LIMIT} characters. Move reference material into files beside SKILL.md and link to them.`
-        );
-      }
-    }
-  }
-  return problems;
+    return [];
+  });
 }
 
 if (import.meta.main) {

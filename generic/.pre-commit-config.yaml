@@ -5,6 +5,15 @@ default_install_hook_types: [pre-commit, post-checkout, post-merge]
 repos:
   - repo: local
     hooks:
+      # The one command that defines "done": the same gate every contributor and every coding agent runs.
+      - id: check
+        name: pnpm run check
+        entry: pnpm run check
+        language: unsupported
+        pass_filenames: false
+        always_run: true
+        stages: [pre-commit]
+
       # The shared agent skills (Databricks' own, adr, skill-authoring) are pinned in skills-lock.json and never
       # committed. Restoring them after every checkout and merge gives every contributor's agents the pinned versions.
       # -a names the agents to link them for: `universal` is the shared .agents/skills/ folder.
