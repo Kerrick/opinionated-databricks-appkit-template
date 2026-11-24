@@ -11,15 +11,21 @@ AppKit (record 0002). How data reaches the screen without waterfalls is in
 
 ```text
 client/src/
-  pages/        view: one component per route
-  components/   view: everything else that renders
-  hooks/        application: the app's own hooks, built on acl/
-  acl/          application: the only code that knows how data arrives
-  domain/       domain: the business's concepts and rules
-server/         AppKit's server, its plugins and the app's own routes
-config/queries/ SQL for the SQL warehouse, one file per query
-shared/         types both sides import, including AppKit's generated ones
+  pages/          view: one component per route
+  components/     view: everything else that renders
+  acl/            application: the only code that knows how data arrives
+  domain/         domain: the business's concepts and rules
+  lib/            the cn helper AppKit's UI components use, outside the layers
+  design/         the design plugin's development pages, outside the layers
+server/           AppKit's server, its plugins and the app's own routes
+config/queries/   SQL for the SQL warehouse, one file per query
+shared/           types both sides import; AppKit writes its generated ones here
 ```
+
+Some of these arrive later. `domain/` starts with only its `AGENTS.md`,
+`design/` comes with the design plugin, and `config/queries/` comes with the first analytics query.
+`shared/appkit-types/` is written by `appkit generate-types`, which runs before
+every build and with `pnpm run typegen`.
 
 The view renders, the application layer turns data from outside into domain
 objects, and the domain layer holds the rules. Each layer can be understood,
@@ -33,23 +39,46 @@ is that it lets you think about each of them relatively independently.
 React's rules that
 [components and hooks are pure](https://react.dev/reference/rules/components-and-hooks-must-be-pure).
 They hold no business logic and never call `fetch`; data comes from route
-loaders or from hooks in `acl/` and `hooks/`.
+loaders or from hooks in `acl/`.
 
-AppKit's chart and table components are the one place a view fetches for
-itself: they take a query key and load their own rows, so they can't be handed
-domain objects. A view may use them to show a query's rows as they are. Once
-anything interprets the rows, the data goes through `acl/` instead. AppKit's
-`GenieChat` is the same kind of component: it holds a whole conversation with
-a Genie space, so a view may render it as it is. The page that comes with the
-Genie plugin does just that.
+**Components that fetch for themselves.** A few of AppKit's components load
+their own data, so they can't be handed domain objects, and a view may render
+them as they are:
 
-Charts are drawn on a canvas, so each chart type gets one wrapper in
-`components/charts/` that turns on ECharts' accessibility (`aria.enabled`, with
-the `aria` component registered once at the app's root), and only those
-wrappers import AppKit's charts. Where users act on a chart's data, the page also
-offers a way to reach it by keyboard, such as a table of the same rows. The first
-chart adds the first wrapper; `platform.md` says why the `echarts` version is
-pinned.
+- AppKit's chart and table components take a query key and load its rows. A
+  view may use them to show those rows unchanged. Once anything interprets the
+  rows, the data goes through `acl/` instead.
+- `GenieChat` holds a whole conversation with a Genie space. The page that
+  comes with the Genie plugin renders it and nothing else.
+
+Every other request goes through `acl/`.
+
+**Every route has an error element.** Each route in `App.tsx` names
+`components/RouteError.tsx` as its `errorElement`, so a loader that throws or a
+page that fails to render shows what went wrong and a way home, not a blank
+screen. `components/ErrorBoundary.tsx` at the root catches anything outside the
+router.
+
+### Charts
+
+AppKit's charts are drawn on a canvas, so screen readers and tests can't find
+their data unless ECharts' accessibility support is on ([platform.md](platform.md)
+says how it works). The template ships no chart, so it ships no chart code
+either; it ships the boundary the first chart must respect. Charts are imported
+only through wrappers in `client/src/components/charts/`, one per chart type.
+The first chart brings three things with it:
+
+1. ECharts' `aria` component, registered once at the app's root, with `use`
+   from `echarts/core`.
+2. `echarts`, pinned to exactly the version `@databricks/appkit-ui` depends on.
+   The registration reaches AppKit's charts only when both import the same
+   copy of ECharts.
+3. Its wrapper, which sets `aria: { enabled: true }` in the chart's options.
+
+Wrappers are written with the first chart that needs one, not before, because a
+wrapper nothing uses is dead code that knip fails. Where users act on a chart's
+data, the page also offers a way to reach that data by keyboard, such as a
+table of the same rows.
 
 ### Application
 
@@ -59,13 +88,19 @@ of a translating layer between two subsystems that don't share the same
 semantics. The rows AppKit's generated types describe are the SQL warehouse's
 model, shaped by tables someone else owns. The app's model is the domain layer.
 Each data need gets one hook in `acl/`, named for the domain concept it returns,
-that wraps AppKit's hook and maps rows to domain objects. Only `acl/` imports the
-generated types or calls AppKit's data hooks, and only `acl/` calls the app's own
-`/api/*` routes. When a table changes shape, one mapping function changes, and
-nothing that renders or decides does.
+that wraps AppKit's hook and maps rows to domain objects. When a table changes
+shape, one mapping function changes, and nothing that renders or decides does.
 
-`hooks/` holds the app's other hooks, built on `acl/`: state that several
-components share, or a combination of several data needs.
+`acl/` is the only folder in the client that may:
+
+- import AppKit's generated types or call AppKit's data hooks;
+- call `fetch`, or name an `/api/` path. `acl/fetch-or-throw.ts` is the helper
+  for the app's own endpoints: it fetches, turns an error response into a
+  thrown error, and checks the JSON against a Zod schema.
+
+The layout check and the import rules also accept a `client/src/hooks/` folder
+in this layer, for hooks built on `acl/`: state that several components share,
+or a combination of several data needs. The template ships none.
 
 ### Domain
 
@@ -108,10 +143,15 @@ apps says not to add custom endpoints for warehouse queries.
 
 Every route validates its body, parameters and query string with Zod, as
 [Databricks' best practices](https://docs.databricks.com/aws/en/dev-tools/databricks-apps/best-practices)
-ask for every app, internal ones included. Every `async` handler goes through one
-small wrapper that passes failures to `next(err)`, because AppKit runs
-Express 4, where a rejected promise never reaches the error middleware
-([`platform.md`](platform.md) has the details).
+ask for every app, internal ones included.
+
+Every `async` handler is wrapped in `asyncHandler` from
+`server/async-handler.ts`, which passes a thrown error or a rejected promise to
+`next(err)`. AppKit runs Express 4, which ignores the promise an `async` handler
+returns, so without the wrapper a failure never reaches the error middleware and
+the request hangs until the client gives up
+([platform.md](platform.md) has the details). Its test shows a failing handler
+getting an error response.
 
 If the app turns out to own bounded contexts (see below), a custom AppKit plugin
 per context, each with its own routes, resources and tests, is an option to
@@ -128,19 +168,29 @@ no logic, with one exception, the domain layer once it moves there.
 dependency-cruiser checks these rules on every `pnpm run lint`:
 
 - `client/` never imports `server/`, and `server/` never imports `client/`.
-- The domain layer imports nothing from the view or application layers, React,
-  AppKit or browser APIs.
+- `domain/` stays plain TypeScript: no import from another client folder, from
+  React, from AppKit or from a chart library.
 - Only `acl/` imports AppKit's generated types.
-- Only `components/charts/` imports AppKit's chart components.
+- Only `components/charts/` imports a chart library.
 - Nothing imports a server-rendering framework (`next`, `@react-router/dev`,
   `@tanstack/react-start`).
 - No import cycles, and no module that nothing imports.
 
 Lint rules on `domain/` enforce the rest of that layer's rules: immutable data
 (`eslint-plugin-functional`'s immutability rules), no setters, no agent-noun
-class names, one class per file, and exhaustive `switch` statements. Other rules
-check single files across the client: no `fetch` inside `useEffect`, no `/api/*`
-call outside `acl/`, and an error element on every route.
+class names, one class per file, and exhaustive `switch` statements.
+
+Structural rules (ast-grep) check single files across the client and the server:
+
+- only `acl/` calls AppKit's data hooks, calls `fetch` or names an `/api/` path;
+- no `fetch` inside a `useEffect` callback;
+- only `components/charts/` imports AppKit's charts;
+- every route has an error element;
+- a plain `<form>` fails unless its file uses React Hook Form (see
+  [Libraries for client concerns](#libraries-for-client-concerns));
+- every `async` Express handler goes through `asyncHandler`, and every handler
+  that reads the request validates it with Zod.
+
 [tooling.md](tooling.md) lists every tool and why it was chosen.
 
 ## Exceptions in AppKit's own files
@@ -150,11 +200,11 @@ an exception to them:
 
 - `client/src/components/ErrorBoundary.tsx` is a class component, the one in the
   view layer, because React has no hook that catches render errors.
-- `client/src/acl/fetch-or-throw.ts` is the helper AppKit's pages use to call
+- `client/src/acl/fetch-or-throw.ts` is the helper AppKit's pages used to call
   the server. It calls `fetch`, so it lives in `acl/`, the one layer allowed to.
 - `client/src/lib/` holds `utils.ts`, with the `cn` helper that combines
   Tailwind class names for AppKit's UI components. It sits outside the layers.
-- `client/src/design/` holds AppKit's development-only design pages, also
+- `client/src/design/` holds the design plugin's development-only pages, also
   outside the layers.
 
 `lib/` and `design/` are the only folders under `client/src/` besides the
@@ -174,8 +224,8 @@ domain layer moves at that moment, once, to where both sides can import it:
 2. Update the imports in the client.
 3. Point the domain-layer rules at the new path: the dependency-cruiser rules
    (`shared/` may then hold the domain as well as types, and `server/` may import
-   it), the lint rules scoped to `domain/`, and the folders mutation testing
-   covers.
+   it), the ESLint and oxlint rules scoped to `domain/`, and the files Stryker
+   mutates.
 4. Make sure both `tsconfig.client.json` and `tsconfig.server.json` include
    `shared/domain/`.
 5. Update this document, the root `AGENTS.md` and `server/AGENTS.md`.
@@ -195,31 +245,37 @@ Martin Fowler's description of a
 [bounded context](https://martinfowler.com/bliki/BoundedContext.html), each has
 a unified model of its own, so translation is needed only where two models meet.
 
-Until the question is answered, the client has only the layers above, and a new
-top-level folder under `client/src/` fails the build with a message pointing at
-the question.
+Until the question is answered, the client has only the folders above, and a
+new top-level folder under `client/src/` fails the build with a message pointing
+at the question ([tooling.md](tooling.md) lists the checks that wait like this).
 
 ## Libraries for client concerns
 
-- **Server state:** TanStack Query, for the app's own endpoints. Most state
-  libraries are built for client state, not for data that lives on a server and
-  goes stale. One `QueryClient` and its provider sit at the app's root, and
-  query and mutation options live in `acl/`. Details in
-  [data-loading.md](data-loading.md).
+- **Routing:** React Router 7 in data mode (`createBrowserRouter`), as AppKit's
+  template ships it. Every route has an `errorElement`.
+- **Server state:** route loaders and actions that call functions in `acl/`.
+  TanStack Query joins them when the app first needs a cache shared across
+  routes and components; [data-loading.md](data-loading.md) says how.
 - **Shared client state:** React Context, and no store library. Passing data
   deep into the tree is what
   [`useContext`](https://react.dev/reference/react/useContext) is for, and
   nothing yet needs more.
-- **Routing:** React Router 7 in data mode (`createBrowserRouter`), as AppKit's
-  template ships it. Every route has an `errorElement`.
 - **Errors:** `ErrorBoundary.tsx` at the root, plus each route's error element.
   No error library.
-- **Forms:** React Hook Form with Zod (`react-hook-form`,
-  `@hookform/resolvers`), reusing the Zod schemas the server validates with. It
-  is installed with the first form, not before, because knip fails the build on
-  an unused dependency. A check fails on a plain `<form>` whose component doesn't
-  use it, so the first form can't be built another way. React Router's `<Form>`
-  stays allowed for actions with no validation in the browser.
+- **Forms:** two kinds, and a check keeps them apart.
+  - A form that only submits to a route action, with no validation in the
+    browser, is React Router's `<Form>`. The action parses the form data with
+    Zod. The Lakebase sample's todo list works this way.
+  - A form that checks its fields in the browser, as the user types or before
+    it submits, is built with React Hook Form (`react-hook-form`) and its Zod
+    resolver (`@hookform/resolvers`). The resolver takes the same Zod schema
+    the server checks the request with, so the browser and the server agree on
+    what is valid, and every form shows its errors the same way.
+
+  React Hook Form is installed with the first form that needs it, not before,
+  because knip fails the build on an unused dependency. A plain `<form>` fails
+  the structural check unless its file uses React Hook Form, so no form is built
+  a third way.
 
 ## Storage
 

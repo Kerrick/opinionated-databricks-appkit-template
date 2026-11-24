@@ -8,48 +8,77 @@ that wait again.
 
 Data comes from two places, and each is loaded differently:
 
-| Source                                                                        | Loaded by                           | Where it starts                            |
-| ----------------------------------------------------------------------------- | ----------------------------------- | ------------------------------------------ |
-| The app's own `/api/*` routes, and the beta `database` plugin's `databaseApi` | TanStack Query, from route loaders  | Before the route renders                   |
-| AppKit's plugins (`analytics` and the others)                                 | AppKit's data hooks, through `acl/` | When the component calling the hook mounts |
+| Source                                                                        | Loaded by                                    | Where it starts                            |
+| ----------------------------------------------------------------------------- | -------------------------------------------- | ------------------------------------------ |
+| The app's own `/api/*` routes, and the beta `database` plugin's `databaseApi` | Route loaders, calling functions in `acl/`   | Before the route renders                   |
+| AppKit's plugins (`analytics` and the others)                                 | AppKit's data hooks, through hooks in `acl/` | When the component calling the hook mounts |
 
 ## The app's own endpoints: route loaders
 
 React Router's data routers
 [run the loaders of every matched route in parallel](https://reactrouter.com/api/data-routers/createBrowserRouter)
 by default. So data from the app's own endpoints is requested in loaders, and
-every fetch a page needs starts before anything renders.
+every fetch a page needs starts before anything renders. Writes go through the
+route's action, after which React Router runs the loaders again.
+
+The Lakebase sample's todo list shows the pattern:
+
+```tsx
+// client/src/acl/todos.ts: the request, its error message and the schema the
+// response must match, in the one folder allowed to fetch.
+export function listTodos(): Promise<Todo[]> {
+  return fetchJson('/api/lakebase/todos', undefined, z.array(Todo), (r) => `Failed to fetch todos: ${r.statusText}`);
+}
+
+// client/src/App.tsx: the route starts the request and handles the forms.
+const todoRoute = {
+  path: '/lakebase',
+  element: <LakebasePage />,
+  loader: () => listTodos(),
+  action: submitTodoForm,
+  errorElement: <RouteError />,
+};
+
+// The page reads what the loader returned.
+const todos = useLoaderData<Awaited<ReturnType<typeof listTodos>>>();
+```
+
+- The functions live in `acl/`; the route only names them. A loader that
+  throws shows the route's error element.
+- **A child route's loader never uses its parent's data.** If both need the
+  same thing, both ask for it. A child that waits for its parent's result turns
+  two parallel requests into a chain.
+- Use `useNavigation()` for pending UI while loaders and actions run, and route
+  `lazy` for code splitting, so a route's code and data load at the same time.
+
+### When a cache is needed: TanStack Query
+
+Loaders keep nothing between navigations, and two routes that need the same
+data each fetch it. When that starts to cost, add TanStack Query
+(`@tanstack/react-query`), with one `QueryClient` at the app's root, and
+`@tanstack/eslint-plugin-query` to check how queries are written. Neither is
+installed before then, because knip fails the build on a dependency nothing
+uses. With them, the query options live in `acl/`, and the loader and the
+component share them, so both use one cache entry:
 
 ```ts
 // client/src/acl/invoices.ts
 export const openInvoicesQuery = queryOptions({
-  queryKey: ["invoices", "open"],
-  queryFn: async () => toInvoices(await getJson("/api/invoices?status=open")),
+  queryKey: ['invoices', 'open'],
+  queryFn: async () => toInvoices(await fetchJson('/api/invoices?status=open', undefined, InvoiceRows, failed)),
 });
 
 // The route's loader starts the request and waits for it.
-loader: () => queryClient.query({ ...openInvoicesQuery, staleTime: "static" }),
+loader: () => queryClient.query({ ...openInvoicesQuery, staleTime: 'static' }),
 
 // The page reads the same cache entry, already filled.
 const { data: invoices } = useSuspenseQuery(openInvoicesQuery);
 ```
 
-- The query options live in `acl/`; the loader and the component share them, so
-  both use one cache entry.
-- `queryClient.query` with `staleTime: 'static'` returns cached data when there
-  is some and fetches when there isn't. It replaces `ensureQueryData`, which
-  TanStack Query 5 deprecates and will remove in its next major version.
-- **A child route's loader never uses its parent's data.** If both need the same
-  thing, both ask for the same query; the cache makes the second request free.
-  A child that waits for its parent's result turns two parallel requests into a
-  chain.
-- Use `useNavigation()` for pending UI while loaders run, and route `lazy` for
-  code splitting, so a route's code and data load at the same time.
-
-TanStack Query is installed and wired up from the start, with one `QueryClient`
-at the app's root, because the first custom endpoint is close to certain (writes
-need one) and because a check that only `acl/` calls `/api/*` needs a place for
-those calls to go.
+`queryClient.query` with `staleTime: 'static'` returns cached data when there is
+some and fetches when there isn't. It replaces `ensureQueryData`, which TanStack
+Query 5 deprecates. The rule about child routes still holds; the cache only
+makes the second request for the same query free.
 
 ## AppKit's data hooks: at the top of the page
 
@@ -59,9 +88,10 @@ is no documented client for analytics queries outside React
 it mounts, and is torn down when the last component using it unmounts. Where a
 hook is called therefore decides when its request starts.
 
-So the `acl/` hooks that wrap them are called at the top of each page component,
-or in components that always render. Never put a component that fetches behind
-another query's loading state:
+So a page calls the `acl/` hooks that wrap them first thing, in its own body, or
+leaves them to child components it renders unconditionally. A child that loads
+its own data must not wait for a sibling's spinner to go away before it
+mounts:
 
 ```tsx
 // Wrong: RevenueChart doesn't mount, so its query doesn't start, until the
@@ -104,11 +134,10 @@ answering, so every query in a chain can wait again.
 ## What enforces this
 
 - A structural rule fails on any `fetch` inside a `useEffect` callback, the
-  pattern that loads data after render with no cache. Databricks' own example
-  code for AppKit apps uses it; this project doesn't.
-- A structural rule fails on any call to `/api/*` outside `acl/`, so data from
-  the app's own endpoints goes through TanStack Query.
-- `@tanstack/eslint-plugin-query` checks how queries are written.
+  pattern that loads data after render, with no cache and no cancellation.
+  Databricks' own example code for AppKit apps uses it; this project doesn't.
+- A structural rule fails on any `fetch`, or any `/api/` path, outside `acl/`,
+  so every request to the app's own endpoints has one home.
 - Placing hooks at the top of a page, and spinners beside rather than in front
   of children, is left to review: no tool can tell whether a component that
   renders conditionally also fetches.
