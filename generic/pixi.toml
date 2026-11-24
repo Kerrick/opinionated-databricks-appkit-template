@@ -3,9 +3,11 @@
 # into .pixi/ through tools/install-browsers.ts, and only the browser sees them
 # (tools/browser-libraries.ts). macOS and Windows don't use this file.
 #
-# The list is what Playwright's headless Chromium links against, beyond glibc:
-# `readelf -d` on the browser binary names them. Add a package here when a
-# Playwright upgrade makes the browser report another missing library.
+# The list is what Playwright's Chromium links against, beyond glibc:
+# `readelf -d` on its two binaries names them. The headless shell, which the
+# tests run, needs all but cairo, libcups and pango; the full browser, for
+# headed runs, needs those too. Add a package here when a Playwright upgrade
+# makes the browser setup report another missing library.
 
 [workspace]
 name = "browser-libraries"
@@ -18,15 +20,18 @@ alsa-lib = "==1.2.16.1"
 at-spi2-atk = "==2.38.0"
 at-spi2-core = "==2.40.3"
 "atk-1.0" = "==2.38.0"
+cairo = "==1.18.6"
 dbus = "==1.16.2"
 libexpat = "==2.9.0"
 libgbm = "==1.1.2"
+libcups = "==2.4.20"
 libglib = "==2.90.1"
 libudev1 = "==262.2"
 libxcb = "==1.17.0"
 libxkbcommon = "==1.13.2"
 nspr = "==4.41"
 nss = "==3.118"
+pango = "==1.58.2"
 xorg-libx11 = "==1.8.14"
 xorg-libxcomposite = "==0.4.7"
 xorg-libxdamage = "==1.1.6"

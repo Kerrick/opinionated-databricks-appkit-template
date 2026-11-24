@@ -118,6 +118,61 @@ Locators in journeys follow the same rule as page-level tests;
 `eslint-plugin-playwright`'s `no-raw-locators` and `prefer-native-locators`
 enforce it there.
 
+## The browser on Linux, without root
+
+Page-level tests and journeys both drive Playwright's Chromium. On macOS and
+Windows the browser Playwright downloads is self-contained. On Linux it links
+against shared libraries the system is expected to provide: NSS, GLib, ATK,
+D-Bus, ALSA, libgbm, libudev, libxkbcommon and a handful of X11 libraries. A
+desktop usually has them; a container, a minimal server or a fresh CI image
+often doesn't, and the browser then fails to start with "error while loading
+shared libraries" (exit 127).
+
+Playwright's own answer, `playwright install-deps` (or `install --with-deps`),
+runs the system package manager, which needs root. It also knows only Debian
+and Ubuntu package names. The project's setup and checks never need root, on
+any system, so the project brings the libraries itself:
+
+- `pixi.toml` lists the conda-forge packages that provide what Playwright's
+  Chromium links against beyond glibc (`readelf -d` on its binaries), for
+  x86-64 and Arm Linux, each at an exact version. `pixi.lock` pins every
+  package, dependencies included, by checksum. Renovate's pixi manager can
+  keep both current.
+- [pixi](https://pixi.sh), pinned in `mise.toml` for Linux only, installs
+  them into `.pixi/` as part of the browser setup that runs before `pnpm test`
+  (`tools/install-browsers.ts`). No root and no system package manager, so
+  any Linux distribution with glibc works. The setup then asks `ldd` whether
+  the browser still lacks anything, and names what it lacks.
+- `tools/browser-libraries.ts` hands the folder to the browser alone, on
+  `LD_LIBRARY_PATH` in Playwright's `launchOptions.env`: the page-level tests
+  get it in `vitest.pages.config.ts`, and the journeys in
+  `playwright.config.ts`. Nothing else in the project runs against those
+  libraries, and on macOS and Windows the options are empty.
+
+The browser is still Playwright's own build, at the version Playwright
+tests; only the libraries under it come from elsewhere. They are the same
+upstream libraries a distribution ships, and the same on every Linux
+machine, so a check that passes in CI passes on a developer's machine too.
+
+Alternatives considered:
+
+- Downloading the distribution's packages (`apt-get download` and
+  `dpkg -x`) needs no root, but works only where those packages fit: Debian
+  and Ubuntu, one release at a time. Nothing would keep the versions current.
+- A Chromium build that bundles its libraries (such as `@sparticuz/chromium`,
+  made for AWS Lambda) ships only for x86-64 on npm, and trails the Chromium
+  that Playwright's release supports.
+- Playwright's container image, with the tests connecting to a browser
+  server inside it, needs Podman or Docker on every Linux machine, a large
+  image, and tests that reach the app through a host name other than
+  `localhost`.
+- A simulated DOM (jsdom, happy-dom) would let the page-level tests skip the
+  browser, but not the journeys, and it differs from a real browser in ways
+  that pass tests and fail users.
+- mise's own conda-forge support installs each package into a separate
+  folder, solved apart from the others, so the libraries could disagree on
+  versions; pixi solves them as one set and locks it.
+
 ## Smoke journeys
 
 Journeys tagged `@smoke` also run unfaked, with `pnpm run test:smoke`, against
