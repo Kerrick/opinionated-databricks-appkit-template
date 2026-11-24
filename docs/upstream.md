@@ -109,6 +109,11 @@ generates a project with these plugins selected and runs its check.
   plain forms and failed the type and lint checks, and it needs a volume with
   files in it. A project's own file features call the plugin's routes from
   `acl/`. `README.md.tmpl` says so.
+- `genie`: kept as it was. `client/src/pages/genie/GeniePage.tsx` renders
+  AppKit's `GenieChat` and nothing else, which is how a project uses the
+  plugin, and it passes every check. `GenieChat` talks to its Genie space
+  itself, like AppKit's charts, so `_docs/design/architecture.md` names it
+  beside them as a component a view may render as it is.
 
 Added files:
 

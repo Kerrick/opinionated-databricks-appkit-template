@@ -38,7 +38,10 @@ loaders or from hooks in `acl/` and `hooks/`.
 AppKit's chart and table components are the one place a view fetches for
 itself: they take a query key and load their own rows, so they can't be handed
 domain objects. A view may use them to show a query's rows as they are. Once
-anything interprets the rows, the data goes through `acl/` instead.
+anything interprets the rows, the data goes through `acl/` instead. AppKit's
+`GenieChat` is the same kind of component: it holds a whole conversation with
+a Genie space, so a view may render it as it is. The page that comes with the
+Genie plugin does just that.
 
 Charts are drawn on a canvas, so each chart type gets one wrapper in
 `components/charts/` that turns on ECharts' accessibility (`aria.enabled`, with

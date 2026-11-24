@@ -32,6 +32,7 @@ const plugins = {
   analytics: { 'sql-warehouse.id': 'abc123' },
   design: {},
   files: { 'files.path': '/Volumes/check/app/files' },
+  genie: { 'genie-space.id': 'check-space', 'genie-space.name': 'Check space' },
   lakebase: {
     'postgres.branch': 'projects/check/branches/main',
     'postgres.database': 'projects/check/branches/main/databases/app',
