@@ -32,6 +32,9 @@ function quote(arg) {
   return /[\s"&|<>^()%!]/.test(arg) ? `"${arg.replaceAll('"', '\\"')}"` : arg;
 }
 
+// The step now running, so a signal can stop it before the scratch folder goes.
+let current = null;
+
 function run(label, command, args, { cwd, env }) {
   console.log(`\n== ${label}\n$ ${[command, ...args].join(' ')}`);
   return new Promise((resolvePromise, reject) => {
@@ -39,8 +42,10 @@ function run(label, command, args, { cwd, env }) {
     const child = isWindows
       ? spawn([command, ...args.map(quote)].join(' '), { cwd, env, stdio: 'inherit', shell: true })
       : spawn(command, args, { cwd, env, stdio: 'inherit' });
+    current = child;
     child.on('error', reject);
     child.on('close', (code, signal) => {
+      current = null;
       if (code === 0) resolvePromise();
       else reject(new Error(`${label} failed (${signal ?? `exit ${code}`})`));
     });
@@ -49,6 +54,30 @@ function run(label, command, args, { cwd, env }) {
 
 const scratch = mkdtempSync(join(tmpdir(), 'appkit-template-check-'));
 let failed = false;
+
+function removeScratch() {
+  rmSync(scratch, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 });
+}
+
+// A cancelled CI job sends SIGTERM, and Ctrl-C sends SIGINT. Neither runs the
+// `finally` below, so stop the running step, wait for it, and clean up here.
+for (const [signal, number] of [
+  ['SIGINT', 2],
+  ['SIGTERM', 15],
+]) {
+  process.once(signal, () => {
+    const finish = () => {
+      removeScratch();
+      process.exit(128 + number);
+    };
+    if (current && current.exitCode === null && current.signalCode === null) {
+      current.once('close', finish);
+      current.kill(signal);
+      setTimeout(finish, 10_000).unref();
+    } else finish();
+  });
+}
+
 try {
   const outputDir = join(scratch, 'out');
   mkdirSync(outputDir);
@@ -102,6 +131,6 @@ try {
   failed = true;
   console.error(`\n${error.message}`);
 } finally {
-  rmSync(scratch, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 });
+  removeScratch();
 }
 process.exit(failed ? 1 : 0);
