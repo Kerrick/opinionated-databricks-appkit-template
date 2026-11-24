@@ -1,4 +1,4 @@
-import { existsSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { afterEach, beforeEach, expect, test } from 'vitest';
 import { Fixture } from './lib/fixture.ts';
@@ -44,4 +44,50 @@ test('still renames when package.json has no name', () => {
   project.write('package.json', '[]').write('_docs/plan.md');
   expect(unpackDocs(project.root)).toBe(true);
   expect(exists('docs/plan.md')).toBe(true);
+});
+
+const read = (path: string): string => readFileSync(join(project.root, path), 'utf8');
+const manifest = { name: 'orders', scripts: { dev: 'vite', postinstall: 'tsx tools/unpack-docs.ts' } };
+
+function generatedProject(): void {
+  project
+    .write('package.json', `${JSON.stringify(manifest, null, 2)}\n`)
+    .write('_docs/plan.md')
+    .write('tools/unpack-docs.ts')
+    .write('tools/unpack-docs.test.ts')
+    .write('tools/check-triggers.ts');
+}
+
+test('removes itself and its test after renaming', () => {
+  generatedProject();
+  unpackDocs(project.root);
+  expect(exists('tools/unpack-docs.ts')).toBe(false);
+  expect(exists('tools/unpack-docs.test.ts')).toBe(false);
+  expect(exists('tools/check-triggers.ts')).toBe(true);
+});
+
+test('removes the postinstall script from package.json and keeps the rest, formatted as Prettier prints it', () => {
+  generatedProject();
+  unpackDocs(project.root);
+  const expected = { name: 'orders', scripts: { dev: 'vite' } };
+  expect(read('package.json')).toBe(`${JSON.stringify(expected, null, 2)}\n`);
+});
+
+test('keeps its files and the postinstall script when docs/ already exists', () => {
+  generatedProject();
+  project.write('docs/plan.md');
+  unpackDocs(project.root);
+  expect(exists('tools/unpack-docs.ts')).toBe(true);
+  expect(read('package.json')).toContain('postinstall');
+});
+
+test('keeps its files and the postinstall script inside the template', () => {
+  const unrendered = `${'{'.repeat(2)}.projectName}}`;
+  generatedProject();
+  const templateManifest = `${JSON.stringify({ ...manifest, name: unrendered }, null, 2)}\n`;
+  project.write('package.json', templateManifest);
+  unpackDocs(project.root);
+  expect(exists('tools/unpack-docs.ts')).toBe(true);
+  expect(exists('tools/unpack-docs.test.ts')).toBe(true);
+  expect(read('package.json')).toBe(templateManifest);
 });

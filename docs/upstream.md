@@ -110,11 +110,15 @@ Modified files:
   `databricks apps init` never copies a directory named `docs`, at any depth,
   even when the files in it end in `.tmpl` (its skip list in
   `cmd/apps/init.go`). Leading underscores are the convention the CLI already
-  uses for files it must not treat as live (`_gitignore`). The script does
-  nothing once `docs/` exists, so later installs, including the one each deploy
-  runs, leave the tree alone. It also does nothing in `generic/` itself, where
-  `package.json` still holds the unrendered project name, so installing inside
-  the template doesn't break it.
+  uses for files it must not treat as live (`_gitignore`). After the rename the
+  script deletes itself and `tools/unpack-docs.test.ts`, and removes the
+  `postinstall` key from `package.json` (rewritten the way Prettier prints
+  it), so a generated project keeps nothing of the mechanism and its own
+  documents never mention it. The script does nothing once `docs/` exists. It
+  also does nothing in `generic/` itself, where `package.json` still holds the
+  unrendered project name, so installing inside the template doesn't break it.
+  The root check asserts that a generated project, after install, has `docs/`,
+  no `tools/unpack-docs.*` and no `postinstall` script.
 - Formatting only: `client/src/App.tsx`, `client/src/index.css`,
   `client/src/acl/fetch-or-throw.ts`, `client/src/main.tsx`,
   `client/vite.config.ts`, `client/src/pages/*/*.tsx` (except `genie`),

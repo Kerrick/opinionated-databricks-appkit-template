@@ -6,7 +6,7 @@
 // `check` script. It needs no workspace credentials and works on any OS.
 
 import { spawn } from 'node:child_process';
-import { existsSync, mkdirSync, mkdtempSync, rmSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -117,11 +117,21 @@ try {
     env: projectEnv,
   });
   // The CLI never copies a folder named docs, so the template ships _docs/
-  // and the project's postinstall renames it.
+  // and the project's postinstall renames it, then removes itself.
   if (!existsSync(join(projectDir, 'docs', 'plan.md')) || existsSync(join(projectDir, '_docs'))) {
     throw new Error('The generated project has no docs/ after install: _docs/ was not unpacked');
   }
-  console.log('\nThe project documents are in docs/.');
+  const leftovers = ['unpack-docs.ts', 'unpack-docs.test.ts'].filter((name) =>
+    existsSync(join(projectDir, 'tools', name)),
+  );
+  if (leftovers.length > 0) {
+    throw new Error(`The generated project still has tools/${leftovers.join(', tools/')} after install`);
+  }
+  const { scripts = {} } = JSON.parse(readFileSync(join(projectDir, 'package.json'), 'utf8'));
+  if ('postinstall' in scripts) {
+    throw new Error('The generated project still has a postinstall script after install');
+  }
+  console.log('\nThe project documents are in docs/, and the unpacker is gone.');
   await run('Run the generated project\'s own check', 'pnpm', ['run', 'check'], {
     cwd: projectDir,
     env: projectEnv,
