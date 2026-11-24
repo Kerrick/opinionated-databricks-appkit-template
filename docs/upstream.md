@@ -239,6 +239,13 @@ Modified files:
     `.oxlintrc.json`, `.prettierignore` and `_gitignore` out of the linters,
     the formatter and git.
 
+- Coverage in `test`: `package.json`'s `test` now runs `vitest run --coverage`
+  and the separate `test:coverage` script is gone, so `check` enforces 100%
+  of every file. `vitest.config.ts` also leaves out
+  `server/routes/lakebase/**`: the sample's routes run SQL, and a faked
+  database would prove nothing about it. Tests for it belong against a local
+  Postgres, once the project has a database of its own.
+
 - Formatting only: `client/src/App.tsx`, `client/src/index.css`,
   `client/src/acl/fetch-or-throw.ts`, `client/src/main.tsx`,
   `client/vite.config.ts`, `client/src/pages/lakebase/LakebasePage.tsx`,
