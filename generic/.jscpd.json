@@ -1,0 +1,10 @@
+{
+  "path": ["client/src", "server", "tools"],
+  "format": ["typescript", "tsx", "javascript"],
+  "ignore": ["**/*.test.*", "**/node_modules/**", "**/dist/**", "**/appkit-types/**"],
+  "minLines": 8,
+  "minTokens": 70,
+  "threshold": 0,
+  "reporters": ["console"],
+  "gitignore": true
+}

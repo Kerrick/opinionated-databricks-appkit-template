@@ -3,7 +3,7 @@
 // https://developers.databricks.com/docs/appkit/v0/plugins/lakebase#on-behalf-of-obo--per-user-connections
 
 import { z } from 'zod';
-import { Application } from 'express';
+import type { Application, Response } from 'express';
 import { asyncHandler } from '../../async-handler';
 
 interface AppKitWithLakebase {
@@ -33,6 +33,32 @@ const CREATE_TABLE_SQL = `
 
 const CreateTodoBody = z.object({ title: z.string().min(1) });
 const TodoParams = z.object({ id: z.coerce.number().int() });
+
+const TOGGLE_TODO_SQL =
+  'UPDATE app.todos SET completed = NOT completed WHERE id = $1 RETURNING id, title, completed, created_at';
+const DELETE_TODO_SQL = 'DELETE FROM app.todos WHERE id = $1 RETURNING id';
+
+/** Runs a query for one todo and sends its row, answering 404 when no todo has that id and 500 when the query fails. */
+async function withTodoRow(
+  appkit: AppKitWithLakebase,
+  res: Response,
+  sql: string,
+  id: number,
+  action: string,
+  send: (row: Record<string, unknown>) => void
+): Promise<void> {
+  try {
+    const row = (await appkit.lakebase.query(sql, [id])).rows[0];
+    if (row === undefined) {
+      res.status(404).json({ error: 'Todo not found' });
+      return;
+    }
+    send(row);
+  } catch (err) {
+    console.error(`Failed to ${action} todo:`, err);
+    res.status(500).json({ error: `Failed to ${action} todo` });
+  }
+}
 
 /** Creates the sample todo table if it is missing and registers its routes. */
 export async function setupSampleLakebaseRoutes(appkit: AppKitWithLakebase) {
@@ -93,49 +119,24 @@ export async function setupSampleLakebaseRoutes(appkit: AppKitWithLakebase) {
     app.patch(
       '/api/lakebase/todos/:id',
       asyncHandler(async (req, res) => {
-        try {
-          const params = TodoParams.safeParse(req.params);
-          if (!params.success) {
-            res.status(400).json({ error: 'Invalid id' });
-            return;
-          }
-          const { id } = params.data;
-          const result = await appkit.lakebase.query(
-            'UPDATE app.todos SET completed = NOT completed WHERE id = $1 RETURNING id, title, completed, created_at',
-            [id]
-          );
-          if (result.rows.length === 0) {
-            res.status(404).json({ error: 'Todo not found' });
-            return;
-          }
-          res.json(result.rows[0]);
-        } catch (err) {
-          console.error('Failed to update todo:', err);
-          res.status(500).json({ error: 'Failed to update todo' });
+        const params = TodoParams.safeParse(req.params);
+        if (!params.success) {
+          res.status(400).json({ error: 'Invalid id' });
+          return;
         }
+        await withTodoRow(appkit, res, TOGGLE_TODO_SQL, params.data.id, 'update', (row) => res.json(row));
       })
     );
 
     app.delete(
       '/api/lakebase/todos/:id',
       asyncHandler(async (req, res) => {
-        try {
-          const params = TodoParams.safeParse(req.params);
-          if (!params.success) {
-            res.status(400).json({ error: 'Invalid id' });
-            return;
-          }
-          const { id } = params.data;
-          const result = await appkit.lakebase.query('DELETE FROM app.todos WHERE id = $1 RETURNING id', [id]);
-          if (result.rows.length === 0) {
-            res.status(404).json({ error: 'Todo not found' });
-            return;
-          }
-          res.status(204).send();
-        } catch (err) {
-          console.error('Failed to delete todo:', err);
-          res.status(500).json({ error: 'Failed to delete todo' });
+        const params = TodoParams.safeParse(req.params);
+        if (!params.success) {
+          res.status(400).json({ error: 'Invalid id' });
+          return;
         }
+        await withTodoRow(appkit, res, DELETE_TODO_SQL, params.data.id, 'delete', () => res.status(204).send());
       })
     );
   });
