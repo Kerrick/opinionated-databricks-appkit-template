@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import { cpSync } from 'node:fs';
-import { delimiter, join, resolve } from 'node:path';
+import { join, resolve } from 'node:path';
+import { z } from 'zod';
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
 import { Fixture } from './lib/fixture.ts';
 
@@ -26,6 +27,7 @@ const hooks = [
 ];
 
 const projectRoot = resolve(import.meta.dirname, '..');
+const astGrep = join(projectRoot, 'node_modules', '.bin', 'ast-grep');
 let project: Fixture;
 beforeEach(() => {
   project = new Fixture();
@@ -38,14 +40,13 @@ afterEach(() => {
 
 /** Scans the fixture and returns the files the rule fired in, relative to the project root. */
 function filesWithFindings(): string[] {
-  const result = spawnSync('ast-grep', ['scan', '--json=compact', '--filter', '^appkit-data-hooks-only-in-acl$'], {
+  const result = spawnSync(astGrep, ['scan', '--json=compact', '--filter', '^appkit-data-hooks-only-in-acl$'], {
     cwd: project.root,
     encoding: 'utf8',
     shell: process.platform === 'win32',
-    env: { ...process.env, PATH: [join(projectRoot, 'node_modules', '.bin'), process.env['PATH']].join(delimiter) },
   });
   expect(result.error).toBeUndefined();
-  const findings = JSON.parse(result.stdout || '[]') as { file: string }[];
+  const findings = z.array(z.object({ file: z.string() })).parse(JSON.parse(result.stdout || '[]'));
   return findings.map((finding) => finding.file.replaceAll('\\', '/'));
 }
 
