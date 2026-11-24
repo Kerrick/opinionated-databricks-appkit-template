@@ -1,5 +1,6 @@
 minimum_pre_commit_version: '4.4.0'
-# `pre-commit install` installs every hook type listed here.
+# `pre-commit install` installs every hook type listed here. `mise run hooks` does that and then runs the skills hook
+# once, because git has not run it yet on a fresh clone.
 default_install_hook_types: [pre-commit, post-checkout, post-merge]
 
 repos:

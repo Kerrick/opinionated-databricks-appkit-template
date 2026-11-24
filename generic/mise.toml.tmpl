@@ -14,3 +14,7 @@ pixi = { version = "0.84.2", os = ["linux"] }
 # Checks Lakebase migrations for changes that lock tables or break running code.
 "pipx:squawk-cli" = "2.74.0"
 {{- end}}
+
+[tasks.hooks]
+description = "Install the git hooks, then restore the shared agent skills now rather than at the next checkout"
+run = ["pre-commit install", "pre-commit run restore-agent-skills --hook-stage post-checkout"]

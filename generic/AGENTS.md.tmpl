@@ -28,7 +28,7 @@ https://databricks.github.io/appkit/llms.txt.
 | Command                        | What it does                                                                |
 | ------------------------------ | --------------------------------------------------------------------------- |
 | `mise install`, `pnpm install` | Install the pinned tools, then the dependencies                             |
-| `mise x -- pre-commit install` | Install the git hooks: `check` before each commit, skills after checkout    |
+| `mise run hooks`               | Install the git hooks (`check` before each commit) and restore the skills   |
 | `pnpm run check`               | The whole gate: every check below except the smoke journeys                 |
 | `pnpm run lint`                | Linters, import rules, structural rules, `appkit lint`, SQL lint, sizes     |
 | `pnpm run typecheck`           | `tsc -b`                                                                    |

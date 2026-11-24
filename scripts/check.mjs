@@ -236,9 +236,38 @@ async function expectFailure(projectDir, failure) {
   }
 }
 
+// A fresh clone's setup has to leave the agent skills in place at once, not at the next checkout. This sets
+// up a generated project the way its README says (`mise install`, then `mise run hooks`) in a new git
+// repository, with the machine's own git settings kept out (a global hooks folder would stop pre-commit from
+// installing), then requires the hooks and every skill the lock pins.
+async function checkSetupRestoresSkills(projectDir) {
+  const env = { ...cleanEnv(), GIT_CONFIG_GLOBAL: join(scratch, 'no-gitconfig'), GIT_CONFIG_NOSYSTEM: '1' };
+  await run('Start a git repository in the generated project', 'git', ['init', '--quiet'], { cwd: projectDir, env });
+  await run("Trust the project's mise.toml", 'mise', ['trust', '--quiet', 'mise.toml'], { cwd: projectDir, env });
+  await run("Install the project's tools", 'mise', ['install'], { cwd: projectDir, env });
+  await run('Set up the git hooks, which also restores the agent skills', 'mise', ['run', 'hooks'], {
+    cwd: projectDir,
+    env,
+  });
+  const missing = [];
+  for (const hook of ['pre-commit', 'post-checkout', 'post-merge']) {
+    if (!existsSync(join(projectDir, '.git', 'hooks', hook))) missing.push(`the ${hook} hook`);
+  }
+  const { skills } = JSON.parse(readFileSync(join(projectDir, 'skills-lock.json'), 'utf8'));
+  for (const name of Object.keys(skills)) {
+    if (!existsSync(join(projectDir, '.agents', 'skills', name, 'SKILL.md'))) missing.push(`.agents/skills/${name}`);
+    if (!existsSync(join(projectDir, '.claude', 'skills', name, 'SKILL.md'))) missing.push(`.claude/skills/${name}`);
+  }
+  if (missing.length > 0) {
+    throw new Error(`After \`mise run hooks\` the project is missing: ${missing.join(', ')}.`);
+  }
+  console.log('\nSetup installed the git hooks and restored every pinned agent skill.');
+}
+
 try {
   const plain = await generate('template-check-app', []);
   await run("Run the plugin-free project's check", 'pnpm', ['run', 'check'], { cwd: plain, env: cleanEnv() });
+  await checkSetupRestoresSkills(plain);
 
   const sets = Object.entries(plugins).flatMap(([plugin, fields]) =>
     Object.entries(fields).flatMap(([field, value]) => ['--set', `${plugin}.${field}=${value}`]),

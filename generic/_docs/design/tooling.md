@@ -250,7 +250,7 @@ Setting up a fresh clone takes three commands, and none of them needs root:
 ```sh
 mise install                # the pinned tools
 pnpm install                # the dependencies, from pnpm-lock.yaml
-mise x -- pre-commit install # the git hooks
+mise run hooks              # the git hooks, and the agent skills
 ```
 
 **Exact versions** for every package, as AppKit's template already does. Build
@@ -261,13 +261,15 @@ on the platform.
 
 The [pre-commit](https://pre-commit.com) framework, pinned with mise, reads
 `.pre-commit-config.yaml`. `pre-commit install` installs every hook type that
-file lists:
+file lists, and `mise run hooks` runs it for you:
 
 - **Before each commit,** `pnpm run check`. The hook is local and declares
   `language: unsupported`, so pre-commit runs the command with the tools
   already installed; pre-commit 4.4 renamed `language: system` to that.
 - **After each checkout and merge,** the shared agent skills are restored
-  ([Coding agents](#coding-agents)).
+  ([Coding agents](#coding-agents)). Git has run neither hook yet in a fresh
+  clone, so `mise run hooks` also runs the restore once, and the agents have
+  their skills as soon as setup ends.
 
 ## Licences of development tools
 
