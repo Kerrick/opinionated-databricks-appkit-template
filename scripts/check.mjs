@@ -15,7 +15,18 @@
 // and then requires the project's whole check to pass.
 
 import { spawn } from 'node:child_process';
-import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import {
+  appendFileSync,
+  existsSync,
+  mkdirSync,
+  readdirSync,
+  readFileSync,
+  rmdirSync,
+  rmSync,
+  statSync,
+  utimesSync,
+  writeFileSync,
+} from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -89,7 +100,24 @@ function cleanEnv() {
     if (/^DATABRICKS_/i.test(key) || /^npm_/i.test(key)) continue;
     env[key] = value;
   }
-  return env;
+  return { ...env, ...toolTempEnv() };
+}
+
+// Points every temporary file and cache the generated project's tools write at
+// this run's own folder, so nothing lands beside it in the system's temporary
+// folder. TMPDIR, TEMP and TMP move whatever asks the operating system where
+// temporary files go (Node, pnpm, Playwright, Vite, Vitest, Stryker, the
+// Databricks CLI). The rest are the tools that keep their own cache setting:
+// Node's compile cache, tsx's cache and Playwright's transform cache.
+function toolTempEnv() {
+  return {
+    TMPDIR: toolTmp,
+    TEMP: toolTmp,
+    TMP: toolTmp,
+    NODE_COMPILE_CACHE: join(toolTmp, 'cc'),
+    TSX_TMPDIR: toolTmp,
+    PWTEST_CACHE_DIR: join(toolTmp, 'pw'),
+  };
 }
 
 function quote(arg) {
@@ -125,11 +153,104 @@ function run(label, command, args, { cwd, env, capture = false }) {
   });
 }
 
-const scratch = mkdtempSync(join(tmpdir(), 'appkit-template-check-'));
+// All scratch lives under one well-known folder in the system's temporary
+// folder, one subfolder per run, so leftovers are easy to find and to clear.
+// The names are short on purpose: tsx listens on a Unix socket inside the
+// folder, and those paths are limited to 107 bytes, which a long temporary
+// folder on a build machine already comes close to.
+// A run that is killed outright cannot clean up after itself, so each run keeps
+// a heartbeat file fresh while it lives, and the next run removes any run
+// folder whose heartbeat has stopped. Runs on one machine can overlap; a live
+// run's heartbeat is never old, so a run never touches another live one.
+const scratchRoot = join(tmpdir(), 'atc');
+const heartbeatEvery = 30_000;
+const staleAfter = 10 * 60_000;
+// Folders an earlier version of this script made beside the root, which may
+// still be lying about on a shared machine. Their runs ended long ago.
+const legacyStaleAfter = 24 * 60 * 60_000;
+
+function removeTree(path) {
+  rmSync(path, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 });
+}
+
+function ageOf(path) {
+  try {
+    return Date.now() - statSync(path).mtimeMs;
+  } catch {
+    return 0;
+  }
+}
+
+function clearStale() {
+  let runs = [];
+  try {
+    runs = readdirSync(scratchRoot);
+  } catch {
+    // No root yet: nothing to clear.
+  }
+  for (const name of runs) {
+    const dir = join(scratchRoot, name);
+    const beat = join(dir, 'heartbeat');
+    if (ageOf(existsSync(beat) ? beat : dir) <= staleAfter) continue;
+    try {
+      removeTree(dir);
+    } catch {
+      // Something still writes into it. A later run will finish the job.
+    }
+  }
+  for (const name of readdirSync(tmpdir())) {
+    if (name.startsWith('appkit-template-check-') && ageOf(join(tmpdir(), name)) > legacyStaleAfter) {
+      try {
+        removeTree(join(tmpdir(), name));
+      } catch {
+        // Not ours to fail on.
+      }
+    }
+  }
+}
+
+function makeScratch() {
+  for (let attempt = 0; ; attempt++) {
+    // Three characters, since mkdtemp's six would push tsx's socket path over its limit.
+    const dir = join(scratchRoot, `r${Math.random().toString(36).slice(2, 5).padEnd(3, '0')}`);
+    try {
+      mkdirSync(scratchRoot, { recursive: true });
+      mkdirSync(dir);
+      return dir;
+    } catch (error) {
+      // EEXIST: another run drew the same name. ENOENT: another run removed the empty root between the two calls.
+      if (!['EEXIST', 'ENOENT'].includes(error.code) || attempt >= 20) throw error;
+    }
+  }
+}
+
+clearStale();
+const scratch = makeScratch();
+const toolTmp = scratch;
+// tsx's socket lives at <folder>/tsx-<uid>/<pid>.pipe, and the longest pid has seven digits.
+if (!isWindows && Buffer.byteLength(join(toolTmp, 'tsx-1000', '1234567.pipe')) > 107) {
+  console.error(`The temporary folder's path is too long for tsx's socket: ${toolTmp}\nSet TMPDIR to a shorter folder.`);
+  process.exit(1);
+}
+const heartbeat = join(scratch, 'heartbeat');
+writeFileSync(heartbeat, '');
+setInterval(() => {
+  try {
+    utimesSync(heartbeat, new Date(), new Date());
+  } catch {
+    // The folder is gone, so the run is ending.
+  }
+}, heartbeatEvery).unref();
 let failed = false;
 
 function removeScratch() {
-  rmSync(scratch, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 });
+  removeTree(scratch);
+  // Take the shared root with it when no other run is using it.
+  try {
+    rmdirSync(scratchRoot);
+  } catch {
+    // Not empty (another run is live) or already gone.
+  }
 }
 
 // A cancelled CI job sends SIGTERM, and Ctrl-C sends SIGINT. Neither runs the
