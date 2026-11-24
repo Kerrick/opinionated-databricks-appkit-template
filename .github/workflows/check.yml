@@ -1,0 +1,61 @@
+# © Kerrick Long <me@kerricklong.com>
+# SPDX-License-Identifier: MIT-0
+
+# Generates a project from this checkout, installs it and runs its own check,
+# on each of the three operating systems a generated project has to support.
+# No workspace credentials are used: the generated project's check needs none,
+# and the script that does the generating supplies a fake host and token to
+# `databricks apps init` alone. The schedule catches rot: AppKit, the
+# Databricks CLI and the registry move even when this repository doesn't.
+name: Template check
+
+on:
+  push:
+    branches: [trunk]
+  pull_request:
+  schedule:
+    - cron: '17 5 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# A new push must not cancel a trunk run that is still going, or a busy trunk
+# would never finish one. Only superseded pull request runs are cancelled.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    name: check (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Installs Node, pnpm and the Databricks CLI at the versions in mise.toml.
+      - uses: jdx/mise-action@924e7c586e33d7d4bae9c14e26c5d22e2beb6e78 # v5.3.0
+      - name: Check the template
+        run: pnpm run check
+
+  # The one result to require in branch protection: it stays a single stable
+  # name however the matrix changes, and fails if any leg failed or was skipped.
+  required:
+    name: Template check
+    needs: check
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Require every leg to pass
+        env:
+          RESULT: ${{ needs.check.result }}
+        run: |
+          echo "check legs: $RESULT"
+          test "$RESULT" = success
