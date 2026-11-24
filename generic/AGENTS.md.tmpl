@@ -70,6 +70,17 @@ One exception in the view: AppKit's chart and table components, and its
 - Prefer one SQL query with a join to several queries that depend on one
   another. Each trip to a SQL warehouse costs seconds.
 
+## Pages and accessibility
+
+- **Each page owns its one `h1`;** the layout supplies none, and the header's
+  app name is plain text. A page without one fails axe's `page-has-heading-one`.
+- **When a component renders its title as a `div`** (AppKit's `CardTitle` and
+  `EmptyTitle`), give it the level with `role="heading"` and `aria-level`, so
+  its look stays.
+- **Scenarios find a page's title** with `getByRole('heading', { level: 1 })`.
+- Axe runs the WCAG rules and `page-has-heading-one`. Its other best-practice
+  rules are off; turn one on in `accessibilityRules` in `features/tasks/visitor.ts`.
+
 ## Never
 
 - `fetch` inside `useEffect`, or anywhere in the client outside `acl/`.

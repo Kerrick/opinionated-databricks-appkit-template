@@ -102,6 +102,10 @@ little more and removes the doubt.
 - Scenarios check the page with `axe-core` (see
   [Accessibility checks](#accessibility-checks)).
 
+A scenario finds a page's title with `getByRole('heading', { level: 1 })`, plus
+its name where the page has one to check, so it also proves the page has exactly
+the heading a screen reader's user lands on.
+
 Charts are drawn on a canvas, so a test finds one with
 `getByRole('img', { name: ... })` (the label ECharts' accessibility support
 gives it) and checks the rows themselves below the UI.
@@ -299,6 +303,13 @@ against WCAG 2.0, 2.1 and 2.2 at levels A and AA
 (`accessibilityTags` in `features/tasks/visitor.ts`). Automated checks find only
 some problems, such as missing or invalid properties; they are a floor, not a
 substitute for testing with assistive technology.
+
+The checks run axe's WCAG rules, which `accessibilityTags` selects, plus one
+rule from outside them, `page-has-heading-one`, which fails a page with no
+top-level heading (`accessibilityRules`, in the same file). Axe's other
+best-practice rules, such as `heading-order`, are off. To turn one on, add it to
+`accessibilityRules`; both browser levels read that one object, so a rule holds
+every page at once, and each page must pass it before it lands.
 
 Each check judges the page at rest. It waits until no animation or transition is
 running, since a color that is still changing can't be judged, and in journeys

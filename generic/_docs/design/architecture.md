@@ -59,6 +59,19 @@ page that fails to render shows what went wrong and a way home, not a blank
 screen. `components/ErrorBoundary.tsx` at the root catches anything outside the
 router.
 
+**Every page owns its one `h1`.** A page supplies the top-level heading that
+names it, and the layout in `App.tsx` supplies none: the app's name in the
+header is plain text, so a page that renders without the header (the not-found,
+load-failure and crash pages) still has exactly one, and none shows two. A new
+page must supply one, and axe's `page-has-heading-one` rule fails its scenario
+otherwise ([testing.md](testing.md#accessibility-checks)). Sub-headings sit one
+level below.
+
+AppKit's components such as `CardTitle` and `EmptyTitle` render their title as
+a `div`, so the page gives it its level with `role="heading"` and `aria-level`
+(`<CardTitle role="heading" aria-level={1}>`). That keeps the look the component
+was styled with, where swapping in an `h1` element would not.
+
 ### Charts
 
 AppKit's charts are drawn on a canvas, so screen readers and tests can't find
