@@ -14,6 +14,7 @@ maintainer decides whether to file it. Each draft names the workaround in this
 template that can be removed once the problem is fixed upstream.
 
 - [AppKit's `@ast-grep/napi` crashes in a worker thread](appkit-ast-grep-napi-worker-thread.md)
+- [pnpm's side-effects cache and packages bundled by `@databricks/appkit`](pnpm-side-effects-cache-appkit.md)
 
 | | |
 | --- | --- |
@@ -159,7 +160,8 @@ Modified files:
   in that order. `prebuild` calls `scripts/typegen-production.mjs`
   instead of `NODE_ENV=production appkit generate-types --wait`, which fails on
   Windows.
-- `pnpm-workspace.yaml`: `sideEffectsCache: false`. With pnpm 11.0.8,
+- `pnpm-workspace.yaml`: `sideEffectsCache: false` (draft report:
+  [pnpm-side-effects-cache-appkit.md](pnpm-side-effects-cache-appkit.md)). With pnpm 11.0.8,
   installing the project a second time from a warm store leaves out the packages that
   `@databricks/appkit` bundles (`@databricks/sdk-statementexecution` among
   them), so importing `@databricks/appkit` throws "Cannot find package
