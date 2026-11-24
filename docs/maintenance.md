@@ -1,7 +1,7 @@
 # Maintenance
 
-Exact version pins age quickly, and AppKit changes often. Two pieces keep this
-repository from rotting. Neither reaches a generated project.
+Every version here is pinned exactly, so nothing moves unless someone moves it,
+and AppKit releases often. Two pieces keep this repository from falling behind. Neither reaches a generated project.
 
 ## The workflow
 
@@ -37,7 +37,8 @@ It runs on:
 - `workflow_dispatch`, for a run by hand.
 
 Each run covers Linux, Windows and macOS, because a generated project has to
-work on all three. The repository is public, so all three are free; if it ever
+work on all three, and Linux twice, on x86-64 and on Arm, because the browser
+tests bring their own Linux libraries for each (`generic/pixi.lock`). The repository is public, so all three are free; if it ever
 goes private, Windows and macOS minutes cost more than Linux, and the matrix is
 the place to trim. Node, pnpm and the Databricks CLI come from `mise.toml` via
 `jdx/mise-action`, so CI and a local `mise install` use the same versions. Every
@@ -50,8 +51,11 @@ pull request does.
 
 `renovate.json` configures Renovate. It keeps exact pins (`rangeStrategy: pin`)
 and covers the root `package.json`, `generic/package.json` with its lockfile,
-`mise.toml`, the GitHub Actions digests, and the AppKit packages, which it
-updates together in one pull request. The three Node pins (`mise.toml`,
+`mise.toml`, `generic/pixi.toml` with its lock, the GitHub Actions digests, and
+the AppKit packages, which it updates together in one pull request. Its regex
+managers read the pins built-in managers can't: those in
+`generic/mise.toml.tmpl`, whose template conditionals aren't valid TOML, and
+the `skills` CLI version in `generic/.pre-commit-config.yaml`. The three Node pins (`mise.toml`,
 `generic/.nvmrc`, `generic/mise.toml.tmpl`) are one group too, held to Node 22
 because that is the Databricks Apps runtime. It never automerges. A person merges each
 pull request after the check is green.

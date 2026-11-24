@@ -169,6 +169,26 @@ pnpm run format
 pnpm run format:fix
 ```
 
+## Tests
+
+The tests that ship with the project cover what every app has: the home page,
+the page for an address that doesn't exist, the page a route shows when it
+fails to load, the error boundary that catches a page that crashes, and the
+navigation on a wide screen and on a phone. There is no example analytics query
+or test for one, because no dataset exists in every workspace.
+`docs/design/testing.md` describes each level.
+
+```bash
+# Unit, property and page-level tests
+pnpm test
+
+# Journeys through the built app, with Databricks faked
+pnpm run build && pnpm run test:e2e
+
+# Everything, as the git hook runs it before each commit
+pnpm run check
+```
+
 ## Deployment with Databricks Asset Bundles
 
 ### 1. Configure Bundle

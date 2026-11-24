@@ -141,8 +141,9 @@ Added files:
 
 Modified files:
 
-- `package.json`: new `check` script (typecheck, lint, format check, test,
-  build, in that order). `prebuild` calls `scripts/typegen-production.mjs`
+- `package.json`: new `check` script, which runs `typecheck`, `lint`,
+  `format`, `knip`, `jscpd`, `test`, `test:mutation`, `build` and `test:e2e`,
+  in that order. `prebuild` calls `scripts/typegen-production.mjs`
   instead of `NODE_ENV=production appkit generate-types --wait`, which fails on
   Windows.
 - `pnpm-workspace.yaml`: `sideEffectsCache: false`. With pnpm 11.0.8,
@@ -174,7 +175,7 @@ Modified files:
 - `tsconfig.shared.json` extends `@tsconfig/strictest` (added to `devDependencies`) and keeps only the module and emit settings. The strictest preset adds `exactOptionalPropertyTypes`, `noImplicitOverride`, `noPropertyAccessFromIndexSignature` and `isolatedModules`, so the `ErrorBoundary` and `example.test.ts` class members gained `override`.
 - `package.json`: `typescript` is now an alias of `@typescript/typescript6` 6.0.2 (the compiler API that typescript-eslint, dependency-cruiser and Stryker's checker call), and `@typescript/native` aliases `typescript` 7.0.2, which keeps `tsc` at 7.0. `tsc6` is the 6.0 compiler. AppKit's type generation also imports `typescript`, so it now runs on 6.0.
 - `.oxlintrc.json`: added `typescript/switch-exhaustiveness-check`, and `max-classes-per-file` (one class per file) for `client/src/domain/`. `lint:oxlint` runs with `--deny-warnings`.
-- `eslint.config.js`: new flat config for what oxlint lacks: `naming-convention` (no agent-noun class names in the domain), disable-comment hygiene, sonarjs, functional's immutability rules and a setter ban in the domain, and JSDoc on exports from the domain and `server/`. The `lint` script now runs oxlint, ESLint and the triggered checks in turn.
+- `eslint.config.js`: new flat config for what oxlint lacks: `naming-convention` (no agent-noun class names in the domain), disable-comment hygiene, sonarjs, functional's immutability rules and a setter ban in the domain, and JSDoc on exports from the domain and `server/`. The `lint` script runs oxlint, ESLint, the import rules, the structural rules, `appkit lint`, the SQL checks, the size check and the triggered checks, in that order.
 - `client/src/App.tsx`, `client/src/components/ErrorBoundary.tsx`, `server/example.test.ts`: small edits so the new rules pass (readonly props, one return type, `static readonly`).
 - `server/routes/lakebase/todo-routes.ts`: a doc comment on the exported setup function, which the JSDoc rule requires.
 - `package.json`: a `postinstall` script runs `tools/unpack-docs.ts`
@@ -249,14 +250,6 @@ Modified files:
   database would prove nothing about it. Tests for it belong against a local
   Postgres, once the project has a database of its own.
 
-- Formatting only: `client/src/App.tsx`, `client/src/index.css`,
-  `client/src/acl/fetch-or-throw.ts`, `client/src/main.tsx`,
-  `client/vite.config.ts`, `client/src/pages/lakebase/LakebasePage.tsx`,
-  and `server/routes/lakebase/todo-routes.ts`.
-
-When a later upstream change touches a formatting-only file, take it, then
-format that file the way `generic/` does: strip any `{{if ...}}` wrapper
-lines, run Prettier on the body, and put the wrapper back.
 - `.dependency-cruiser.mjs` and `tools/check-boundaries.ts`: new. Import-graph rules (layers, client against server, domain isolation, generated types only in `acl/`, chart libraries only in `components/charts/`, no cycles, no orphans, no server-rendering frameworks), run through a wrapper that fails when no modules were analysed. `lint:boundaries` is part of `lint`. `.oxlintrc.json` bans browser globals in the domain.
 - `sgconfig.yml`, `rules/`, `rule-tests/`: new. Structural rules checked one file at a time with `@ast-grep/cli` (added to `devDependencies` and to `allowBuilds` in `pnpm-workspace.yaml`): routes have an `errorElement`, route handlers validate input with Zod and async handlers go through `asyncHandler`, network calls and `/api/` paths stay in `acl/`, no `fetch` in an effect, plain forms need React Hook Form, Vitest tests avoid test IDs and selectors, and AppKit's charts and analytics hooks stay in their layers. Each rule has tests; `lint:structure` runs them before scanning.
 - `server/async-handler.ts`: new, with a test that a failing handler gets an error response.
@@ -265,9 +258,29 @@ lines, run Prettier on the body, and put the wrapper back.
 - `client/src/acl/todos.ts`, `client/src/pages/lakebase/LakebasePage.tsx`, `client/src/App.tsx`, `server/routes/lakebase/todo-routes.ts`: the sample todo list loads through a route loader and submits through React Router forms, with its requests in `acl/`, and the sample routes use `asyncHandler` and validate `:id` with Zod. The sample still does what it did; it now follows the project's own rules.
 - `tools/check-sizes.ts`: new. The root `AGENTS.md` stays under 12,000 characters, each `AGENTS.md` below it under 4,000, and each project-owned `SKILL.md` (not those installed from `skills-lock.json`) under 500 lines and 20,000 characters. `lint:sizes` is part of `lint`.
 - `rules/queries-use-generated-types.yml`, `rules/no-warehouse-reads-in-custom-endpoints.yml`: new. A type argument on `useAnalyticsQuery` replaces the generated row type, and a custom endpoint that reads the warehouse (the analytics plugin, a statement-execution or SQL client) bypasses the plugin's cache, types and per-user execution.
-- `.pre-commit-config.yaml`: new. One local hook runs `pnpm run check` (`language: unsupported`) on every commit.
-- `.claude/settings.json`, `tools/oxlint-edited-file.ts`: new. For Claude Code, a post-edit hook that runs oxlint on the file just edited and sends findings back to the agent. It is a convenience; `pnpm run check` stays the gate.
+- `.pre-commit-config.yaml`: new. One local hook runs `pnpm run check` (`language: unsupported`) on every commit; another restores the shared agent skills after every checkout and merge.
+- `.claude/settings.json`, `tools/oxlint-edited-file.ts`: new. For Claude Code, a post-edit hook that runs oxlint on the file just edited and sends findings back to the agent. It is a convenience; `pnpm run check` stays the gate. The same file sets `autoMemoryEnabled` to `false`, so Claude Code keeps no notes outside the repository.
 - `knip.json`, `.jscpd.json`, `package.json`: unused files, exports and dependencies (knip) and duplicate code (jscpd) are checked by `check`. `embla-carousel-react`, `next-themes` and `react-resizable-panels` are gone from `dependencies`: nothing in the starter imports them, `@databricks/appkit-ui` carries the ones it needs, and the shadcn CLI adds them when a component needs them. `tw-animate-css` stays, because `@databricks/appkit-ui`'s stylesheet imports it and the build can't resolve it otherwise; `knip.json` lists it, with `@ast-grep/napi` (loaded by `appkit lint`) and the PostCSS packages, as dependencies knip can't see being used.
-- `vitest.config.ts`: a coverage block (v8, 100% per file over `client/src` and `server`, the two start-up files excluded) with `@vitest/coverage-v8` and a `test:coverage` script. It is off by default until the tests reach the thresholds.
+- `vitest.config.ts`: a coverage block (v8, 100% per file over `client/src` and `server`, the two start-up files excluded), with `@vitest/coverage-v8`. `test` enforces it; see "Coverage in `test`".
 - `server/routes/lakebase/todo-routes.ts`: the update and delete routes share one helper, which keeps the sample under the duplicate-code threshold.
 - `pixi.toml`, `pixi.lock`, `tools/browser-libraries.ts`: new. On Linux, the shared libraries Playwright's Chromium links against come from conda-forge, installed by pixi into `.pixi/` without root, and reach only the browser, through its launch environment. `mise.toml.tmpl` pins pixi for Linux only. `_gitignore`, `eslint.config.js` and `.oxlintrc.json` ignore `.pixi/`, and `.prettierignore` skips `pixi.lock`, which pixi writes.
+- Agent instructions and documents, all new: `AGENTS.md.tmpl` at the root and
+  in `server/`, `client/src/acl/` and `client/src/domain/`, each with a
+  `CLAUDE.md.tmpl` beside it that imports it (the CLI never copies files named
+  `AGENTS.md` or `CLAUDE.md`, so they ship with the `.tmpl` suffix it strips);
+  the project's documents in `_docs/` (see the `postinstall` entry);
+  `skills-lock.json`, which pins the shared agent skills; and the lines in
+  `_gitignore` that keep the installed skills out of git.
+- `README.md.tmpl`: a "Tests" section saying what the template's tests cover,
+  and why there is no example analytics query.
+- Tests beside the code they test: `client/src/acl/fetch-or-throw.test.ts`,
+  `client/src/acl/todos.test.ts` and `client/src/lib/utils.test.ts`, run in
+  Node and by mutation testing.
+- Formatting only: `client/src/App.tsx`, `client/src/index.css`,
+  `client/src/acl/fetch-or-throw.ts`, `client/src/main.tsx`,
+  `client/vite.config.ts`, `client/src/pages/lakebase/LakebasePage.tsx`,
+  and `server/routes/lakebase/todo-routes.ts`.
+
+When a later upstream change touches a formatting-only file, take it, then
+format that file the way `generic/` does: strip any `{{if ...}}` wrapper
+lines, run Prettier on the body, and put the wrapper back.
