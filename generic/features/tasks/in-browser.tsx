@@ -7,6 +7,7 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { RouteError } from '@/components/RouteError';
 import { HomePage } from '@/pages/home/HomePage';
 import { NotFoundPage } from '@/pages/not-found/NotFoundPage';
+import { openTheApp } from './app';
 import { Crash } from './crash';
 import { accessibilityTags, missingAddress, type Visitor } from './visitor';
 
@@ -23,14 +24,7 @@ function fail(reason: unknown): never {
 /** A visitor whose pages are rendered, one at a time, in the test browser. */
 export class InBrowserVisitor implements Visitor {
   async opensTheApp(width: number, address = '/') {
-    await page.viewport(width, 800);
-    await expect.poll(() => window.innerWidth).toBe(width);
-    // The app builds its router once, when it is first loaded, so each visit moves that router to
-    // its address the way the browser's back button would.
-    const { default: App } = await import('@/App');
-    window.history.pushState({}, '', address);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-    await render(<App />);
+    await openTheApp(width, address);
   }
 
   async opensTheNavigationMenu() {
@@ -124,10 +118,13 @@ export class InBrowserVisitor implements Visitor {
   }
 
   async seesNoAccessibilityViolations() {
+    // A color that is still changing is no color to judge.
+    await expect.poll(() => document.getAnimations().length).toBe(0);
     const results = await axe.run(document, { runOnly: { type: 'tag', values: accessibilityTags } });
     expect(
       results.violations.map(
-        (violation) => `${violation.id}: ${violation.nodes.map((node) => node.target.join(' ')).join(', ')}`
+        (violation) =>
+          `${violation.id}: ${violation.nodes.map((node) => `${node.target.join(' ')} (${node.any.map((check) => check.message).join('; ')})`).join(', ')}`
       )
     ).toEqual([]);
   }

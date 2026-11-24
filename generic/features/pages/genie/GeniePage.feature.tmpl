@@ -1,0 +1,11 @@
+{{if .plugins.genie -}}
+Feature: Asking Genie
+  A visitor asks questions about their data in plain language.
+
+  Scenario: A visitor finds where to ask a question
+    Given a visitor
+    When they open the Genie page
+    Then they are told what Genie is for
+    And they can type a question
+    And the page has no accessibility violations
+{{- end}}

@@ -40,7 +40,7 @@ export default defineConfig({
     globals: true,
     include: ['features/pages/**/*.feature', '**/*.browser.test.{ts,tsx}'],
     exclude: ['**/node_modules/**', '**/dist/**', '**/.databricks/**', '**/.stryker-tmp/**'],
-    setupFiles: ['./features/steps/pages.steps.tsx'],
+    setupFiles: ['./features/steps/pages.setup.ts'],
     browser: {
       enabled: true,
       headless: true,

@@ -1,0 +1,10 @@
+{{if .plugins.design -}}
+Feature: Design page
+  A designer works on the app's look on a page of their own, apart from the app's data.
+
+  Scenario: A designer finds the starting point
+    Given a visitor
+    When they open the design page
+    Then they see the starting point for a design
+    And the page has no accessibility violations
+{{- end}}

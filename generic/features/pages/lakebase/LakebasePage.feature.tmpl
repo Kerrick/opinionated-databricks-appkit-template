@@ -1,0 +1,67 @@
+{{if .plugins.lakebase -}}
+Feature: Todo list
+  A visitor keeps a short list of things to do, saved in Lakebase.
+
+  Scenario: A visitor with nothing to do is invited to add something
+    Given a visitor
+    And the todo list is empty
+    When they open the todo list
+    Then they are invited to add a todo
+    And the page has no accessibility violations
+
+  Scenario: A visitor sees what is done and what is left
+    Given a visitor
+    And the todo list holds:
+      | title        | done |
+      | Buy milk     | no   |
+      | Walk the dog | yes  |
+    When they open the todo list
+    Then they see the todos "Buy milk" and "Walk the dog"
+    And the list says "1 of 2 completed"
+    And the page has no accessibility violations
+
+  Scenario: A visitor adds a todo
+    Given a visitor
+    And the todo list is empty
+    When they open the todo list
+    And they add the todo "Feed the cat"
+    Then they see the todo "Feed the cat"
+    And the list says "0 of 1 completed"
+
+  Scenario: A visitor is told while a todo is being saved
+    Given a visitor
+    And the todo list is empty and saving a todo takes a moment
+    When they open the todo list
+    And they add the todo "Water the plants"
+    Then they are told the todo is being added
+    And they see the todo "Water the plants"
+
+  Scenario: A visitor finishes a todo and takes it back
+    Given a visitor
+    And the todo list holds:
+      | title    | done |
+      | Buy milk | no   |
+    When they open the todo list
+    And they mark "Buy milk" as complete
+    Then the list says "1 of 1 completed"
+    When they mark "Buy milk" as incomplete
+    Then the list says "0 of 1 completed"
+
+  Scenario: A visitor removes a todo
+    Given a visitor
+    And the todo list holds:
+      | title        | done |
+      | Buy milk     | no   |
+      | Walk the dog | no   |
+    When they open the todo list
+    And they delete "Buy milk"
+    Then they no longer see the todo "Buy milk"
+    And they see the todo "Walk the dog"
+    And the list says "0 of 1 completed"
+
+  Scenario: A visitor is told when the todo list cannot be loaded
+    Given a visitor
+    And the todo service is down
+    When they open the todo list
+    Then they are told the page failed to load because "Failed to fetch todos: Internal Server Error"
+{{- end}}

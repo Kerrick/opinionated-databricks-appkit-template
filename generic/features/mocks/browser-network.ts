@@ -1,4 +1,5 @@
-import { setupWorker } from 'msw/browser';
+{{if .plugins.lakebase}}import type { RequestHandler } from 'msw';
+{{end}}import { setupWorker } from 'msw/browser';
 import { afterAll, afterEach, beforeAll, expect } from 'vitest';
 import { createFakes } from './fakes';
 
@@ -8,7 +9,12 @@ import { createFakes } from './fakes';
  */
 const fakes = createFakes();
 const worker = setupWorker(...fakes.handlers);
-
+{{if .plugins.lakebase}}
+/** Adds fakes for the rest of the scenario that is running. */
+export function fake(...handlers: RequestHandler[]): void {
+  worker.use(...handlers);
+}
+{{end}}
 beforeAll(async () => {
   await worker.start({ onUnhandledFrame: 'bypass', quiet: true });
 });
