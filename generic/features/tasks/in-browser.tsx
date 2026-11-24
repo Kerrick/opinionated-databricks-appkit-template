@@ -52,7 +52,7 @@ export class InBrowserVisitor implements Visitor {
   }
 
   async isToldThePageFailedBecause(reason: string) {
-    await expect.element(page.getByText('This page failed to load')).toBeVisible();
+    await expect.element(page.getByRole('heading', { level: 1, name: 'This page failed to load' })).toBeVisible();
     await expect.element(page.getByText(reason)).toBeVisible();
   }
 
@@ -75,7 +75,7 @@ export class InBrowserVisitor implements Visitor {
   }
 
   async isShownTheCrash(message: string) {
-    await expect.element(page.getByText('Application Error')).toBeVisible();
+    await expect.element(page.getByRole('heading', { level: 1, name: 'Application Error' })).toBeVisible();
     await expect.element(page.getByText(`Error: ${message}`, { exact: true })).toBeVisible();
   }
 
@@ -103,11 +103,11 @@ export class InBrowserVisitor implements Visitor {
   }
 
   async isWelcomedToTheApp() {
-    await expect.element(page.getByRole('heading', { name: 'Welcome to your Databricks App' })).toBeVisible();
+    await expect.element(page.getByRole('heading', { level: 1, name: 'Welcome to your Databricks App' })).toBeVisible();
   }
 
   async isToldThePageWasNotFound() {
-    await expect.element(page.getByText('Page not found')).toBeVisible();
+    await expect.element(page.getByRole('heading', { level: 1, name: 'Page not found' })).toBeVisible();
     await expect.element(page.getByText(missingAddress)).toBeVisible();
   }
 

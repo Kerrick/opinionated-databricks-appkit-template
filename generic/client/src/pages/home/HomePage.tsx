@@ -5,13 +5,15 @@ export function HomePage() {
   return (
     <div data-appkit-template-home className="max-w-2xl mx-auto space-y-6 mt-8">
       <div className="text-center">
-        <h2 className="text-3xl font-bold mb-2 text-foreground">Welcome to your Databricks App</h2>
+        <h1 className="text-3xl font-bold mb-2 text-foreground">Welcome to your Databricks App</h1>
         <p className="text-lg text-muted-foreground">Powered by Databricks AppKit</p>
       </div>
 
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle>Getting Started</CardTitle>
+          <CardTitle role="heading" aria-level={2}>
+            Getting Started
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
           <p className="text-sm text-muted-foreground">

@@ -14,7 +14,9 @@ export function LakebasePage() {
     <div className="space-y-6 w-full max-w-2xl mx-auto">
       <Card className="shadow-lg">
         <CardHeader>
-          <CardTitle>Todo List</CardTitle>
+          <CardTitle role="heading" aria-level={1}>
+            Todo List
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground mb-4">

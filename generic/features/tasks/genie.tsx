@@ -8,7 +8,7 @@ export async function opensTheGeniePage(): Promise<void> {
 }
 
 export async function isToldWhatGenieIsFor(): Promise<void> {
-  await expect.element(page.getByRole('heading', { name: 'Genie' })).toBeVisible();
+  await expect.element(page.getByRole('heading', { level: 1, name: 'Genie' })).toBeVisible();
   await expect.element(page.getByText('Ask questions about your data using Databricks AI/BI Genie.')).toBeVisible();
 }
 

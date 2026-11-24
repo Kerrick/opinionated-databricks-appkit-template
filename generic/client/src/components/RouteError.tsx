@@ -26,7 +26,9 @@ export function RouteError() {
         <EmptyMedia variant="icon">
           <TriangleAlert />
         </EmptyMedia>
-        <EmptyTitle>This page failed to load</EmptyTitle>
+        <EmptyTitle role="heading" aria-level={1}>
+          This page failed to load
+        </EmptyTitle>
         <EmptyDescription>{describe(error)}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>

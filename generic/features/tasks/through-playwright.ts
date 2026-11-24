@@ -23,11 +23,11 @@ export class PlaywrightVisitor implements Visitor {
   }
 
   async isWelcomedToTheApp() {
-    await expect(this.page.getByRole('heading', { name: 'Welcome to your Databricks App' })).toBeVisible();
+    await expect(this.page.getByRole('heading', { level: 1, name: 'Welcome to your Databricks App' })).toBeVisible();
   }
 
   async isToldThePageWasNotFound() {
-    await expect(this.page.getByText('Page not found')).toBeVisible();
+    await expect(this.page.getByRole('heading', { level: 1, name: 'Page not found' })).toBeVisible();
     await expect(this.page.getByText(missingAddress)).toBeVisible();
   }
 

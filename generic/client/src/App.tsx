@@ -56,7 +56,7 @@ function Layout() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b px-4 md:px-6 py-3 flex items-center gap-4">
-        <h1 className="text-lg font-semibold text-foreground">{{.projectName}}</h1>
+        <span className="text-lg font-semibold text-foreground">{{.projectName}}</span>
         {/* Desktop nav — hidden below md breakpoint */}
         <NavLinks className="hidden md:flex gap-1" linkClass={navLinkClass} />
         {/* Mobile nav — visible below md breakpoint */}

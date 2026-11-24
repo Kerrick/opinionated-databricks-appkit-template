@@ -19,7 +19,9 @@ export function NotFoundPage() {
         <EmptyMedia variant="icon">
           <FileQuestionMark />
         </EmptyMedia>
-        <EmptyTitle>Page not found</EmptyTitle>
+        <EmptyTitle role="heading" aria-level={1}>
+          Page not found
+        </EmptyTitle>
         <EmptyDescription>
           There is no page at <code className="break-all">{pathname}</code>
         </EmptyDescription>
