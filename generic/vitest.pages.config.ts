@@ -32,7 +32,7 @@ export default defineConfig({
     // would show up as uncovered code in a page that renders once.
     react(),
     tailwindcss(),
-    quickpickle(),
+    quickpickle({ stepTimeout: 30_000 }),
     serveMockServiceWorker(),
   ],
   test: {
@@ -42,12 +42,19 @@ export default defineConfig({
     include: ['features/pages/**/*.feature', '**/*.browser.test.{ts,tsx}'],
     exclude: ['**/node_modules/**', '**/dist/**', '**/.databricks/**', '**/.stryker-tmp/**'],
     setupFiles: ['./features/steps/pages.setup.ts'],
+    // A real browser has to start and render here, so the limits are stated, not left at the defaults (a scenario
+    // 5 s, a step 3 s, a query of the page 1 s). With eight busy loops per core, three of the all-plugins project's
+    // nine files failed a step at 3 s. At 24 per core the browser did not connect within its default minute.
+    testTimeout: 60_000,
+    hookTimeout: 60_000,
+    expect: { poll: { timeout: 20_000 } },
     browser: {
       enabled: true,
       headless: true,
       provider: playwright({ launchOptions: browserLaunchOptions() }),
       // The browser's own server, on a port the system hands out for this run, so two runs on one machine don't share one.
       api: { port: await freePort() },
+      connectTimeout: 240_000,
       instances: [{ browser: 'chromium' }],
     },
   },
