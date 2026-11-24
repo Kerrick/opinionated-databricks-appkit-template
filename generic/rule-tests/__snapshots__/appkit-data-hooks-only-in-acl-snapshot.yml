@@ -2,289 +2,289 @@ id: appkit-data-hooks-only-in-acl
 snapshots:
   "import { Button, useMetricView } from '@databricks/appkit-ui/react';\n":
     labels:
-    - source: useMetricView
-      style: primary
-      start: 17
-      end: 30
-    - source: "'@databricks/appkit-ui/react'"
-      style: secondary
-      start: 38
-      end: 67
-    - source: import { Button, useMetricView } from '@databricks/appkit-ui/react';
-      style: secondary
-      start: 0
-      end: 68
-    - source: useMetricView
-      style: secondary
-      start: 17
-      end: 30
+      - source: useMetricView
+        style: primary
+        start: 17
+        end: 30
+      - source: "'@databricks/appkit-ui/react'"
+        style: secondary
+        start: 38
+        end: 67
+      - source: import { Button, useMetricView } from '@databricks/appkit-ui/react';
+        style: secondary
+        start: 0
+        end: 68
+      - source: useMetricView
+        style: secondary
+        start: 17
+        end: 30
   "import { useAgentChat } from '@databricks/appkit-ui/react';\n":
     labels:
-    - source: useAgentChat
-      style: primary
-      start: 9
-      end: 21
-    - source: "'@databricks/appkit-ui/react'"
-      style: secondary
-      start: 29
-      end: 58
-    - source: import { useAgentChat } from '@databricks/appkit-ui/react';
-      style: secondary
-      start: 0
-      end: 59
-    - source: useAgentChat
-      style: secondary
-      start: 9
-      end: 21
+      - source: useAgentChat
+        style: primary
+        start: 9
+        end: 21
+      - source: "'@databricks/appkit-ui/react'"
+        style: secondary
+        start: 29
+        end: 58
+      - source: import { useAgentChat } from '@databricks/appkit-ui/react';
+        style: secondary
+        start: 0
+        end: 59
+      - source: useAgentChat
+        style: secondary
+        start: 9
+        end: 21
   "import { useAiSearchQuery } from '@databricks/appkit-ui/react/beta';\n":
     labels:
-    - source: useAiSearchQuery
-      style: primary
-      start: 9
-      end: 25
-    - source: "'@databricks/appkit-ui/react/beta'"
-      style: secondary
-      start: 33
-      end: 67
-    - source: import { useAiSearchQuery } from '@databricks/appkit-ui/react/beta';
-      style: secondary
-      start: 0
-      end: 68
-    - source: useAiSearchQuery
-      style: secondary
-      start: 9
-      end: 25
+      - source: useAiSearchQuery
+        style: primary
+        start: 9
+        end: 25
+      - source: "'@databricks/appkit-ui/react/beta'"
+        style: secondary
+        start: 33
+        end: 67
+      - source: import { useAiSearchQuery } from '@databricks/appkit-ui/react/beta';
+        style: secondary
+        start: 0
+        end: 68
+      - source: useAiSearchQuery
+        style: secondary
+        start: 9
+        end: 25
   "import { useAnalyticsQuery } from '@databricks/appkit-ui/react';\n":
     labels:
-    - source: useAnalyticsQuery
-      style: primary
-      start: 9
-      end: 26
-    - source: "'@databricks/appkit-ui/react'"
-      style: secondary
-      start: 34
-      end: 63
-    - source: import { useAnalyticsQuery } from '@databricks/appkit-ui/react';
-      style: secondary
-      start: 0
-      end: 64
-    - source: useAnalyticsQuery
-      style: secondary
-      start: 9
-      end: 26
+      - source: useAnalyticsQuery
+        style: primary
+        start: 9
+        end: 26
+      - source: "'@databricks/appkit-ui/react'"
+        style: secondary
+        start: 34
+        end: 63
+      - source: import { useAnalyticsQuery } from '@databricks/appkit-ui/react';
+        style: secondary
+        start: 0
+        end: 64
+      - source: useAnalyticsQuery
+        style: secondary
+        start: 9
+        end: 26
   "import { useChartData } from '@databricks/appkit-ui/react';\n":
     labels:
-    - source: useChartData
-      style: primary
-      start: 9
-      end: 21
-    - source: "'@databricks/appkit-ui/react'"
-      style: secondary
-      start: 29
-      end: 58
-    - source: import { useChartData } from '@databricks/appkit-ui/react';
-      style: secondary
-      start: 0
-      end: 59
-    - source: useChartData
-      style: secondary
-      start: 9
-      end: 21
+      - source: useChartData
+        style: primary
+        start: 9
+        end: 21
+      - source: "'@databricks/appkit-ui/react'"
+        style: secondary
+        start: 29
+        end: 58
+      - source: import { useChartData } from '@databricks/appkit-ui/react';
+        style: secondary
+        start: 0
+        end: 59
+      - source: useChartData
+        style: secondary
+        start: 9
+        end: 21
   "import { useDatabaseCreate } from '@databricks/appkit-ui/react/beta';\n":
     labels:
-    - source: useDatabaseCreate
-      style: primary
-      start: 9
-      end: 26
-    - source: "'@databricks/appkit-ui/react/beta'"
-      style: secondary
-      start: 34
-      end: 68
-    - source: import { useDatabaseCreate } from '@databricks/appkit-ui/react/beta';
-      style: secondary
-      start: 0
-      end: 69
-    - source: useDatabaseCreate
-      style: secondary
-      start: 9
-      end: 26
+      - source: useDatabaseCreate
+        style: primary
+        start: 9
+        end: 26
+      - source: "'@databricks/appkit-ui/react/beta'"
+        style: secondary
+        start: 34
+        end: 68
+      - source: import { useDatabaseCreate } from '@databricks/appkit-ui/react/beta';
+        style: secondary
+        start: 0
+        end: 69
+      - source: useDatabaseCreate
+        style: secondary
+        start: 9
+        end: 26
   "import { useDatabaseDelete } from '@databricks/appkit-ui/react/beta';\n":
     labels:
-    - source: useDatabaseDelete
-      style: primary
-      start: 9
-      end: 26
-    - source: "'@databricks/appkit-ui/react/beta'"
-      style: secondary
-      start: 34
-      end: 68
-    - source: import { useDatabaseDelete } from '@databricks/appkit-ui/react/beta';
-      style: secondary
-      start: 0
-      end: 69
-    - source: useDatabaseDelete
-      style: secondary
-      start: 9
-      end: 26
+      - source: useDatabaseDelete
+        style: primary
+        start: 9
+        end: 26
+      - source: "'@databricks/appkit-ui/react/beta'"
+        style: secondary
+        start: 34
+        end: 68
+      - source: import { useDatabaseDelete } from '@databricks/appkit-ui/react/beta';
+        style: secondary
+        start: 0
+        end: 69
+      - source: useDatabaseDelete
+        style: secondary
+        start: 9
+        end: 26
   "import { useDatabaseList } from '@databricks/appkit-ui/react/beta';\n":
     labels:
-    - source: useDatabaseList
-      style: primary
-      start: 9
-      end: 24
-    - source: "'@databricks/appkit-ui/react/beta'"
-      style: secondary
-      start: 32
-      end: 66
-    - source: import { useDatabaseList } from '@databricks/appkit-ui/react/beta';
-      style: secondary
-      start: 0
-      end: 67
-    - source: useDatabaseList
-      style: secondary
-      start: 9
-      end: 24
+      - source: useDatabaseList
+        style: primary
+        start: 9
+        end: 24
+      - source: "'@databricks/appkit-ui/react/beta'"
+        style: secondary
+        start: 32
+        end: 66
+      - source: import { useDatabaseList } from '@databricks/appkit-ui/react/beta';
+        style: secondary
+        start: 0
+        end: 67
+      - source: useDatabaseList
+        style: secondary
+        start: 9
+        end: 24
   "import { useDatabaseMutation } from '@databricks/appkit-ui/react/beta';\n":
     labels:
-    - source: useDatabaseMutation
-      style: primary
-      start: 9
-      end: 28
-    - source: "'@databricks/appkit-ui/react/beta'"
-      style: secondary
-      start: 36
-      end: 70
-    - source: import { useDatabaseMutation } from '@databricks/appkit-ui/react/beta';
-      style: secondary
-      start: 0
-      end: 71
-    - source: useDatabaseMutation
-      style: secondary
-      start: 9
-      end: 28
+      - source: useDatabaseMutation
+        style: primary
+        start: 9
+        end: 28
+      - source: "'@databricks/appkit-ui/react/beta'"
+        style: secondary
+        start: 36
+        end: 70
+      - source: import { useDatabaseMutation } from '@databricks/appkit-ui/react/beta';
+        style: secondary
+        start: 0
+        end: 71
+      - source: useDatabaseMutation
+        style: secondary
+        start: 9
+        end: 28
   "import { useDatabaseQuery } from '@databricks/appkit-ui/react/beta';\n":
     labels:
-    - source: useDatabaseQuery
-      style: primary
-      start: 9
-      end: 25
-    - source: "'@databricks/appkit-ui/react/beta'"
-      style: secondary
-      start: 33
-      end: 67
-    - source: import { useDatabaseQuery } from '@databricks/appkit-ui/react/beta';
-      style: secondary
-      start: 0
-      end: 68
-    - source: useDatabaseQuery
-      style: secondary
-      start: 9
-      end: 25
+      - source: useDatabaseQuery
+        style: primary
+        start: 9
+        end: 25
+      - source: "'@databricks/appkit-ui/react/beta'"
+        style: secondary
+        start: 33
+        end: 67
+      - source: import { useDatabaseQuery } from '@databricks/appkit-ui/react/beta';
+        style: secondary
+        start: 0
+        end: 68
+      - source: useDatabaseQuery
+        style: secondary
+        start: 9
+        end: 25
   "import { useDatabaseRecord } from '@databricks/appkit-ui/react/beta';\n":
     labels:
-    - source: useDatabaseRecord
-      style: primary
-      start: 9
-      end: 26
-    - source: "'@databricks/appkit-ui/react/beta'"
-      style: secondary
-      start: 34
-      end: 68
-    - source: import { useDatabaseRecord } from '@databricks/appkit-ui/react/beta';
-      style: secondary
-      start: 0
-      end: 69
-    - source: useDatabaseRecord
-      style: secondary
-      start: 9
-      end: 26
+      - source: useDatabaseRecord
+        style: primary
+        start: 9
+        end: 26
+      - source: "'@databricks/appkit-ui/react/beta'"
+        style: secondary
+        start: 34
+        end: 68
+      - source: import { useDatabaseRecord } from '@databricks/appkit-ui/react/beta';
+        style: secondary
+        start: 0
+        end: 69
+      - source: useDatabaseRecord
+        style: secondary
+        start: 9
+        end: 26
   "import { useDatabaseUpdate } from '@databricks/appkit-ui/react/beta';\n":
     labels:
-    - source: useDatabaseUpdate
-      style: primary
-      start: 9
-      end: 26
-    - source: "'@databricks/appkit-ui/react/beta'"
-      style: secondary
-      start: 34
-      end: 68
-    - source: import { useDatabaseUpdate } from '@databricks/appkit-ui/react/beta';
-      style: secondary
-      start: 0
-      end: 69
-    - source: useDatabaseUpdate
-      style: secondary
-      start: 9
-      end: 26
+      - source: useDatabaseUpdate
+        style: primary
+        start: 9
+        end: 26
+      - source: "'@databricks/appkit-ui/react/beta'"
+        style: secondary
+        start: 34
+        end: 68
+      - source: import { useDatabaseUpdate } from '@databricks/appkit-ui/react/beta';
+        style: secondary
+        start: 0
+        end: 69
+      - source: useDatabaseUpdate
+        style: secondary
+        start: 9
+        end: 26
   "import { useGenieChat } from '@databricks/appkit-ui/react';\n":
     labels:
-    - source: useGenieChat
-      style: primary
-      start: 9
-      end: 21
-    - source: "'@databricks/appkit-ui/react'"
-      style: secondary
-      start: 29
-      end: 58
-    - source: import { useGenieChat } from '@databricks/appkit-ui/react';
-      style: secondary
-      start: 0
-      end: 59
-    - source: useGenieChat
-      style: secondary
-      start: 9
-      end: 21
+      - source: useGenieChat
+        style: primary
+        start: 9
+        end: 21
+      - source: "'@databricks/appkit-ui/react'"
+        style: secondary
+        start: 29
+        end: 58
+      - source: import { useGenieChat } from '@databricks/appkit-ui/react';
+        style: secondary
+        start: 0
+        end: 59
+      - source: useGenieChat
+        style: secondary
+        start: 9
+        end: 21
   "import { useMetricView } from '@databricks/appkit-ui/react';\n":
     labels:
-    - source: useMetricView
-      style: primary
-      start: 9
-      end: 22
-    - source: "'@databricks/appkit-ui/react'"
-      style: secondary
-      start: 30
-      end: 59
-    - source: import { useMetricView } from '@databricks/appkit-ui/react';
-      style: secondary
-      start: 0
-      end: 60
-    - source: useMetricView
-      style: secondary
-      start: 9
-      end: 22
+      - source: useMetricView
+        style: primary
+        start: 9
+        end: 22
+      - source: "'@databricks/appkit-ui/react'"
+        style: secondary
+        start: 30
+        end: 59
+      - source: import { useMetricView } from '@databricks/appkit-ui/react';
+        style: secondary
+        start: 0
+        end: 60
+      - source: useMetricView
+        style: secondary
+        start: 9
+        end: 22
   "import { useServingInvoke } from '@databricks/appkit-ui/react';\n":
     labels:
-    - source: useServingInvoke
-      style: primary
-      start: 9
-      end: 25
-    - source: "'@databricks/appkit-ui/react'"
-      style: secondary
-      start: 33
-      end: 62
-    - source: import { useServingInvoke } from '@databricks/appkit-ui/react';
-      style: secondary
-      start: 0
-      end: 63
-    - source: useServingInvoke
-      style: secondary
-      start: 9
-      end: 25
+      - source: useServingInvoke
+        style: primary
+        start: 9
+        end: 25
+      - source: "'@databricks/appkit-ui/react'"
+        style: secondary
+        start: 33
+        end: 62
+      - source: import { useServingInvoke } from '@databricks/appkit-ui/react';
+        style: secondary
+        start: 0
+        end: 63
+      - source: useServingInvoke
+        style: secondary
+        start: 9
+        end: 25
   "import { useServingStream } from '@databricks/appkit-ui/react';\n":
     labels:
-    - source: useServingStream
-      style: primary
-      start: 9
-      end: 25
-    - source: "'@databricks/appkit-ui/react'"
-      style: secondary
-      start: 33
-      end: 62
-    - source: import { useServingStream } from '@databricks/appkit-ui/react';
-      style: secondary
-      start: 0
-      end: 63
-    - source: useServingStream
-      style: secondary
-      start: 9
-      end: 25
+      - source: useServingStream
+        style: primary
+        start: 9
+        end: 25
+      - source: "'@databricks/appkit-ui/react'"
+        style: secondary
+        start: 33
+        end: 62
+      - source: import { useServingStream } from '@databricks/appkit-ui/react';
+        style: secondary
+        start: 0
+        end: 63
+      - source: useServingStream
+        style: secondary
+        start: 9
+        end: 25
