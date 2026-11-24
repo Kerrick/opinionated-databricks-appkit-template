@@ -135,7 +135,19 @@
       // Domain layer: one class per file, named for the concept it models
       "files": ["client/src/domain/**/*.{ts,tsx}"],
       "rules": {
-        "max-classes-per-file": ["error", { "max": 1 }]
+        "max-classes-per-file": ["error", { "max": 1 }],
+        // Plain TypeScript: nothing from the browser. Take the value as an argument instead.
+        "no-restricted-globals": [
+          "error",
+          { "name": "window", "message": "The domain layer cannot use the browser." },
+          { "name": "document", "message": "The domain layer cannot use the browser." },
+          { "name": "navigator", "message": "The domain layer cannot use the browser." },
+          { "name": "location", "message": "The domain layer cannot use the browser." },
+          { "name": "history", "message": "The domain layer cannot use the browser." },
+          { "name": "localStorage", "message": "The domain layer cannot use the browser." },
+          { "name": "sessionStorage", "message": "The domain layer cannot use the browser." },
+          { "name": "fetch", "message": "The domain layer cannot make requests. Data arrives through the acl layer." }
+        ]
       }
     },
     {

@@ -124,3 +124,4 @@ Modified files:
 When a later upstream change touches a formatting-only file, take it, then
 format that file the way `generic/` does: strip any `{{if ...}}` wrapper
 lines, run Prettier on the body, and put the wrapper back.
+- `.dependency-cruiser.mjs` and `tools/check-boundaries.ts`: new. Import-graph rules (layers, client against server, domain isolation, generated types only in `acl/`, chart libraries only in `components/charts/`, no cycles, no orphans, no server-rendering frameworks), run through a wrapper that fails when no modules were analysed. `lint:boundaries` is part of `lint`. `.oxlintrc.json` bans browser globals in the domain.
