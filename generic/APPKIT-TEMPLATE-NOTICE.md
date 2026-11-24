@@ -6,7 +6,7 @@ Databricks AppKit (https://github.com/databricks/appkit, `template/`), Copyright
 of that license is in `APPKIT-TEMPLATE-LICENSE`.
 
 The derivation is at commit `8b99a203e4b3422936231fb185154d9e31064846` of that
-repository. The files were modified: `docs/upstream.md` in the template repository
+repository. The files were modified: `docs/upstream/README.md` in the template repository
 (https://github.com/Kerrick/opinionated-databricks-appkit-template) lists
 each change. This notice and the license text cover the files that came from the
 template. They don't cover this project as a whole: the license of the project

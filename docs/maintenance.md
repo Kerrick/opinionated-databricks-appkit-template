@@ -107,4 +107,4 @@ before committing the new pins, not only the lock.
 
 Renovate bumps the AppKit packages, but it cannot take changes to AppKit's own
 project template. That is a separate, manual process, described in
-[upstream.md](upstream.md).
+[upstream/README.md](upstream/README.md).

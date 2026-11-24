@@ -1,6 +1,18 @@
 # Upstream
 
-The template in `generic/` is a fork of the AppKit project template.
+The template in `generic/` is a fork of the AppKit project template. This
+folder is the fork's record: this file says where the fork came from and lists
+every change made to it, and the other files are drafts of reports this project
+could make to the projects it builds on.
+
+## Drafts of upstream reports
+
+Nothing in this folder has been filed. Each draft is one Markdown file, with
+the title, the affected versions, a minimal reproduction and what this template
+does meanwhile, and optionally a paired `.patch` where a fix is known. The
+maintainer decides whether to file it. Each draft names the workaround in this
+template that can be removed once the problem is fixed upstream. No draft is
+here yet.
 
 | | |
 | --- | --- |

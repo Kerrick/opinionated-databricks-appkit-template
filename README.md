@@ -14,7 +14,7 @@ The default template that `databricks apps init` uses is AppKit's. This template
 - The sample pages that need data a workspace may not have are removed.
 - It ships instructions for coding agents, in the [AGENTS.md](https://agents.md) format.
 
-[docs/upstream.md](docs/upstream.md) lists every difference from AppKit's template.
+[docs/upstream/README.md](docs/upstream/README.md) lists every difference from AppKit's template.
 
 ## Start a project
 
@@ -108,7 +108,7 @@ On GitHub's runners, a run lasts about 12 to 14 minutes.
 
 ## Documentation
 
-- [docs/upstream.md](docs/upstream.md): how the template relates to AppKit's, every change made to it, and how to take later upstream changes.
+- [docs/upstream/README.md](docs/upstream/README.md): how the template relates to AppKit's, every change made to it, how to take later upstream changes, and drafts of reports to upstream projects.
 - [docs/maintenance.md](docs/maintenance.md): the workflow that runs the check, how dependency updates and the pinned agent skills are kept current, and the GitHub settings that no file can make.
 
 ## Reporting problems
