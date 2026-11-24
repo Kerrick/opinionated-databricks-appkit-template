@@ -125,9 +125,19 @@
 
     // No escape hatches around the type checker
     "typescript/consistent-type-assertions": ["error", { "assertionStyle": "never" }],
-    "typescript/no-non-null-assertion": "error"
+    "typescript/no-non-null-assertion": "error",
+
+    // A switch over a union must name every member, so a new member can't fall through unnoticed
+    "typescript/switch-exhaustiveness-check": "error"
   },
   "overrides": [
+    {
+      // Domain layer: one class per file, named for the concept it models
+      "files": ["client/src/domain/**/*.{ts,tsx}"],
+      "rules": {
+        "max-classes-per-file": ["error", { "max": 1 }]
+      }
+    },
     {
       // TypeScript files: the TypeScript compiler already covers these checks
       "files": ["**/*.ts", "**/*.tsx", "**/*.mts", "**/*.cts"],

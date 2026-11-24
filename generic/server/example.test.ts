@@ -30,7 +30,7 @@ const GreetBody = z.object({ name: z.string() });
 
 // A tiny example plugin: it registers one route and streams two events.
 class GreeterPlugin extends Plugin {
-  static manifest: PluginManifest<'greeter'> = {
+  static readonly manifest: PluginManifest<'greeter'> = {
     name: 'greeter',
     displayName: 'Greeter',
     description: 'Example plugin for the testing-kit demo',

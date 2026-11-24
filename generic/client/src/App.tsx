@@ -60,7 +60,11 @@ const mobileNavLinkClass = ({ isActive }: { isActive: boolean }) =>
 
 type NavLinkClassFn = (props: { isActive: boolean }) => string;
 
-function NavLinks({ className, linkClass, onClick }: { className?: string; linkClass: NavLinkClassFn; onClick?: () => void }) {
+function NavLinks({
+  className,
+  linkClass,
+  onClick,
+}: Readonly<{ className?: string; linkClass: NavLinkClassFn; onClick?: () => void }>) {
   return (
     <nav className={className}>
       <NavLink to="/" end className={linkClass} onClick={onClick}>

@@ -21,7 +21,7 @@ export function checkLakebase(root: string): string[] {
     (path) =>
       path !== '.sqlfluff' &&
       path.endsWith('/.sqlfluff') &&
-      /^\s*dialect\s*=\s*postgres\s*$/m.test(readIfPresent(root, path)) &&
+      readIfPresent(root, path).split("\n").some((line) => /^dialect\s*=\s*postgres$/.test(line.trim())) &&
       (path.startsWith('config/database/') || path.includes('/migrations/'))
   );
   if (!postgresLinted) {
