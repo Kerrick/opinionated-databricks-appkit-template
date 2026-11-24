@@ -20,10 +20,12 @@ on:
 permissions:
   contents: read
 
-# A new push must not cancel a trunk run that is still going, or a busy trunk
-# would never finish one. Only superseded pull request runs are cancelled.
+# Every trunk, scheduled and manual run checks its own commit to the end. A
+# shared group would not do: GitHub cancels a run waiting in a group when a
+# newer one joins, so a busy trunk would leave most commits unchecked. Only a
+# pull request's superseded runs are cancelled.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
