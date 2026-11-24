@@ -1,0 +1,31 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:recommended", "helpers:pinGitHubActionDigests"],
+  "rangeStrategy": "pin",
+  "automerge": false,
+  "platformAutomerge": false,
+  "minimumReleaseAge": "3 days",
+  "dependencyDashboard": true,
+  "lockFileMaintenance": {
+    "enabled": true,
+    "schedule": ["before 6am on monday"]
+  },
+  "packageRules": [
+    {
+      "description": "AppKit's packages are released in step, and the template pins them to one version.",
+      "matchPackageNames": ["@databricks/appkit", "@databricks/appkit-ui"],
+      "groupName": "AppKit",
+      "rangeStrategy": "pin"
+    },
+    {
+      "description": "Tools pinned in mise.toml (Node, pnpm, the Databricks CLI) are exact versions.",
+      "matchManagers": ["mise"],
+      "rangeStrategy": "pin"
+    },
+    {
+      "description": "Actions stay pinned to a full commit digest, with the version in a comment.",
+      "matchManagers": ["github-actions"],
+      "pinDigests": true
+    }
+  ]
+}
