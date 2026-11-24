@@ -1,0 +1,13 @@
+id: no-warehouse-reads-in-custom-endpoints
+valid:
+  - |
+    const rows = await appkit.lakebase.query('SELECT 1');
+  - |
+    import { z } from 'zod';
+invalid:
+  - |
+    const rows = await appkit.analytics.query('sales', { month });
+  - |
+    import { StatementExecution } from '@databricks/sdk-statementexecution';
+  - |
+    import { DBSQLClient } from '@databricks/sql';

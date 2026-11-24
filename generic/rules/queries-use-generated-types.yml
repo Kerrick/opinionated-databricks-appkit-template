@@ -1,0 +1,15 @@
+id: queries-use-generated-types
+language: Tsx
+severity: error
+message: Don't write a type for a query's rows. AppKit generates it from the SQL.
+note: |
+  Passing a type argument to useAnalyticsQuery (or useMetricView) replaces the generated row type with a
+  hand-written one that can drift from the SQL without any check noticing. Run `pnpm run typegen`, let the
+  hook infer its rows, and map them to domain objects in client/src/acl/. See docs/design/architecture.md.
+files:
+  - client/src/**/*.ts
+  - client/src/**/*.tsx
+rule:
+  any:
+    - pattern: useAnalyticsQuery<$$$TYPES>($$$)
+    - pattern: useMetricView<$$$TYPES>($$$)

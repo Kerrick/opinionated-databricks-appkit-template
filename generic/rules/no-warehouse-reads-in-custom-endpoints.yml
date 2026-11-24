@@ -1,0 +1,19 @@
+id: no-warehouse-reads-in-custom-endpoints
+language: Tsx
+severity: error
+message: Don't read from the SQL warehouse in a custom endpoint.
+note: |
+  Reads belong in config/queries/*.sql, run by the analytics plugin, which caches them, generates their types
+  and can run them as the signed-in user. Custom endpoints are for writes, Databricks APIs that have no
+  plugin, multi-step logic, external services and file processing. See docs/design/architecture.md.
+files:
+  - server/**/*.ts
+ignores:
+  - '**/*.test.*'
+rule:
+  any:
+    - pattern: $APP.analytics.$METHOD($$$)
+    - kind: import_statement
+      has:
+        field: source
+        regex: (statementexecution|statement-execution|@databricks/sql)

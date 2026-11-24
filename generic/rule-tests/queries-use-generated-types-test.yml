@@ -1,0 +1,11 @@
+id: queries-use-generated-types
+valid:
+  - |
+    const { data } = useAnalyticsQuery('sales', { month });
+  - |
+    const rows = useMemo<Row[]>(() => [], []);
+invalid:
+  - |
+    const { data } = useAnalyticsQuery<SalesRow[]>('sales', { month });
+  - |
+    const view = useMetricView<Revenue>('revenue');

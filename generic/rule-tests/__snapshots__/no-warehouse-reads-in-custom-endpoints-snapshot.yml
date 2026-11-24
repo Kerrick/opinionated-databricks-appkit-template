@@ -1,0 +1,28 @@
+id: no-warehouse-reads-in-custom-endpoints
+snapshots:
+  "const rows = await appkit.analytics.query('sales', { month });\n":
+    labels:
+      - source: appkit.analytics.query('sales', { month })
+        style: primary
+        start: 19
+        end: 61
+  "import { DBSQLClient } from '@databricks/sql';\n":
+    labels:
+      - source: import { DBSQLClient } from '@databricks/sql';
+        style: primary
+        start: 0
+        end: 46
+      - source: "'@databricks/sql'"
+        style: secondary
+        start: 28
+        end: 45
+  "import { StatementExecution } from '@databricks/sdk-statementexecution';\n":
+    labels:
+      - source: import { StatementExecution } from '@databricks/sdk-statementexecution';
+        style: primary
+        start: 0
+        end: 72
+      - source: "'@databricks/sdk-statementexecution'"
+        style: secondary
+        start: 35
+        end: 71

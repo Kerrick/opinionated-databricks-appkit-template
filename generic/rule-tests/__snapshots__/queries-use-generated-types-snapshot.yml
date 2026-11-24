@@ -1,0 +1,14 @@
+id: queries-use-generated-types
+snapshots:
+  "const view = useMetricView<Revenue>('revenue');\n":
+    labels:
+      - source: useMetricView<Revenue>('revenue')
+        style: primary
+        start: 13
+        end: 46
+  "const { data } = useAnalyticsQuery<SalesRow[]>('sales', { month });\n":
+    labels:
+      - source: useAnalyticsQuery<SalesRow[]>('sales', { month })
+        style: primary
+        start: 17
+        end: 66
