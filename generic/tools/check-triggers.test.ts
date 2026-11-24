@@ -49,6 +49,11 @@ describe('write routes', () => {
     expect(checkTriggers(project.root)).toHaveLength(1);
   });
 
+  test('ignores routes in comments', () => {
+    project.write('server/routes/orders.ts', "// app.post('/x', h)\n/* router.put('/y', h) */\napp.get('/z', h);");
+    expect(checkTriggers(project.root)).toEqual([]);
+  });
+
   test('passes for GET routes', () => {
     project.write('server/routes/orders.ts', "app.get('/x', h); this.route(router, { method: 'get' });");
     expect(checkTriggers(project.root)).toEqual([]);
@@ -81,7 +86,7 @@ describe('write routes', () => {
 
 describe('lakebase', () => {
   const sqlfluff = '[sqlfluff]\ndialect = postgres\n';
-  const packageJson = '{"scripts":{"lint:migrations":"squawk config/database/migrations/*.sql"}}';
+  const miseToml = '[tools]\n"pipx:squawk-cli" = "2.74.0"\n';
 
   test('fails when lakebase() is registered without Postgres linting or squawk', () => {
     project.write('server/server.ts', 'createApp({ plugins: [lakebase()] });');
@@ -95,18 +100,26 @@ describe('lakebase', () => {
 
   test('passes once Postgres linting and squawk are in place', () => {
     project.write('server/server.ts', 'createApp({ plugins: [lakebase()] });');
-    project.write('config/database/.sqlfluff', sqlfluff).write('package.json', packageJson);
+    project.write('config/database/.sqlfluff', sqlfluff).write('mise.toml', miseToml);
+    expect(checkTriggers(project.root)).toEqual([]);
+  });
+
+  test('ignores plugin names that only appear in comments', () => {
+    project.write(
+      'server/server.ts',
+      '// lakebase() comes later\n/* database() too */\ncreateApp({ plugins: [server()] });'
+    );
     expect(checkTriggers(project.root)).toEqual([]);
   });
 
   test('does not accept the root sqlfluff configuration', () => {
-    project.write('server/server.ts', 'lakebase();').write('.sqlfluff', sqlfluff).write('package.json', packageJson);
+    project.write('server/server.ts', 'lakebase();').write('.sqlfluff', sqlfluff).write('mise.toml', miseToml);
     expect(checkTriggers(project.root)).toHaveLength(1);
   });
 
   test('database() also needs a per-user authorization record', () => {
     project.write('server/server.ts', 'createApp({ plugins: [database()] });');
-    project.write('config/database/.sqlfluff', sqlfluff).write('package.json', packageJson);
+    project.write('config/database/.sqlfluff', sqlfluff).write('mise.toml', miseToml);
     expect(checkTriggers(project.root)).toHaveLength(1);
     project.write('docs/design/architecture.md', '## Per-user authorization\n\nRow filters in every query.\n');
     expect(checkTriggers(project.root)).toEqual([]);

@@ -1,5 +1,5 @@
 import { designDocRecords } from '../lib/design-docs.ts';
-import { listDirectories, listFiles, readIfPresent } from '../lib/files.ts';
+import { listDirectories, listFiles, readIfPresent, withoutComments } from '../lib/files.ts';
 
 /** `lakebase()` or `database()` called in the server entry point. */
 const REGISTRATION = /\b(lakebase|database)\s*\(/g;
@@ -16,7 +16,7 @@ function isPostgresDialect(config: string): boolean {
  */
 export function checkLakebase(root: string): string[] {
   const registered = new Set(
-    [...readIfPresent(root, 'server/server.ts').matchAll(REGISTRATION)].map((match) => match[1])
+    [...withoutComments(readIfPresent(root, 'server/server.ts')).matchAll(REGISTRATION)].map((match) => match[1])
   );
   const migrationFolders = listDirectories(root).filter((path) => path.split('/').at(-1) === 'migrations');
   if (registered.size === 0 && migrationFolders.length === 0) return [];
@@ -35,10 +35,10 @@ export function checkLakebase(root: string): string[] {
         'in config/database/ (and in each migrations folder), and lint those folders from the lint script.'
     );
   }
-  if (!/\bsquawk\b/.test(readIfPresent(root, 'package.json'))) {
+  if (!/\bsquawk\b/.test(readIfPresent(root, 'mise.toml'))) {
     problems.push(
-      'Lakebase is in use but migrations are not checked for unsafe changes. Run squawk over the migrations ' +
-        'from a script that the lint script calls, and pin it in mise.toml.'
+      'Lakebase is in use but migrations are not checked for unsafe changes. Pin squawk in mise.toml: ' +
+        'the lint script runs it over every migrations folder (tools/lint-sql.ts).'
     );
   }
   if (registered.has('database') && !designDocRecords(root, 'Per-user authorization')) {

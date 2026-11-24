@@ -1,84 +1,13 @@
 {{if .plugins.lakebase -}}
-import { Card, CardContent, CardHeader, CardTitle, Button, Input, Skeleton } from '@databricks/appkit-ui/react';
-import { useState, useEffect } from 'react';
+import { Button, Card, CardContent, CardHeader, CardTitle, Input } from '@databricks/appkit-ui/react';
 import { Check, X } from 'lucide-react';
-import { z } from 'zod';
-import { fetchJson, fetchOrThrow } from '../../acl/fetch-or-throw';
+import { Form, useLoaderData, useNavigation } from 'react-router';
+import type { listTodos } from '../../acl/todos';
 
-const Todo = z.object({
-  id: z.number(),
-  title: z.string(),
-  completed: z.boolean(),
-  created_at: z.string(),
-});
-type Todo = z.infer<typeof Todo>;
-
+/** The todo list. The route's loader fetches the todos and its action handles the forms (see App.tsx). */
 export function LakebasePage() {
-  const [todos, setTodos] = useState<Todo[]>([]);
-  const [newTitle, setNewTitle] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-
-  useEffect(() => {
-    fetchJson('/api/lakebase/todos', undefined, z.array(Todo), (r) => `Failed to fetch todos: ${r.statusText}`)
-      .then(setTodos)
-      .catch((err) => setError(err instanceof Error ? err.message : 'Failed to load todos'))
-      .finally(() => setLoading(false));
-  }, []);
-
-  const addTodo = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const title = newTitle.trim();
-    if (!title) return;
-
-    setSubmitting(true);
-    try {
-      const created = await fetchJson(
-        '/api/lakebase/todos',
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ title }),
-        },
-        Todo,
-        (r) => `Failed to create todo: ${r.statusText}`
-      );
-      setTodos((prev) => [created, ...prev]);
-      setNewTitle('');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to add todo');
-    }
-    setSubmitting(false);
-  };
-
-  const toggleTodo = async (id: number) => {
-    try {
-      const updated = await fetchJson(
-        `/api/lakebase/todos/${id}`,
-        { method: 'PATCH' },
-        Todo,
-        (r) => `Failed to update todo: ${r.statusText}`
-      );
-      setTodos((prev) => prev.map((t) => (t.id === id ? updated : t)));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update todo');
-    }
-  };
-
-  const deleteTodo = async (id: number) => {
-    try {
-      await fetchOrThrow(
-        `/api/lakebase/todos/${id}`,
-        { method: 'DELETE' },
-        (r) => `Failed to delete todo: ${r.statusText}`
-      );
-      setTodos((prev) => prev.filter((t) => t.id !== id));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete todo');
-    }
-  };
-
+  const todos = useLoaderData<Awaited<ReturnType<typeof listTodos>>>();
+  const submitting = useNavigation().state === 'submitting';
   const completedCount = todos.filter((t) => t.completed).length;
 
   return (
@@ -92,69 +21,65 @@ export function LakebasePage() {
             A simple CRUD example powered by Databricks Lakebase (PostgreSQL).
           </p>
 
-          <form onSubmit={(e) => void addTodo(e)} className="flex gap-2 mb-6">
+          <Form method="post" className="flex gap-2 mb-6">
+            <input type="hidden" name="intent" value="add" />
             <Input
+              name="title"
               placeholder="What needs to be done?"
-              value={newTitle}
-              onChange={(e) => setNewTitle(e.target.value)}
+              required
               disabled={submitting}
               className="flex-1"
+              aria-label="New todo"
             />
-            <Button type="submit" disabled={submitting || !newTitle.trim()}>
+            <Button type="submit" disabled={submitting}>
               {submitting ? 'Adding...' : 'Add'}
             </Button>
-          </form>
+          </Form>
 
-          {error && <div className="text-destructive bg-destructive/10 p-3 rounded-md mb-4">{error}</div>}
-
-          {loading && (
-            <div className="space-y-3">
-              {Array.from({ length: 3 }, (_, i) => (
-                <div key={`skeleton-${i}`} className="flex items-center gap-3">
-                  <Skeleton className="h-5 w-5 rounded" />
-                  <Skeleton className="h-4 flex-1" />
-                </div>
-              ))}
-            </div>
-          )}
-
-          {!loading && todos.length === 0 && (
+          {todos.length === 0 && (
             <p className="text-muted-foreground text-center py-8">No todos yet. Add one above to get started.</p>
           )}
 
-          {!loading && todos.length > 0 && (
+          {todos.length > 0 && (
             <div className="space-y-2">
               {todos.map((todo) => (
                 <div
                   key={todo.id}
                   className="flex items-center gap-3 p-3 rounded-lg border hover:bg-muted/50 transition-colors"
                 >
-                  <button
-                    type="button"
-                    onClick={() => void toggleTodo(todo.id)}
-                    className={`h-5 w-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
-                      todo.completed
-                        ? 'bg-primary border-primary text-primary-foreground'
-                        : 'border-muted-foreground/30 hover:border-primary'
-                    }`}
-                    aria-label={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
-                  >
-                    {todo.completed && <Check className="h-3 w-3" />}
-                  </button>
+                  <Form method="post">
+                    <input type="hidden" name="intent" value="toggle" />
+                    <input type="hidden" name="id" value={todo.id} />
+                    <button
+                      type="submit"
+                      className={`h-5 w-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
+                        todo.completed
+                          ? 'bg-primary border-primary text-primary-foreground'
+                          : 'border-muted-foreground/30 hover:border-primary'
+                      }`}
+                      aria-label={todo.completed ? 'Mark as incomplete' : 'Mark as complete'}
+                    >
+                      {todo.completed && <Check className="h-3 w-3" />}
+                    </button>
+                  </Form>
 
                   <span className={`flex-1 ${todo.completed ? 'line-through text-muted-foreground' : ''}`}>
                     {todo.title}
                   </span>
 
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => void deleteTodo(todo.id)}
-                    className="text-muted-foreground hover:text-destructive shrink-0"
-                    aria-label="Delete todo"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
+                  <Form method="post">
+                    <input type="hidden" name="intent" value="delete" />
+                    <input type="hidden" name="id" value={todo.id} />
+                    <Button
+                      type="submit"
+                      variant="ghost"
+                      size="sm"
+                      className="text-muted-foreground hover:text-destructive shrink-0"
+                      aria-label="Delete todo"
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </Form>
                 </div>
               ))}
 

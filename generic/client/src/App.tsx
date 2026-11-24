@@ -27,6 +27,7 @@ import { AgentChat } from './pages/agents/AgentChat';
 import { AnalyticsPage } from './pages/analytics/AnalyticsPage';
 {{- end}}
 {{- if .plugins.lakebase}}
+import { listTodos, submitTodoForm } from './acl/todos';
 import { LakebasePage } from './pages/lakebase/LakebasePage';
 {{- end}}
 {{- if .plugins.genie}}
@@ -164,7 +165,13 @@ const router = createBrowserRouter([
       { path: '/analytics', element: <AnalyticsPage />, errorElement: <RouteError /> },
 {{- end}}
 {{- if .plugins.lakebase}}
-      { path: '/lakebase', element: <LakebasePage />, errorElement: <RouteError /> },
+      {
+        path: '/lakebase',
+        element: <LakebasePage />,
+        loader: () => listTodos(),
+        action: submitTodoForm,
+        errorElement: <RouteError />,
+      },
 {{- end}}
 {{- if .plugins.genie}}
       { path: '/genie', element: <GeniePage />, errorElement: <RouteError /> },

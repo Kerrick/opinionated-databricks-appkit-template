@@ -1,0 +1,6 @@
+{{- if or .plugins.lakebase .plugins.database -}}
+# Lakebase is Postgres, so SQL in this folder (and in any migrations folder under it) is linted as Postgres.
+[sqlfluff]
+dialect = postgres
+max_line_length = 120
+{{- end}}

@@ -55,3 +55,16 @@ export function readIfPresent(root: string, path: string): string {
 export function isTestFile(path: string): boolean {
   return /\.(test|spec)\.[cm]?[jt]sx?$/.test(path);
 }
+
+/** Removes block and line comments from TypeScript source, so a name that only appears in a comment doesn't count. */
+export function withoutComments(source: string): string {
+  let text = source;
+  for (let start = text.indexOf('/*'); start !== -1; start = text.indexOf('/*')) {
+    const end = text.indexOf('*/', start + 2);
+    text = text.slice(0, start) + (end === -1 ? '' : text.slice(end + 2));
+  }
+  return text
+    .split('\n')
+    .map((line) => (line.includes('//') ? line.slice(0, line.indexOf('//')) : line))
+    .join('\n');
+}

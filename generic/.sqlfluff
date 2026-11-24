@@ -1,0 +1,12 @@
+[sqlfluff]
+dialect = databricks
+max_line_length = 120
+
+# Named parameters (`:name`) are written with a space before the colon and none after it.
+[sqlfluff:layout:type:colon]
+spacing_before = any
+spacing_after = touch
+
+# `value` is not reserved in Databricks SQL, and AppKit's sample query names a column with it.
+[sqlfluff:rules:references.keywords]
+ignore_words = value

@@ -1,5 +1,5 @@
 import { designDocRecords } from '../lib/design-docs.ts';
-import { isTestFile, listFiles, readIfPresent } from '../lib/files.ts';
+import { isTestFile, listFiles, readIfPresent, withoutComments } from '../lib/files.ts';
 
 /** A route registered with `app.post(...)`, `router.put(...)` and the like. */
 const VERB_CALL = /\.(post|put|patch|delete)\s*\(/;
@@ -16,7 +16,7 @@ export function checkWriteRoutes(root: string): string[] {
   const offenders = listFiles(root)
     .filter((path) => /^server\/.*\.[cm]?tsx?$/.test(path) && !isTestFile(path))
     .filter((path) => {
-      const source = readIfPresent(root, path);
+      const source = withoutComments(readIfPresent(root, path));
       return VERB_CALL.test(source) || VERB_PROPERTY.test(source);
     });
   if (offenders.length === 0 || designDocRecords(root, 'Write target')) return [];
