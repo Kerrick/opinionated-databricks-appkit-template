@@ -17,7 +17,10 @@ rule:
   kind: import_specifier
   has:
     field: name
-    regex: ^(useAnalyticsQuery|useMetricView|useChartData)$
+    # Every hook in @databricks/appkit-ui (react and react/beta) that requests data from the server, as of the
+    # pinned version. Hooks that read only local state or the boot-time config (useIsMobile, usePluginClientConfig,
+    # useResourceStatus, useDesignReady) stay open to views.
+    regex: ^(useAnalyticsQuery|useMetricView|useChartData|useAgentChat|useGenieChat|useServingInvoke|useServingStream|useAiSearchQuery|useDatabase(Create|Delete|List|Mutation|Query|Record|Update))$
   inside:
     stopBy: end
     kind: import_statement

@@ -4,8 +4,44 @@ valid:
     import { Button, useIsMobile } from '@databricks/appkit-ui/react';
   - |
     import { useSales } from '../acl/useSales';
+  # Hooks that read no data stay open to views.
+  - |
+    import { useDesignReady } from '@databricks/appkit-ui/react/beta';
+  - |
+    import { usePluginClientConfig, useResourceStatus } from '@databricks/appkit-ui/react';
+  # Only AppKit's own package is covered.
+  - |
+    import { useAgentChat } from './my-chat';
 invalid:
   - |
     import { useAnalyticsQuery } from '@databricks/appkit-ui/react';
+  - |
+    import { useMetricView } from '@databricks/appkit-ui/react';
+  - |
+    import { useChartData } from '@databricks/appkit-ui/react';
+  - |
+    import { useAgentChat } from '@databricks/appkit-ui/react';
+  - |
+    import { useGenieChat } from '@databricks/appkit-ui/react';
+  - |
+    import { useServingInvoke } from '@databricks/appkit-ui/react';
+  - |
+    import { useServingStream } from '@databricks/appkit-ui/react';
+  - |
+    import { useAiSearchQuery } from '@databricks/appkit-ui/react/beta';
+  - |
+    import { useDatabaseCreate } from '@databricks/appkit-ui/react/beta';
+  - |
+    import { useDatabaseDelete } from '@databricks/appkit-ui/react/beta';
+  - |
+    import { useDatabaseList } from '@databricks/appkit-ui/react/beta';
+  - |
+    import { useDatabaseMutation } from '@databricks/appkit-ui/react/beta';
+  - |
+    import { useDatabaseQuery } from '@databricks/appkit-ui/react/beta';
+  - |
+    import { useDatabaseRecord } from '@databricks/appkit-ui/react/beta';
+  - |
+    import { useDatabaseUpdate } from '@databricks/appkit-ui/react/beta';
   - |
     import { Button, useMetricView } from '@databricks/appkit-ui/react';
