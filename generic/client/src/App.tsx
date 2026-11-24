@@ -23,9 +23,6 @@ import { RouteError } from './components/RouteError';
 {{- if .plugins.agents}}
 import { AgentChat } from './pages/agents/AgentChat';
 {{- end}}
-{{- if .plugins.analytics}}
-import { AnalyticsPage } from './pages/analytics/AnalyticsPage';
-{{- end}}
 {{- if .plugins.lakebase}}
 import { listTodos, submitTodoForm } from './acl/todos';
 import { LakebasePage } from './pages/lakebase/LakebasePage';
@@ -71,11 +68,6 @@ function NavLinks({
 {{- if .plugins.agents}}
       <NavLink to="/agents" className={linkClass} onClick={onClick}>
         Agents
-      </NavLink>
-{{- end}}
-{{- if .plugins.analytics}}
-      <NavLink to="/analytics" className={linkClass} onClick={onClick}>
-        Analytics
       </NavLink>
 {{- end}}
 {{- if .plugins.lakebase}}
@@ -160,9 +152,6 @@ const router = createBrowserRouter([
       { path: '/', element: <HomePage />, errorElement: <RouteError /> },
 {{- if .plugins.agents}}
       { path: '/agents', element: <AgentChat />, errorElement: <RouteError /> },
-{{- end}}
-{{- if .plugins.analytics}}
-      { path: '/analytics', element: <AnalyticsPage />, errorElement: <RouteError /> },
 {{- end}}
 {{- if .plugins.lakebase}}
       {

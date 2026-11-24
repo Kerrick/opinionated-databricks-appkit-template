@@ -59,6 +59,31 @@ later upstream merge should keep these. Lines changed for formatting only
 follow from running Prettier 3.6.2 with the template's own `.prettierrc.json`
 over the generated project.
 
+### Plugin samples
+
+Upstream ships sample code for most plugins: a page, and for some plugins
+queries, agents or routes. Each sample here was either brought into line with
+the project's rules, or cut to the code the plugin's wiring needs. The wiring
+itself is unchanged in every case: the registration in `server/server.ts`, the
+resources and scopes in `databricks.yml`, `app.yaml` and the environment files,
+and the conditionals around them. Samples were cut when following the rules
+would have meant rewriting a demo that a project replaces anyway, and always
+when the sample needs data that a workspace may not have. The root check
+generates a project with these plugins selected and runs its check.
+
+- `analytics`: cut. `config/queries/hello_world.sql`,
+  `config/queries/mocked_sales.sql` and `client/src/pages/analytics/` are gone,
+  with the page's route and link in `client/src/App.tsx`. AppKit generates a
+  query's types from the warehouse, so a project with a query builds without
+  credentials only once those types are committed, and types written by hand
+  would be a guess. With no query, the build generates empty types and passes.
+  The page also called the data hooks and the charts from a view, which the
+  layers forbid. `config/metric-views/definitions.json` stays: it is
+  configuration, and empty. `README.md.tmpl` says why there is no sample query
+  and that the generated types should be committed. `.prettierignore` skips
+  `shared/appkit-types/`, which type generation rewrites, unformatted, on every
+  build.
+
 Added files:
 
 - `.gitattributes`: every text file is checked out with LF line endings. A

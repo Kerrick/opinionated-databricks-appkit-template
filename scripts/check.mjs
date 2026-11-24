@@ -27,6 +27,7 @@ const isWindows = process.platform === 'win32';
 // resource field `apps init` asks for. Nothing contacts a workspace, so the
 // values only have to be well formed.
 const plugins = {
+  analytics: { 'sql-warehouse.id': 'abc123' },
   lakebase: {
     'postgres.branch': 'projects/check/branches/main',
     'postgres.database': 'projects/check/branches/main/databases/app',

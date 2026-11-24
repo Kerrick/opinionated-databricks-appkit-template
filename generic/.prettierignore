@@ -37,3 +37,6 @@ vendor
 
 # Rewritten by `appkit plugin sync` on every build, unformatted
 appkit.plugins.json
+
+# Written by `appkit generate-types` on every build, unformatted
+shared/appkit-types/

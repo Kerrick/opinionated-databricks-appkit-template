@@ -5,7 +5,7 @@ A Databricks App powered by [AppKit](https://developers.databricks.com/docs/appk
 **Enabled plugins:**
 {{- "\n"}}
 {{- if .plugins.analytics}}
-- **Analytics** -- SQL query execution against Databricks SQL Warehouses
+- **Analytics** -- SQL query execution against Databricks SQL Warehouses. No sample query is included, because no dataset is guaranteed to exist in every workspace. Add queries to `config/queries/`, one file each; `pnpm run typegen` generates their types into `shared/appkit-types/`. Commit those files: when no warehouse can be reached, as in a check without credentials, AppKit's type generation falls back to the committed types.
 {{- end}}
 {{- if .plugins.lakebase}}
 - **Lakebase** -- Fully managed Postgres database for transactional (OLTP) workloads on Databricks
