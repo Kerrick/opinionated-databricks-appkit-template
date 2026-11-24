@@ -157,7 +157,7 @@ function run(label, command, args, { cwd, env, capture = false }) {
 // folder, one subfolder per run, so leftovers are easy to find and to clear.
 // The names are short on purpose: tsx listens on a Unix socket inside the
 // folder, and those paths are limited to 107 bytes, which a long temporary
-// folder on a build machine already comes close to.
+// folder on a shared machine or a CI runner can already come close to.
 // A run that is killed outright cannot clean up after itself, so each run keeps
 // a heartbeat file fresh while it lives, and the next run removes any run
 // folder whose heartbeat has stopped. Runs on one machine can overlap; a live
@@ -230,6 +230,7 @@ const toolTmp = scratch;
 // tsx's socket lives at <folder>/tsx-<uid>/<pid>.pipe, and the longest pid has seven digits.
 if (!isWindows && Buffer.byteLength(join(toolTmp, 'tsx-1000', '1234567.pipe')) > 107) {
   console.error(`The temporary folder's path is too long for tsx's socket: ${toolTmp}\nSet TMPDIR to a shorter folder.`);
+  removeScratch();
   process.exit(1);
 }
 const heartbeat = join(scratch, 'heartbeat');
