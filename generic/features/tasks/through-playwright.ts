@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, type Page } from '@playwright/test';
-import { accessibilityTags, missingAddress, type Visitor } from './visitor';
+import { accessibilityRules, accessibilityTags, missingAddress, type Visitor } from './visitor';
 
 /** A visitor driving the whole app in a real browser, over HTTP. */
 export class PlaywrightVisitor implements Visitor {
@@ -44,7 +44,10 @@ export class PlaywrightVisitor implements Visitor {
     await this.page.mouse.move(0, 0);
     // A color that is still changing is no color to judge.
     await this.page.waitForFunction(() => document.getAnimations().length === 0);
-    const results = await new AxeBuilder({ page: this.page }).withTags(accessibilityTags).analyze();
+    const results = await new AxeBuilder({ page: this.page })
+      .withTags(accessibilityTags)
+      .options({ rules: accessibilityRules })
+      .analyze();
     expect(
       results.violations.map(
         (violation) =>

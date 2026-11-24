@@ -9,7 +9,7 @@ import { HomePage } from '@/pages/home/HomePage';
 import { NotFoundPage } from '@/pages/not-found/NotFoundPage';
 import { openTheApp } from './app';
 import { Crash } from './crash';
-import { accessibilityTags, missingAddress, type Visitor } from './visitor';
+import { accessibilityRules, accessibilityTags, missingAddress, type Visitor } from './visitor';
 
 const routes = [
   { path: '/', element: <HomePage /> },
@@ -120,7 +120,10 @@ export class InBrowserVisitor implements Visitor {
   async seesNoAccessibilityViolations() {
     // A color that is still changing is no color to judge.
     await expect.poll(() => document.getAnimations().length).toBe(0);
-    const results = await axe.run(document, { runOnly: { type: 'tag', values: accessibilityTags } });
+    const results = await axe.run(document, {
+      runOnly: { type: 'tag', values: accessibilityTags },
+      rules: accessibilityRules,
+    });
     expect(
       results.violations.map(
         (violation) =>
