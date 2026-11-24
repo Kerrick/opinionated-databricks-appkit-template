@@ -165,9 +165,10 @@ Vitest's `vi` mocks, so it runs only inside a Vitest test, and Playwright starts
 the server as a process of its own. Faked journeys need no credentials, so they
 run in the git hook and in CI like the rest of `check`.
 
-Each copy of a project picks its own journey port from where it sits on disk,
-so two checkouts or worktrees on one machine can run their journeys at once.
-`JOURNEY_PORT` overrides it.
+Every run asks the system for a free port for the journeys' server, and for
+the one Vitest's browser server listens on, and passes it to whatever needs it.
+Nothing in `check` listens on a fixed port, so two checkouts or worktrees on one
+machine can run it at once. `JOURNEY_PORT` overrides the journeys' port.
 
 Journeys find elements the way page-level tests do, by role, label or text.
 ESLint holds them to it with two rules from `eslint-plugin-playwright`,

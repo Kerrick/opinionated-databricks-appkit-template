@@ -1,15 +1,14 @@
 import { defineConfig, devices } from '@playwright/test';
-import { createHash } from 'node:crypto';
 import { defineBddConfig } from 'playwright-bdd';
 import { browserLaunchOptions } from './tools/browser-libraries.ts';
+import { freePort } from './tools/free-port.ts';
 
 // Journeys: the built app (`pnpm run build` first) in a real browser, with the
 // browser's calls to `/api/` faked. They need no workspace and no credentials.
-// The port comes from where the project sits, so two copies of it on one machine (two checkouts, two
-// worktrees) don't fight over one. `JOURNEY_PORT` overrides it.
-const port = Number(
-  process.env['JOURNEY_PORT'] ?? 4000 + (createHash('sha256').update(process.cwd()).digest().readUInt16BE() % 4000)
-);
+// The port is one the system hands out for this run, so two runs on one machine (two checkouts, two worktrees,
+// two CI jobs) never fight over one. Playwright loads this file again in each worker, so the choice is kept in the
+// environment, which the workers inherit. `JOURNEY_PORT` overrides it.
+const port = Number((process.env['JOURNEY_PORT'] ??= String(await freePort())));
 
 const testDir = defineBddConfig({
   features: 'features/journeys/**/*.feature',

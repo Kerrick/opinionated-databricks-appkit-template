@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { quickpickle } from 'quickpickle';
 import { browserLaunchOptions } from './tools/browser-libraries.ts';
+import { freePort } from './tools/free-port.ts';
 import { defineConfig, type Plugin } from 'vite';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
@@ -45,6 +46,8 @@ export default defineConfig({
       enabled: true,
       headless: true,
       provider: playwright({ launchOptions: browserLaunchOptions() }),
+      // The browser's own server, on a port the system hands out for this run, so two runs on one machine don't share one.
+      api: { port: await freePort() },
       instances: [{ browser: 'chromium' }],
     },
   },
