@@ -52,7 +52,9 @@ pull request does.
 `renovate.json` configures Renovate. It keeps exact pins (`rangeStrategy: pin`)
 and covers the root `package.json`, `generic/package.json` with its lockfile,
 `mise.toml`, `generic/pixi.toml` with its lock, the GitHub Actions digests, and
-the AppKit packages, which it updates together in one pull request. Its regex
+the AppKit packages, which it updates together in one pull request. It leaves
+`echarts` alone: that pin has to match the version `@databricks/appkit-ui`
+depends on, so it moves by hand with the AppKit update. Its regex
 managers read the pins built-in managers can't: those in
 `generic/mise.toml.tmpl`, whose template conditionals aren't valid TOML, and
 the `skills` CLI version in `generic/.pre-commit-config.yaml`. The three Node pins (`mise.toml`,

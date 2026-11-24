@@ -20,6 +20,11 @@
       "rangeStrategy": "pin"
     },
     {
+      "description": "echarts has to be exactly the version @databricks/appkit-ui depends on, so it moves only with the AppKit update, by hand.",
+      "matchPackageNames": ["echarts"],
+      "enabled": false
+    },
+    {
       "description": "Tools pinned in mise.toml (Node, pnpm, the Databricks CLI) are exact versions.",
       "matchManagers": ["mise"],
       "rangeStrategy": "pin"

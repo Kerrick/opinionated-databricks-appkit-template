@@ -171,12 +171,12 @@ needs a pointer; there is no keyboard equivalent.
 ECharts can describe a chart to assistive technology, but its `aria` component
 isn't loaded by default since ECharts 5. Registering it with `use` from
 `echarts/core` reaches AppKit's charts only when the app's `echarts` is the same
-module instance as `appkit-ui`'s, which is why the first chart adds `echarts`
+module instance as `appkit-ui`'s, which is why the project depends on `echarts`
 pinned to exactly the version `appkit-ui` depends on (`pnpm why echarts` shows
 it). With `aria: { enabled: true }` in a chart's options (ECharts 6 deprecates
 the older `aria.show`), ECharts gives the container `role="img"` and an
-`aria-label` describing the data. [architecture.md](architecture.md) says what
-the first chart brings.
+`aria-label` describing the data. [architecture.md](architecture.md) says where
+the registration is and what guards it.
 
 Checked 2026-11-23 in the AppKit repository's
 `packages/appkit-ui/src/react/charts/base.tsx`, the

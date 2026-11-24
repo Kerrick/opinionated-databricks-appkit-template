@@ -297,8 +297,15 @@ Modified files:
 - Tests beside the code they test: `client/src/acl/fetch-or-throw.test.ts`,
   `client/src/acl/todos.test.ts` and `client/src/lib/utils.test.ts`, run in
   Node and by mutation testing.
+- `client/src/main.tsx`, `client/src/components/charts/register-accessibility.ts`,
+  `package.json`: `echarts` becomes a dependency, pinned to the version
+  `@databricks/appkit-ui` depends on, and `main.tsx` registers ECharts'
+  accessibility support once at startup. `tools/echarts-pin.test.ts` and
+  `register-accessibility.browser.test.ts` fail when the pin drifts or the
+  registration goes missing. When a later AppKit release moves its ECharts,
+  move the pin to match.
 - Formatting only: `client/src/App.tsx`, `client/src/index.css`,
-  `client/src/acl/fetch-or-throw.ts`, `client/src/main.tsx`,
+  `client/src/acl/fetch-or-throw.ts`,
   `client/vite.config.ts`, `client/src/pages/lakebase/LakebasePage.tsx`,
   and `server/routes/lakebase/todo-routes.ts`.
 

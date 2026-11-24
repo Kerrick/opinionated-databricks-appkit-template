@@ -63,22 +63,25 @@ router.
 
 AppKit's charts are drawn on a canvas, so screen readers and tests can't find
 their data unless ECharts' accessibility support is on ([platform.md](platform.md)
-says how it works). The template ships no chart, so it ships no chart code
-either; it ships the boundary the first chart must respect. Charts are imported
-only through wrappers in `client/src/components/charts/`, one per chart type.
-The first chart brings three things with it:
+says how it works). The template ships no chart, so it ships no chart wrapper
+either, but it does ship the support itself and the boundary charts must respect:
 
-1. ECharts' `aria` component, registered once at the app's root, with `use`
-   from `echarts/core`.
-2. `echarts`, pinned to exactly the version `@databricks/appkit-ui` depends on.
-   The registration reaches AppKit's charts only when both import the same
-   copy of ECharts.
-3. Its wrapper, which sets `aria: { enabled: true }` in the chart's options.
+1. `main.tsx` calls `registerChartAccessibility()` once at startup. It registers
+   ECharts' `AriaComponent` (from `echarts/components`) with `use` from
+   `echarts/core` (`components/charts/register-accessibility.ts`).
+2. `echarts` is a dependency of the project, pinned to exactly the version
+   `@databricks/appkit-ui` depends on. The registration reaches AppKit's charts
+   only when both import the same copy of ECharts, so `tools/echarts-pin.test.ts`
+   fails when the versions differ or the project installs a second copy, and
+   `register-accessibility.browser.test.ts` fails when the registration is
+   missing. When AppKit moves to another ECharts, move the pin with it.
+3. Charts are imported only through wrappers in `client/src/components/charts/`,
+   one per chart type. A wrapper sets `aria: { enabled: true }` in the chart's
+   options; it is written with the first chart that needs one.
 
-Wrappers are written with the first chart that needs one, not before, because a
-wrapper nothing uses is dead code that knip fails. Where users act on a chart's
-data, the page also offers a way to reach that data by keyboard, such as a
-table of the same rows.
+A wrapper is not written before its chart, because a wrapper nothing uses is
+dead code that knip fails. Where users act on a chart's data, the page also
+offers a way to reach that data by keyboard, such as a table of the same rows.
 
 ### Application
 
