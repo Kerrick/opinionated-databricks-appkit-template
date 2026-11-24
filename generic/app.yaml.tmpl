@@ -1,0 +1,7 @@
+command: ['{{or .packageManager "pnpm"}}', 'run', 'start']
+health_check:
+  path: /health
+{{- if .appEnv}}
+env:
+{{.appEnv}}
+{{- end}}
