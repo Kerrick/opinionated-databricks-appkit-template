@@ -1,0 +1,57 @@
+# The domain layer
+
+The business's concepts and rules, as plain TypeScript. Nothing here knows it
+runs in React, in a browser, or on Databricks. The reasons are in
+`docs/design/architecture.md`.
+
+## Imports
+
+Nothing from React, AppKit, `client/src/acl/`, `client/src/hooks/`, the view
+folders, or browser APIs (`window`, `document`, `fetch`, storage). Other domain
+files and small pure libraries only.
+
+## Objects never change
+
+React decides what to re-render by comparing references, and the React
+Compiler assumes nothing it is given is ever mutated. So:
+
+- Fields are `readonly`. No setters.
+- A method that "changes" an object returns a new one:
+
+  ```ts
+  // Wrong: mutates an object that React may already hold.
+  order.status = 'shipped';
+
+  // Right: a new Order, and the old one stays as it was.
+  const shipped = order.withStatus('shipped');
+  ```
+
+- Collections are `ReadonlyArray` and `ReadonlyMap`, and are copied, never
+  pushed to.
+
+## Classes
+
+Classes are welcome here, and only here; the rest of the client is functions.
+
+- Name the concept, never the role: `Invoice`, `ShippingRate`, not
+  `InvoiceManager`, `RateHandler` or `OrderProcessor`. A name ending in an
+  agent noun means behavior is missing from the object it acts on.
+- Put behavior with the data it uses. A class with only fields and a separate
+  service full of logic is the anemic model this layer avoids.
+- One class per file, named after the class.
+- When behavior varies by kind, give each kind its own class (polymorphism or a
+  strategy) instead of branching on a type field. A `switch` over a
+  discriminated union is fine where only the data varies, as long as it is
+  exhaustive.
+
+## Documentation and tests
+
+- Every export has a JSDoc comment saying what it represents in the business.
+- Tests run in Node, below the UI: one example per rule, plus property tests
+  with `fast-check` for rules that hold across many inputs. They must kill every
+  mutant that mutation testing makes.
+
+## When the server needs these rules
+
+Move this folder to `shared/domain/` so the client and the server import one
+copy. `docs/design/architecture.md` says how.

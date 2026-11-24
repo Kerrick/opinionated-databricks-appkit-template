@@ -1,0 +1,50 @@
+# The server
+
+AppKit's Express server, its plugins, and the app's own routes. How it fits
+together is in `docs/design/architecture.md`; the platform's limits are in
+`docs/design/platform.md`.
+
+## Before adding a route
+
+- Reading from a SQL warehouse needs no route: add a `.sql` file to
+  `config/queries/` and read it with AppKit's hooks through `client/src/acl/`.
+  The same goes for Unity Catalog files, through the `files` plugin.
+- Custom routes are for writes, Databricks APIs that have no plugin, logic over
+  several steps, external services and file processing. Writes wait until the
+  team chooses where they go (`docs/open-questions.md`).
+
+## Writing a route
+
+- Register it in `onPluginsReady` with `appkit.server.extend(app => ...)`, or in
+  a custom AppKit plugin's `injectRoutes()`.
+- Validate the body, the parameters and the query string with Zod before using
+  any of them.
+- AppKit runs Express 4, although the project has Express 5's type definitions.
+  In Express 4 a rejected promise in an `async` handler never reaches the error
+  middleware, and the client gets no error response. Wrap every `async` handler so that failures go
+  to `next(err)`, and test that a failing handler answers with an error
+  response.
+- Test plugins and routes with `@databricks/appkit/testing`, which needs no
+  workspace and no network.
+- Document every export with JSDoc.
+
+## The platform
+
+- Log to stdout and stderr only. Nothing else is kept.
+- Nothing written to disk survives a restart or reaches another instance; the
+  app may run as several instances behind one URL.
+- On SIGTERM the app has 15 seconds before it is killed. Finish or drop work
+  within that.
+- No root and no system packages: everything comes from npm.
+- The `database()` plugin's generated routes run as the app's service principal
+  with no per-user or per-row authorization. The build fails while it is
+  registered until a document in `docs/design/` has a "Per-user authorization"
+  section saying how that is handled.
+- The first route that isn't a `GET` fails the build until a document in
+  `docs/design/` has a "Write target" section saying where writes go.
+
+## Domain rules
+
+The server never imports from `client/`. When a route needs the domain's rules,
+move `client/src/domain/` to `shared/domain/` and import it from both sides;
+never copy the rules. `docs/design/architecture.md` says how.

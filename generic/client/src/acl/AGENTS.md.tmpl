@@ -1,0 +1,43 @@
+# The anti-corruption layer
+
+The only code that knows how data reaches the app. Everything else in the client
+asks this folder for domain objects. The reasons are in
+`docs/decisions/` (record 0002) and `docs/design/architecture.md`.
+
+## What lives here
+
+- **One hook per data need,** named `use` plus the domain concept it returns:
+  `useOpenInvoices`, never `useInvoiceQuery` or `useData`. It calls AppKit's
+  data hook (`useAnalyticsQuery` and the others from `@databricks/appkit-ui`)
+  and maps the rows to objects from `client/src/domain/`.
+- **Query and mutation options for the app's own endpoints,** built for
+  TanStack Query. Route loaders and components use these; nothing else in the
+  client calls `/api/*`.
+- **Mapping functions,** pure and separate from the hooks, so they are tested in
+  Node and covered by mutation testing.
+
+## Rules
+
+- AppKit's generated row types (in `shared/appkit-types/`) are imported here
+  and nowhere else in the client. A row is the SQL warehouse's model, not the
+  app's: column names, nulls and number types follow the warehouse.
+- Return domain objects, never rows. A hook's result type mentions no generated
+  type.
+- Keep AppKit's loading and error states. Pass `loading`, `error` and
+  `warehouseStatus` through in a shape the view can show; a stopped warehouse
+  can take minutes to start.
+- No `fetch` inside `useEffect`. AppKit's hooks and TanStack Query do the
+  fetching, the sharing of requests and the caching.
+- One SQL query with a join is better than two hooks whose second waits for the
+  first.
+- Every hook and option set has a test, with the network faked by MSW. AppKit's
+  analytics hooks `POST` to `/api/analytics/query/<key>` and read a
+  server-sent-event stream from the response body, so the fake is an
+  `http.post` handler that returns a `text/event-stream` body.
+
+## The exception
+
+AppKit's chart and table components take a query key and fetch for themselves.
+A view may use them directly to show a query's rows as they are, with no logic
+around them. As soon as anything interprets the rows, the data comes through a
+hook here instead.
