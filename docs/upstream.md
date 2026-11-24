@@ -155,7 +155,7 @@ Modified files:
   `--package-import-method=copy` does not.
 - `.prettierrc.json`: an override for `databricks.yml` that keeps double
   quotes, because `databricks.yml.tmpl` writes `"{{.projectName}}"`.
-- `.prettierignore`: `appkit.plugins.json`, which the build rewrites.
+- `.prettierignore`: `appkit.plugins.json`, which the build rewrites, and `shared/appkit-types/`, which type generation rewrites.
 - `README.md.tmpl`: a blank line after `**Enabled plugins:**`, and the
   package manager is written as `pnpm` instead of `{{or .packageManager "pnpm"}}`,
   with a sentence saying the project uses pnpm only.
@@ -165,7 +165,7 @@ Modified files:
   stale as dependencies change, and Renovate would try to keep both current.
 - `server/server.ts`: the plugin list is written on one line, which is how
   Prettier prints it for every plugin selection.
-- `client/src/ErrorBoundary.tsx` moved to `client/src/components/ErrorBoundary.tsx`, and `client/src/lib/fetch-or-throw.ts` to `client/src/acl/fetch-or-throw.ts`, so that both live in a layer. `main.tsx` and the three pages that import `fetch-or-throw` follow.
+- `client/src/ErrorBoundary.tsx` moved to `client/src/components/ErrorBoundary.tsx`, and `client/src/lib/fetch-or-throw.ts` to `client/src/acl/fetch-or-throw.ts`, so that both live in a layer. `main.tsx` and `acl/todos.ts`, which imports `fetch-or-throw`, follow.
 - `package.json`, `tsconfig.json` and `tsconfig.tools.json`: a `tools/` project (typechecked with `tsc -b`, run with `tsx`) holding the repository checks, and the `lint:triggers` script that `lint` runs.
 - `tools/`: new. Checks that stay quiet until the project learns something: an unknown folder under `client/src/`, a first non-GET custom server route, Lakebase arriving, and an on-behalf-of-user query.
 - `tsconfig.shared.json` extends `@tsconfig/strictest` (added to `devDependencies`) and keeps only the module and emit settings. The strictest preset adds `exactOptionalPropertyTypes`, `noImplicitOverride`, `noPropertyAccessFromIndexSignature` and `isolatedModules`, so the `ErrorBoundary` and `example.test.ts` class members gained `override`.
@@ -202,7 +202,6 @@ lines, run Prettier on the body, and put the wrapper back.
 - `server/async-handler.ts`: new, with a test that a failing handler gets an error response.
 - `client/src/components/RouteError.tsx`: new. `client/src/App.tsx` names it as the `errorElement` of every route.
 - `mise.toml.tmpl`, `.sqlfluff`, `config/database/.sqlfluff.tmpl`, `tools/lint-sql.ts`: new. The toolchain is pinned (Node, pnpm, Python, uv, pre-commit, sqlfluff, and squawk when Lakebase or the database plugin is selected). `config/queries` is linted as Databricks SQL, Lakebase SQL as Postgres, and migrations also go through squawk. `lint:sql` runs whichever apply and is part of `lint`, with `lint:ast-grep` (`appkit lint`).
-- `config/queries/mocked_sales.sql`: the mock rows are a `VALUES` list with a column list, laid out the way sqlfluff expects. The columns and rows are unchanged.
 - `client/src/acl/todos.ts`, `client/src/pages/lakebase/LakebasePage.tsx`, `client/src/App.tsx`, `server/routes/lakebase/todo-routes.ts`: the sample todo list loads through a route loader and submits through React Router forms, with its requests in `acl/`, and the sample routes use `asyncHandler` and validate `:id` with Zod. The sample still does what it did; it now follows the project's own rules.
 - `tools/check-sizes.ts`: new. The root `AGENTS.md` stays under 12,000 characters, each `AGENTS.md` below it under 4,000, and each project-owned `SKILL.md` (not those installed from `skills-lock.json`) under 500 lines and 20,000 characters. `lint:sizes` is part of `lint`.
 - `rules/queries-use-generated-types.yml`, `rules/no-warehouse-reads-in-custom-endpoints.yml`: new. A type argument on `useAnalyticsQuery` replaces the generated row type, and a custom endpoint that reads the warehouse (the analytics plugin, a statement-execution or SQL client) bypasses the plugin's cache, types and per-user execution.
