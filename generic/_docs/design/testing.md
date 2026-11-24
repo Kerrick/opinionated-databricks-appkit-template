@@ -293,7 +293,7 @@ A test must check specific behavior; "it doesn't crash" is never enough.
   the app. Stryker runs its tests in forked processes (`"pool": "forks"` in
   `stryker.config.json`). Its default is worker threads, and a worker thread that
   loads `@ast-grep/napi`, which AppKit's package pulls in, crashes with a
-  segmentation fault on Linux once the tests finish, so no mutant could be judged.
+  segmentation fault on Linux x64, so no mutant could be judged.
 
 ## Accessibility checks
 
