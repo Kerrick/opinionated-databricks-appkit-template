@@ -22,6 +22,9 @@ A Databricks App powered by [AppKit](https://developers.databricks.com/docs/appk
 {{- if .plugins.agents}}
 - **Agents** -- AI agents defined in markdown or code. No sample agent or chat page is included: add each agent as a folder in `server/agents/`, which the plugin discovers when the app starts.
 {{- end}}
+{{- if .plugins.aiSearch}}
+- **AI Search** -- Queries a Databricks Vector Search index. No sample page is included. Before the first deploy, choose the columns a search returns: `aiSearch({ indexes: { default: { columns: [...] } } })` in `server/server.ts`. Until then, `appkit lint` (part of `pnpm run lint`) fails, because without them the index fails in production.
+{{- end}}
 - **Server** -- Express HTTP server with static file serving and Vite dev mode
 
 ## Prerequisites

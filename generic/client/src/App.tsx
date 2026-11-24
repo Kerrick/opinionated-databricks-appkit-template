@@ -33,9 +33,6 @@ import { FilesPage } from './pages/files/FilesPage';
 {{- if .plugins.serving}}
 import { ServingPage } from './pages/serving/ServingPage';
 {{- end}}
-{{- if .plugins.aiSearch}}
-import { AiSearchPage } from './pages/ai-search/AiSearchPage';
-{{- end}}
 {{- if .plugins.jobs}}
 import { JobsPage } from './pages/jobs/JobsPage';
 {{- end}}
@@ -80,11 +77,6 @@ function NavLinks({
 {{- if .plugins.serving}}
       <NavLink to="/serving" className={linkClass} onClick={onClick}>
         Serving
-      </NavLink>
-{{- end}}
-{{- if .plugins.aiSearch}}
-      <NavLink to="/ai-search" className={linkClass} onClick={onClick}>
-        AI Search
       </NavLink>
 {{- end}}
 {{- if .plugins.jobs}}
@@ -159,9 +151,6 @@ const router = createBrowserRouter([
 {{- end}}
 {{- if .plugins.serving}}
       { path: '/serving', element: <ServingPage />, errorElement: <RouteError /> },
-{{- end}}
-{{- if .plugins.aiSearch}}
-      { path: '/ai-search', element: <AiSearchPage />, errorElement: <RouteError /> },
 {{- end}}
 {{- if .plugins.jobs}}
       { path: '/jobs', element: <JobsPage />, errorElement: <RouteError /> },

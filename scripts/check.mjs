@@ -15,7 +15,7 @@
 // and then requires the project's whole check to pass.
 
 import { spawn } from 'node:child_process';
-import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -28,6 +28,7 @@ const isWindows = process.platform === 'win32';
 // values only have to be well formed.
 const plugins = {
   agents: {},
+  aiSearch: { 'vector-search-index.id': 'check.app.index' },
   analytics: { 'sql-warehouse.id': 'abc123' },
   lakebase: {
     'postgres.branch': 'projects/check/branches/main',
@@ -51,6 +52,23 @@ const expectedFailures = [
         '\n## Write target\n\nThe sample todo list writes to Lakebase.\n',
       );
       return ['docs/design/architecture.md'];
+    },
+  },
+  {
+    why: 'an AI Search index returns only the columns the project chooses, and none are chosen yet',
+    script: 'lint:ast-grep',
+    lines: [
+      /^Scanning \d+ TypeScript files\.\.\.$/,
+      /^Found 1 violation\(s\):$/,
+      /^server\/server\.ts:\d+:\d+$/,
+      /^ {2}ai-search-index-requires-columns: AI Search index has no `columns`; it will fail in production .* Set `columns` explicitly on each index\.$/,
+      /^ {2}> aiSearch\(\)$/,
+    ],
+    fix(projectDir) {
+      const path = join(projectDir, 'server', 'server.ts');
+      const source = readFileSync(path, 'utf8');
+      writeFileSync(path, source.replace('aiSearch()', "aiSearch({ indexes: { default: { columns: ['id'] } } })"));
+      return ['server/server.ts'];
     },
   },
 ];

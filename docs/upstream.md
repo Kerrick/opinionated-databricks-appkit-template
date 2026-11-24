@@ -89,6 +89,14 @@ generates a project with these plugins selected and runs its check.
   routes inside a view, kept message state by hand and used a plain form, and
   the agents are a demonstration a project would delete. The plugin starts
   with no agents and says so in its log. `README.md.tmpl` says where agents go.
+- `aiSearch`: cut. `client/src/pages/ai-search/` is gone, with its route and
+  link. A search result's fields are whichever columns the project's index
+  returns, so there is no domain object to map them to until the project
+  chooses them, and the page called AppKit's search hook from a view. The
+  registration stays `aiSearch()`, as upstream writes it: which columns a
+  search returns is the project's choice, and `appkit lint` fails, saying so,
+  until it is made. The root check expects that failure. `README.md.tmpl` says
+  what to set.
 
 Added files:
 
