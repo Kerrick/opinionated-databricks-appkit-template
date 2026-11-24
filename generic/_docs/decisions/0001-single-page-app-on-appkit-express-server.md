@@ -35,7 +35,7 @@ Confidence: AppKit's template already runs this way, and the generated project b
 
 ### Confirmation
 
-The generated project's `build` type-checks and bundles the server with tsdown, then type-checks and builds the client with Vite. A server-rendering framework would replace both, and the build would change shape. No check names the frameworks.
+The generated project's `build` type-checks and bundles the server with tsdown, then type-checks and builds the client with Vite. dependency-cruiser's `no-server-rendering-frameworks` rule, part of `check`, fails when any file imports `next`, `@react-router/dev` or `@tanstack/react-start`.
 
 ## More Information
 
