@@ -2,7 +2,7 @@ import { test as property } from '@fast-check/vitest';
 import fc from 'fast-check';
 import { http, HttpResponse } from 'msw/http';
 import { setupServer } from 'msw/node';
-import { afterAll, afterEach, beforeAll, describe, expect, test } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from 'vitest';
 import { z } from 'zod';
 import { fetchJson, fetchOrThrow } from './fetch-or-throw';
 
@@ -57,9 +57,14 @@ describe('fetchOrThrow', () => {
   property.prop([fc.string(), fc.constantFrom(400, 403, 404, 409, 422, 500, 502, 503)])(
     "always surfaces the server's own message, whatever it says",
     async (message, status) => {
-      server.use(http.get(url, () => HttpResponse.json({ error: message }, { status })));
-
-      await expect(fetchOrThrow(url, undefined, fallback)).rejects.toThrow(new Error(message));
+      // A hundred runs through the mock server cost seconds on a busy machine, and the server's part is covered
+      // by the cases above. Here only the response matters, so it comes straight from a stand-in for fetch.
+      const fetchStub = vi.spyOn(globalThis, 'fetch').mockResolvedValue(Response.json({ error: message }, { status }));
+      try {
+        await expect(fetchOrThrow(url, undefined, fallback)).rejects.toThrow(new Error(message));
+      } finally {
+        fetchStub.mockRestore();
+      }
     }
   );
 });
