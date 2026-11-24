@@ -30,6 +30,17 @@ if a developer selecting that plugin should see it; otherwise fix the template.
 
 The second project roughly doubles the time a run takes.
 
+**Where it leaves files.** The check keeps everything it writes under one folder
+named `atc` in the system's temporary folder, with one subfolder for each run, and
+points `TMPDIR`, `TEMP`, `TMP` and the cache settings of the tools it knows
+(Node's compile cache, tsx and Playwright) into that run's subfolder, so the
+generated project's tools leave nothing beside it. A run removes its subfolder
+when it ends, including on Ctrl-C and SIGTERM. A run that is killed outright can't,
+so each run touches a heartbeat file every 30 seconds while it lives, and the next
+run removes any subfolder whose heartbeat is more than ten minutes old. The
+folder names are three characters long because tsx's Unix socket path lives
+inside the folder, and such paths are limited to 107 bytes.
+
 It runs on:
 
 - every push to `trunk` and every pull request,
